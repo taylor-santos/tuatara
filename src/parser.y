@@ -33,6 +33,14 @@
 %token
     EOF  0      "end of file"
 
+%token<string>
+    IDENT   "identifier"
+    STRING  "string literal"
+%token<int>
+    INT     "int literal"
+%token<double>
+    FLOAT   "float literal"
+
 %start file
 
 %%

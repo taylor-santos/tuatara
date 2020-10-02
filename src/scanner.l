@@ -2,12 +2,19 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <climits>
+#include <cmath>
 
 #include "driver.h"
 #include "parser.h"
 %}
 
 %option noyywrap nounput batch debug noinput nounistd never-interactive
+
+ident   [a-zA-Z0-9][a-zA-Z0-9_]*
+str     \"([^\\\"\n]|\\.)*\"
+int     -?[0-9]+
+float   (-?[0-9]+\.[0-9]*|-?[0-9]*\.[0-9]+)((e|E)-?[0-9]+)?|[0-9]+(e|E)-?[0-9]+|-?inf|-?nan
 
 %{
     #define YY_USER_ACTION {            \
@@ -34,6 +41,30 @@
 \r
 
 "//".*
+
+{int}       {
+                errno = 0;
+                long n = strtol(yytext, NULL, 10);
+                if (!(INT_MIN <= n && n <= INT_MAX && errno != ERANGE)) {
+                    throw yy::parser::syntax_error (
+                        loc,
+                        "integer is out of range: " + std::string(yytext)
+                    );
+                }
+                return yy::parser::make_INT(n, loc);
+            }
+{float}     {
+                errno = 0;
+                double n = strtod(yytext, NULL);
+                if (!(-HUGE_VAL <= n && n <= HUGE_VAL && errno != ERANGE)) {
+                    throw yy::parser::syntax_error (
+                        loc,
+                        "double is out of range: " + std::string(yytext)
+                    );
+                }
+                return yy::parser::make_FLOAT(n, loc);
+            }
+{ident}     return yy::parser::make_IDENT(yytext, loc);
 
 .           {
                 std::stringstream ss;
