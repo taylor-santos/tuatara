@@ -3,7 +3,7 @@ project(tuatara)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(BISON 3.5.0)
+find_package(BISON 3.2)
 find_package(FLEX)
 
 bison_target(
