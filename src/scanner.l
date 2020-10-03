@@ -42,6 +42,11 @@ float   (-?[0-9]+\.[0-9]*|-?[0-9]*\.[0-9]+)((e|E)-?[0-9]+)?|[0-9]+(e|E)-?[0-9]+|
 
 "//".*
 
+"var"       return yy::parser::make_VAR(loc);
+"="         return yy::parser::make_ASSIGN(loc);
+";"         return yy::parser::make_SEMICOLON(loc);
+":"         return yy::parser::make_COLON(loc);
+
 {int}       {
                 errno = 0;
                 long n = strtol(yytext, NULL, 10);
@@ -65,6 +70,7 @@ float   (-?[0-9]+\.[0-9]*|-?[0-9]*\.[0-9]+)((e|E)-?[0-9]+)?|[0-9]+(e|E)-?[0-9]+|
                 return yy::parser::make_FLOAT(n, loc);
             }
 {ident}     return yy::parser::make_IDENT(yytext, loc);
+{str}       return yy::parser::make_STRING(yytext, loc);
 
 .           {
                 std::stringstream ss;
