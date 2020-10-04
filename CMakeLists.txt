@@ -50,16 +50,22 @@ add_subdirectory("${CMAKE_BINARY_DIR}/googletest-src"
 # The gtest/gmock targets carry header search path dependencies
 # automatically when using CMake 2.8.11 or later. Otherwise we
 # have to add them here ourselves.
-if(CMAKE_VERSION VERSION_LESS 2.8.11)
+if (CMAKE_VERSION VERSION_LESS 2.8.11)
     include_directories("${gtest_SOURCE_DIR}/include"
             "${gmock_SOURCE_DIR}/include"
             )
-endif()
+endif ()
 include(GoogleTest)
 set(TESTING_NAME "all_tests")
-file(GLOB_RECURSE TEST_SRC "test/*")
+file(GLOB_RECURSE TEST_SRC "test/*" "src/*")
+list(REMOVE_ITEM TEST_SRC "${CMAKE_SOURCE_DIR}/src/main.cpp")
 enable_testing()
-add_executable(${TESTING_NAME} ${TEST_SRC})
+add_executable(
+        ${TESTING_NAME}
+        ${BISON_Parser_OUTPUTS}
+        ${FLEX_Scanner_OUTPUTS}
+        ${TEST_SRC}
+)
 # Link against gtest
 target_link_libraries(${TESTING_NAME} gtest_main)
 gtest_discover_tests(${TESTING_NAME})
