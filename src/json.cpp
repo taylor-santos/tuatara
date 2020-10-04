@@ -45,9 +45,15 @@ JSON::Object::~Object() {
 }
 
 void
-JSON::Object::String(const string &key, const string &str) {
+JSON::Object::KeyValue(const std::string &key, const std::string &value) {
     Key(key);
-    out << '"' << str << '"';
+    out << '"' << value << '"';
+}
+
+void
+JSON::Object::KeyValue(const string &key, const char *value) {
+    Key(key);
+    out << '"' << value << '"';
 }
 
 JSON::Array::Array(ostream &out)

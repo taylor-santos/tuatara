@@ -31,33 +31,73 @@ TEST(JSONTest, MinimizedEmptyArray) {
     EXPECT_EQ(ss.str(), "[]");
 }
 
-TEST(JSONTest, ObjectWithOneKeyValue) {
+TEST(JSONTest, ObjectWithOneString) {
     std::ostringstream ss;
     JSON::JSON::minimize = false;
     {
         JSON::Object obj(ss);
-        obj.String("key", "value");
+        obj.KeyValue("key", "value");
     }
     EXPECT_EQ(ss.str(), "{\n\t\"key\": \"value\"\n}");
 }
 
-TEST(JSONTest, MinimizedObjectWithOneKeyValue) {
+TEST(JSONTest, MinimizedObjectWithOneString) {
     std::ostringstream ss;
     JSON::JSON::minimize = true;
     {
         JSON::Object obj(ss);
-        obj.String("key", "value");
+        obj.KeyValue("key", "value");
     }
     EXPECT_EQ(ss.str(), R"({"key":"value"})");
 }
 
-TEST(JSONTest, ObjectWithTwoKeyValues) {
+TEST(JSONTest, ObjectWithOneInt) {
     std::ostringstream ss;
     JSON::JSON::minimize = false;
     {
         JSON::Object obj(ss);
-        obj.String("first_key", "first_value");
-        obj.String("second_key", "second_value");
+        obj.KeyValue("key", 123);
+    }
+    EXPECT_EQ(ss.str(), "{\n\t\"key\": 123\n}");
+}
+
+TEST(JSONTest, MinimizedObjectWithOneInt) {
+    std::ostringstream ss;
+    JSON::JSON::minimize = true;
+    {
+        JSON::Object obj(ss);
+        obj.KeyValue("key", 123);
+    }
+    EXPECT_EQ(ss.str(), R"({"key":123})");
+}
+
+TEST(JSONTest, ObjectWithOneFloat) {
+    std::ostringstream ss;
+    JSON::JSON::minimize = false;
+    {
+        JSON::Object obj(ss);
+        obj.KeyValue("key", 123.456);
+    }
+    EXPECT_EQ(ss.str(), "{\n\t\"key\": 123.456\n}");
+}
+
+TEST(JSONTest, MinimizedObjectWithOneFloat) {
+    std::ostringstream ss;
+    JSON::JSON::minimize = true;
+    {
+        JSON::Object obj(ss);
+        obj.KeyValue("key", 123.456);
+    }
+    EXPECT_EQ(ss.str(), R"({"key":123.456})");
+}
+
+TEST(JSONTest, ObjectWithTwoStrings) {
+    std::ostringstream ss;
+    JSON::JSON::minimize = false;
+    {
+        JSON::Object obj(ss);
+        obj.KeyValue("first_key", "first_value");
+        obj.KeyValue("second_key", "second_value");
     }
     EXPECT_EQ(
         ss.str(),
@@ -67,15 +107,96 @@ TEST(JSONTest, ObjectWithTwoKeyValues) {
         "}");
 }
 
-TEST(JSONTest, MinimizedObjectWithTwoKeyValues) {
+TEST(JSONTest, MinimizedObjectWithTwoStrings) {
     std::ostringstream ss;
     JSON::JSON::minimize = true;
     {
         JSON::Object obj(ss);
-        obj.String("first_key", "first_value");
-        obj.String("second_key", "second_value");
+        obj.KeyValue("first_key", "first_value");
+        obj.KeyValue("second_key", "second_value");
     }
     EXPECT_EQ(ss.str(), R"({"first_key":"first_value","second_key":"second_value"})");
+}
+
+TEST(JSONTest, ObjectWithStringInt) {
+    std::ostringstream ss;
+    JSON::JSON::minimize = false;
+    {
+        JSON::Object obj(ss);
+        obj.KeyValue("first_key", "first_value");
+        obj.KeyValue("second_key", 123);
+    }
+    EXPECT_EQ(
+        ss.str(),
+        "{\n"
+        "\t\"first_key\": \"first_value\",\n"
+        "\t\"second_key\": 123\n"
+        "}");
+}
+
+TEST(JSONTest, MinimizedObjectWithStringInt) {
+    std::ostringstream ss;
+    JSON::JSON::minimize = true;
+    {
+        JSON::Object obj(ss);
+        obj.KeyValue("first_key", "first_value");
+        obj.KeyValue("second_key", 123);
+    }
+    EXPECT_EQ(ss.str(), R"({"first_key":"first_value","second_key":123})");
+}
+
+TEST(JSONTest, ObjectWithIntString) {
+    std::ostringstream ss;
+    JSON::JSON::minimize = false;
+    {
+        JSON::Object obj(ss);
+        obj.KeyValue("first_key", 123);
+        obj.KeyValue("second_key", "second_value");
+    }
+    EXPECT_EQ(
+        ss.str(),
+        "{\n"
+        "\t\"first_key\": 123,\n"
+        "\t\"second_key\": \"second_value\"\n"
+        "}");
+}
+
+TEST(JSONTest, MinimizedObjectWithIntString) {
+    std::ostringstream ss;
+    JSON::JSON::minimize = true;
+    {
+        JSON::Object obj(ss);
+        obj.KeyValue("first_key", 123);
+        obj.KeyValue("second_key", "second_value");
+    }
+    EXPECT_EQ(ss.str(), R"({"first_key":123,"second_key":"second_value"})");
+}
+
+TEST(JSONTest, ObjectWithTwoInts) {
+    std::ostringstream ss;
+    JSON::JSON::minimize = false;
+    {
+        JSON::Object obj(ss);
+        obj.KeyValue("first_key", 123);
+        obj.KeyValue("second_key", 456);
+    }
+    EXPECT_EQ(
+        ss.str(),
+        "{\n"
+        "\t\"first_key\": 123,\n"
+        "\t\"second_key\": 456\n"
+        "}");
+}
+
+TEST(JSONTest, MinimizedObjectWithTwoInts) {
+    std::ostringstream ss;
+    JSON::JSON::minimize = true;
+    {
+        JSON::Object obj(ss);
+        obj.KeyValue("first_key", 123);
+        obj.KeyValue("second_key", 456);
+    }
+    EXPECT_EQ(ss.str(), R"({"first_key":123,"second_key":456})");
 }
 
 TEST(JSONTest, ArrayWithOneString) {
@@ -137,7 +258,7 @@ TEST(JSONTest, NestedObjects) {
         obj.Key("obj");
         {
             JSON::Object obj2(ss);
-            obj2.String("key", "value");
+            obj2.KeyValue("key", "value");
         }
     }
     EXPECT_EQ(
@@ -157,7 +278,7 @@ TEST(JSONTest, MinimizedNestedObjects) {
         obj.Key("obj");
         {
             JSON::Object obj2(ss);
-            obj2.String("key", "value");
+            obj2.KeyValue("key", "value");
         }
     }
     EXPECT_EQ(ss.str(), R"({"obj":{"key":"value"}})");
