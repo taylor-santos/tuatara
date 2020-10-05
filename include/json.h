@@ -27,7 +27,13 @@ class Object final : public JSON {
 public:
     explicit Object(std::ostream &out = std::cout);
     ~Object() override;
-    void String(const std::string &key, const std::string &str);
+    template<class T>
+    void KeyValue(const std::string &key, const T &value) {
+        Key(key);
+        out << value;
+    }
+    void KeyValue(const std::string &key, const std::string &value);
+    void KeyValue(const std::string &key, const char value[]);
 };
 
 class Array final : public JSON {
