@@ -78,5 +78,6 @@ else ()
             -Wno-unused-parameter -fprofile-arcs -ftest-coverage)
     target_compile_options(${TESTING_NAME} PRIVATE -O0 -Wall -Wextra -pedantic
             -Wno-unused-parameter -fprofile-arcs -ftest-coverage)
+    target_link_libraries(${PROJECT_NAME} -lgcov --coverage)
     target_link_libraries(${TESTING_NAME} -lgcov --coverage)
 endif ()
