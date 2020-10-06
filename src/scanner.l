@@ -70,7 +70,13 @@ float   (-?[0-9]+\.[0-9]*|-?[0-9]*\.[0-9]+)((e|E)-?[0-9]+)?|[0-9]+(e|E)-?[0-9]+|
                 return yy::parser::make_FLOAT(n, loc);
             }
 {ident}     return yy::parser::make_IDENT(yytext, loc);
-{str}       return yy::parser::make_STRING(yytext, loc);
+{str}       {
+                string str = yytext;
+                assert(str[0] == '"');
+                assert(str[str.size()-1] == '"');
+                str = str.substr(1, str.size()-2);
+                return yy::parser::make_STRING(str, loc);
+            }
 
 .           {
                 std::stringstream ss;
