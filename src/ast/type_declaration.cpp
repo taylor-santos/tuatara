@@ -10,7 +10,7 @@ TypeDeclaration::TypeDeclaration(const yy::location &loc, string variable)
     : Declaration(loc, move(variable)) {}
 
 void
-TypeDeclaration::json(std::ostream &os) const {
+TypeDeclaration::json(ostream &os) const {
     JSON::Object obj(os);
     obj.KeyValue("node", "type declaration");
     obj.KeyValue("variable", variable);

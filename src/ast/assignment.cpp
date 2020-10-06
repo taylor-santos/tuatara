@@ -6,16 +6,13 @@
 using namespace TuataraAST;
 using namespace std;
 
-Assignment::Assignment(
-    const yy::location &        loc,
-    std::string                 variable,
-    std::unique_ptr<Expression> value)
+Assignment::Assignment(const yy::location &loc, string variable, unique_ptr<Expression> value)
     : Expression(loc)
     , variable{move(variable)}
     , value{move(value)} {}
 
 void
-Assignment::json(std::ostream &os) const {
+Assignment::json(ostream &os) const {
     JSON::Object obj(os);
     obj.KeyValue("node", "assignment");
     obj.KeyValue("variable", variable);

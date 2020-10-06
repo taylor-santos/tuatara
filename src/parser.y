@@ -62,21 +62,31 @@
 %type<unique_ptr<TuataraAST::Statement>>
     declaration
     stmt
+%type<vector<unique_ptr<TuataraAST::Statement>>>
+    stmts
+    opt_stmts
 
 %start file
 
 %%
 
 file
-    : opt_stmts
+    : opt_stmts {
+        drv.statements = $1;
+    }
 
 opt_stmts
-    : %empty
+    : %empty {}
     | stmts
 
 stmts
-    : stmt
-    | stmts stmt
+    : stmt {
+        $$.push_back($1);
+    }
+    | stmts stmt {
+        $$ = $1;
+        $$.push_back($2);
+    }
 
 stmt
     : declaration ";" {
