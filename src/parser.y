@@ -4,14 +4,22 @@
 
 %define api.token.constructor
 %define api.value.type variant
-//TODO: uncomment this line when the parser builds AST nodes:
-//%define api.value.automove
+%define api.value.automove
 %define parse.assert
 %define parse.trace
 %define parse.error verbose
 
 %code requires {
     #include "printer.h"
+    #include "ast/int.h"
+    #include "ast/float.h"
+    #include "ast/string.h"
+    #include "ast/variable.h"
+    #include "ast/assignment.h"
+    #include "ast/type_declaration.h"
+    #include "ast/value_declaration.h"
+
+    #include <memory>
 
     using namespace std;
 
@@ -46,51 +54,81 @@
 %token<double>
     FLOAT   "float literal"
 
+%type<unique_ptr<TuataraAST::Expression>>
+    literal
+    primary_expression
+    assignment
+    expression
+%type<unique_ptr<TuataraAST::Statement>>
+    declaration
+    stmt
+%type<vector<unique_ptr<TuataraAST::Statement>>>
+    stmts
+    opt_stmts
+
 %start file
 
 %%
 
 file
-    : opt_stmts
+    : opt_stmts {
+        drv.statements = $1;
+    }
 
 opt_stmts
-    : %empty
+    : %empty {}
     | stmts
 
 stmts
-    : stmt
-    | stmts stmt
+    : stmt {
+        $$.push_back($1);
+    }
+    | stmts stmt {
+        $$ = $1;
+        $$.push_back($2);
+    }
 
 stmt
-    : declaration ";"
-    | expression ";"
+    : declaration ";" {
+        $$ = $1;
+    }
+    | expression ";" {
+        $$ = $1;
+    }
 
 declaration
-    : "var" assignment
-    | "var" "identifier" ":" type
+    : "var" "identifier" "=" expression {
+        $$ = make_unique<TuataraAST::ValueDeclaration>(@$, $2, $4);
+    }
+    | "var" "identifier" ":" type {
+        $$ = make_unique<TuataraAST::TypeDeclaration>(@$, $2);
+    }
 
 expression
     : primary_expression
     | assignment
 
 assignment
-    : "identifier" opt_type_decl "=" primary_expression
+    : "identifier" "=" primary_expression {
+        $$ = make_unique<TuataraAST::Assignment>(@$, $1, $3);
+    }
 
 primary_expression
-    : "identifier"
-    | literal
+    : literal
+    | "identifier" {
+        $$ = make_unique<TuataraAST::Variable>(@$, $1);
+    }
 
 literal
-    : "int literal"
-    | "float literal"
-    | "string literal"
-
-opt_type_decl
-    : %empty
-    | type_decl
-
-type_decl
-    : ":" type
+    : "int literal" {
+        $$ = make_unique<TuataraAST::Int>(@$, $1);
+    }
+    | "float literal" {
+        $$ = make_unique<TuataraAST::Float>(@$, $1);
+    }
+    | "string literal" {
+        $$ = make_unique<TuataraAST::String>(@$, $1);
+    }
 
 type
     : "identifier"
