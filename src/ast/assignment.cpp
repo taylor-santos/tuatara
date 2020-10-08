@@ -3,7 +3,7 @@
 #include <utility>
 #include "json.h"
 
-using namespace TuataraAST;
+using namespace AST;
 using namespace std;
 
 Assignment::Assignment(const yy::location &loc, string variable, unique_ptr<Expression> value)

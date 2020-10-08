@@ -3,7 +3,7 @@
 
 #include <utility>
 
-using namespace TuataraAST;
+using namespace AST;
 using namespace std;
 
 Int::Int(const yy::location &loc, int value)

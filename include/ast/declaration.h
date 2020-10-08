@@ -3,7 +3,7 @@
 
 #include "statement.h"
 
-namespace TuataraAST {
+namespace AST {
 
 class Declaration : public Statement {
 protected:
@@ -13,6 +13,6 @@ protected:
     Declaration(const yy::location &loc, std::string variable);
 };
 
-} // namespace TuataraAST
+} // namespace AST
 
 #endif // DECLARATION_H

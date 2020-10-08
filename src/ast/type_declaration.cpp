@@ -3,7 +3,7 @@
 #include <utility>
 #include "json.h"
 
-using namespace TuataraAST;
+using namespace AST;
 using namespace std;
 
 TypeDeclaration::TypeDeclaration(const yy::location &loc, string variable)

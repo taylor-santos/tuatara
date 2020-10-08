@@ -2,7 +2,7 @@
 
 #include <utility>
 
-using namespace TuataraAST;
+using namespace AST;
 using namespace std;
 
 Declaration::Declaration(const yy::location &loc, string variable)

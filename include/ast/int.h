@@ -3,7 +3,7 @@
 
 #include "expression.h"
 
-namespace TuataraAST {
+namespace AST {
 
 class Int final : public Expression {
 private:
@@ -17,6 +17,6 @@ public:
     ~Int() override = default;
 };
 
-} // namespace TuataraAST
+} // namespace AST
 
 #endif // INT_H

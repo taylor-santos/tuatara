@@ -18,7 +18,7 @@ public:
     // The source code lines after invoking parse().
     std::vector<std::string> lines;
     // The generated AST after invoking parse().
-    std::vector<std::unique_ptr<TuataraAST::Statement>> statements;
+    std::vector<std::unique_ptr<AST::Statement>> statements;
     // Whether to generate parser debug traces.
     bool trace_parsing;
 

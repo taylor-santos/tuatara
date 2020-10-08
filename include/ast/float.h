@@ -3,7 +3,7 @@
 
 #include "expression.h"
 
-namespace TuataraAST {
+namespace AST {
 
 class Float final : public Expression {
 private:
@@ -17,6 +17,6 @@ public:
     ~Float() override = default;
 };
 
-} // namespace TuataraAST
+} // namespace AST
 
 #endif // FLOAT_H

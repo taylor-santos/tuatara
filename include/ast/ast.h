@@ -6,26 +6,26 @@
 #include "location.hh"
 
 // Namespace and class must be forward declared for operator<< to work properly
-namespace TuataraAST {
-class AST;
+namespace AST {
+class Node;
 }
-std::ostream &operator<<(std::ostream &os, const TuataraAST::AST &ast);
+std::ostream &operator<<(std::ostream &os, const AST::Node &ast);
 
-namespace TuataraAST {
+namespace AST {
 
-class AST {
+class Node {
 protected:
     yy::location loc;
 
 protected:
-    AST(const yy::location &loc);
+    Node(const yy::location &loc);
     virtual void json(std::ostream &os) const = 0;
 
 public:
-    virtual ~AST() = default;
-    friend std::ostream & ::operator<<(std::ostream &os, const AST &ast);
+    virtual ~Node() = default;
+    friend std::ostream & ::operator<<(std::ostream &os, const Node &ast);
 };
 
-} // namespace TuataraAST
+} // namespace AST
 
 #endif // AST_H

@@ -6,7 +6,7 @@
 
 #include <memory>
 
-namespace TuataraAST {
+namespace AST {
 
 class ValueDeclaration final : public Declaration {
 protected:
@@ -22,6 +22,6 @@ public:
         std::unique_ptr<Expression> value);
 };
 
-} // namespace TuataraAST
+} // namespace AST
 
 #endif // VALUE_DECLARATION_H

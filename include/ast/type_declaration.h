@@ -2,10 +2,11 @@
 #define TYPE_DECLARATION_H
 
 #include "declaration.h"
+#include "type/type.h"
 
 #include <memory>
 
-namespace TuataraAST {
+namespace AST {
 
 class TypeDeclaration final : public Declaration {
 protected:
@@ -15,6 +16,6 @@ public:
     TypeDeclaration(const yy::location &loc, std::string variable);
 };
 
-} // namespace TuataraAST
+} // namespace AST
 
 #endif // TYPE_DECLARATION_H

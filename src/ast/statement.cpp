@@ -1,6 +1,6 @@
 #include "ast/statement.h"
 
-using namespace TuataraAST;
+using namespace AST;
 
 Statement::Statement(const yy::location &loc)
-    : AST(loc) {}
+    : Node(loc) {}
