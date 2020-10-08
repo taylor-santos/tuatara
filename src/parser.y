@@ -11,6 +11,7 @@
 
 %code requires {
     #include "printer.h"
+
     #include "ast/int.h"
     #include "ast/float.h"
     #include "ast/string.h"
@@ -18,6 +19,8 @@
     #include "ast/assignment.h"
     #include "ast/type_declaration.h"
     #include "ast/value_declaration.h"
+
+    #include "type/object.h"
 
     #include <memory>
 
@@ -65,6 +68,8 @@
 %type<vector<unique_ptr<AST::Statement>>>
     stmts
     opt_stmts
+%type<shared_ptr<TypeChecker::Type>>
+    type
 
 %start file
 
@@ -101,7 +106,7 @@ declaration
         $$ = make_unique<AST::ValueDeclaration>(@$, $2, $4);
     }
     | "var" "identifier" ":" type {
-        $$ = make_unique<AST::TypeDeclaration>(@$, $2);
+        $$ = make_unique<AST::TypeDeclaration>(@$, $2, $4);
     }
 
 expression
@@ -131,7 +136,9 @@ literal
     }
 
 type
-    : "identifier"
+    : "identifier" {
+        $$ = make_unique<TypeChecker::Object>(@$, $1);
+    }
 
 %%
 

@@ -7,7 +7,7 @@ Node::Node(const yy::location &loc)
     : loc(loc) {}
 
 ostream &
-operator<<(ostream &os, const AST::Node &ast) {
+operator<<(ostream &os, const Node &ast) {
     ast.json(os);
     return os;
 }

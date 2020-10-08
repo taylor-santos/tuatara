@@ -2,6 +2,7 @@
 #define TYPE_DECLARATION_H
 
 #include "declaration.h"
+#include "type/type.h"
 
 #include <memory>
 
@@ -9,10 +10,16 @@ namespace AST {
 
 class TypeDeclaration final : public Declaration {
 protected:
+    std::shared_ptr<TypeChecker::Type> type;
+
+protected:
     void json(std::ostream &os) const override;
 
 public:
-    TypeDeclaration(const yy::location &loc, std::string variable);
+    TypeDeclaration(
+        const yy::location &               loc,
+        std::string                        variable,
+        std::shared_ptr<TypeChecker::Type> type);
 };
 
 } // namespace AST
