@@ -3,13 +3,13 @@
 
 #include "statement.h"
 
-namespace TuataraAST {
+namespace AST {
 
 class Expression : public Statement {
 protected:
     explicit Expression(const yy::location &loc);
 };
 
-} // namespace TuataraAST
+} // namespace AST
 
 #endif // EXPRESSION_H

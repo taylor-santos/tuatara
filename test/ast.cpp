@@ -11,7 +11,7 @@
 
 #include <memory>
 
-using namespace TuataraAST;
+using namespace AST;
 using namespace std;
 
 TEST(ASTTest, IntNodeJSON) {
@@ -83,7 +83,6 @@ TEST(ASTTest, ValueDeclarationNodeJSON) {
 TEST(ASTTest, TypeDeclarationNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
-    auto               val = make_unique<Int>(loc, 123);
     TypeDeclaration    node(loc, "var");
     ss << node;
     EXPECT_EQ(ss.str(), "{\"node\":\"type declaration\",\"variable\":\"var\"}");

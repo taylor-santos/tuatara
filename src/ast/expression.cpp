@@ -1,6 +1,6 @@
 #include "ast/expression.h"
 
-using namespace TuataraAST;
+using namespace AST;
 
 Expression::Expression(const yy::location &loc)
     : Statement(loc) {}

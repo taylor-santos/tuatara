@@ -54,15 +54,15 @@
 %token<double>
     FLOAT   "float literal"
 
-%type<unique_ptr<TuataraAST::Expression>>
+%type<unique_ptr<AST::Expression>>
     literal
     primary_expression
     assignment
     expression
-%type<unique_ptr<TuataraAST::Statement>>
+%type<unique_ptr<AST::Statement>>
     declaration
     stmt
-%type<vector<unique_ptr<TuataraAST::Statement>>>
+%type<vector<unique_ptr<AST::Statement>>>
     stmts
     opt_stmts
 
@@ -98,10 +98,10 @@ stmt
 
 declaration
     : "var" "identifier" "=" expression {
-        $$ = make_unique<TuataraAST::ValueDeclaration>(@$, $2, $4);
+        $$ = make_unique<AST::ValueDeclaration>(@$, $2, $4);
     }
     | "var" "identifier" ":" type {
-        $$ = make_unique<TuataraAST::TypeDeclaration>(@$, $2);
+        $$ = make_unique<AST::TypeDeclaration>(@$, $2);
     }
 
 expression
@@ -110,24 +110,24 @@ expression
 
 assignment
     : "identifier" "=" primary_expression {
-        $$ = make_unique<TuataraAST::Assignment>(@$, $1, $3);
+        $$ = make_unique<AST::Assignment>(@$, $1, $3);
     }
 
 primary_expression
     : literal
     | "identifier" {
-        $$ = make_unique<TuataraAST::Variable>(@$, $1);
+        $$ = make_unique<AST::Variable>(@$, $1);
     }
 
 literal
     : "int literal" {
-        $$ = make_unique<TuataraAST::Int>(@$, $1);
+        $$ = make_unique<AST::Int>(@$, $1);
     }
     | "float literal" {
-        $$ = make_unique<TuataraAST::Float>(@$, $1);
+        $$ = make_unique<AST::Float>(@$, $1);
     }
     | "string literal" {
-        $$ = make_unique<TuataraAST::String>(@$, $1);
+        $$ = make_unique<AST::String>(@$, $1);
     }
 
 type

@@ -1,7 +1,7 @@
 #include "ast/value_declaration.h"
 #include "json.h"
 
-using namespace TuataraAST;
+using namespace AST;
 using namespace std;
 
 ValueDeclaration::ValueDeclaration(

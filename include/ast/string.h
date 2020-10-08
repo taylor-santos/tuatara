@@ -3,7 +3,7 @@
 
 #include "expression.h"
 
-namespace TuataraAST {
+namespace AST {
 
 class String final : public Expression {
 private:
@@ -17,6 +17,6 @@ public:
     ~String() override = default;
 };
 
-} // namespace TuataraAST
+} // namespace AST
 
 #endif // STRING_H

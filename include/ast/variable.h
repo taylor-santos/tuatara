@@ -3,7 +3,7 @@
 
 #include "expression.h"
 
-namespace TuataraAST {
+namespace AST {
 
 class Variable : public Expression {
 protected:
@@ -17,6 +17,6 @@ public:
     ~Variable() override = default;
 };
 
-} // namespace TuataraAST
+} // namespace AST
 
 #endif // VARIABLE_H

@@ -3,7 +3,7 @@
 
 #include <utility>
 
-using namespace TuataraAST;
+using namespace AST;
 using namespace std;
 
 Float::Float(const yy::location &loc, double value)

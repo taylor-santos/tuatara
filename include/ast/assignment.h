@@ -5,7 +5,7 @@
 
 #include <memory>
 
-namespace TuataraAST {
+namespace AST {
 
 class Assignment : public Expression {
 protected:
@@ -19,6 +19,6 @@ protected:
     void json(std::ostream &os) const override;
 };
 
-} // namespace TuataraAST
+} // namespace AST
 
 #endif // ASSIGNMENT_H

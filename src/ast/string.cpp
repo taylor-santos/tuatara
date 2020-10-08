@@ -3,7 +3,7 @@
 
 #include <utility>
 
-using namespace TuataraAST;
+using namespace AST;
 using namespace std;
 
 String::String(const yy::location &loc, string value)
