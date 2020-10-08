@@ -8,7 +8,6 @@
 #include "ast/assignment.h"
 #include "ast/value_declaration.h"
 #include "ast/type_declaration.h"
-#include "type/object.h"
 
 #include <memory>
 

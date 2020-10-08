@@ -2,7 +2,6 @@
 #define TYPE_DECLARATION_H
 
 #include "declaration.h"
-#include "type/type.h"
 
 #include <memory>
 
