@@ -16,9 +16,11 @@
     #include "ast/float.h"
     #include "ast/string.h"
     #include "ast/variable.h"
+    #include "ast/typed_variable.h"
     #include "ast/assignment.h"
     #include "ast/type_declaration.h"
     #include "ast/value_declaration.h"
+    #include "ast/type_value_declaration.h"
 
     #include "type/object.h"
 
@@ -62,6 +64,8 @@
     primary_expression
     assignment
     expression
+%type<unique_ptr<AST::LValue>>
+    lvalue
 %type<unique_ptr<AST::Statement>>
     declaration
     stmt
@@ -108,20 +112,31 @@ declaration
     | "var" "identifier" ":" type {
         $$ = make_unique<AST::TypeDeclaration>(@$, $2, $4);
     }
+    | "var" "identifier" ":" type "=" expression {
+        $$ = make_unique<AST::TypeValueDeclaration>(@$, $2, $4, $6);
+    }
 
 expression
     : primary_expression
     | assignment
 
 assignment
-    : "identifier" "=" primary_expression {
+    : lvalue "=" primary_expression {
         $$ = make_unique<AST::Assignment>(@$, $1, $3);
     }
 
 primary_expression
     : literal
-    | "identifier" {
+    | lvalue {
+        $$ = $1;
+    }
+
+lvalue
+    : "identifier" {
         $$ = make_unique<AST::Variable>(@$, $1);
+    }
+    | "identifier" ":" type {
+        $$ = make_unique<AST::TypedVariable>(@$, $1, $3);
     }
 
 literal

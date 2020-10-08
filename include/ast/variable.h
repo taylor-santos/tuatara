@@ -1,11 +1,11 @@
 #ifndef VARIABLE_H
 #define VARIABLE_H
 
-#include "expression.h"
+#include "lvalue.h"
 
 namespace AST {
 
-class Variable : public Expression {
+class Variable : public LValue {
 protected:
     std::string name;
 

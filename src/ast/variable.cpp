@@ -7,7 +7,7 @@ using namespace AST;
 using namespace std;
 
 Variable::Variable(const yy::location &loc, string name)
-    : Expression(loc)
+    : LValue(loc)
     , name{move(name)} {}
 
 void

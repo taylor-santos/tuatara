@@ -6,9 +6,11 @@
 #include "ast/float.h"
 #include "ast/string.h"
 #include "ast/variable.h"
+#include "ast/typed_variable.h"
 #include "ast/assignment.h"
 #include "ast/value_declaration.h"
 #include "ast/type_declaration.h"
+#include "ast/type_value_declaration.h"
 
 #include "type/object.h"
 
@@ -49,17 +51,35 @@ TEST(ASTTest, VariableNodeJSON) {
     EXPECT_EQ(ss.str(), R"({"node":"variable","name":"var"})");
 }
 
+TEST(ASTTest, TypedVariableNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    auto               type = make_shared<TypeChecker::Object>(loc, "class_name");
+    TypedVariable      node(loc, "var", type);
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        "{\"node\":\"typed variable\","
+        "\"name\":\"var\","
+        "\"type\":{"
+        "\"type\":\"object\","
+        "\"class\":\"class_name\"}}");
+}
+
 TEST(ASTTest, AssignmentNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
-    auto               val = make_unique<Int>(loc, 123);
-    Assignment         node(loc, "var", move(val));
+    auto               lhs = make_unique<Variable>(loc, "var");
+    auto               rhs = make_unique<Int>(loc, 123);
+    Assignment         node(loc, move(lhs), move(rhs));
     ss << node;
     EXPECT_EQ(
         ss.str(),
         "{\"node\":\"assignment\","
-        "\"variable\":\"var\","
-        "\"value\":{"
+        "\"lhs\":{"
+        "\"node\":\"variable\","
+        "\"name\":\"var\"},"
+        "\"rhs\":{"
         "\"node\":\"int\","
         "\"value\":123}}");
 }
@@ -92,4 +112,23 @@ TEST(ASTTest, TypeDeclarationNodeJSON) {
         "\"type\":{"
         "\"type\":\"object\","
         "\"class\":\"class_name\"}}");
+}
+
+TEST(ASTTest, TypeValueDeclarationNodeJSON) {
+    std::ostringstream   ss;
+    yy::location         loc;
+    auto                 type = make_shared<TypeChecker::Object>(loc, "class_name");
+    auto                 val  = make_unique<Int>(loc, 123);
+    TypeValueDeclaration node(loc, "var", type, move(val));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        "{\"node\":\"type value declaration\","
+        "\"variable\":\"var\","
+        "\"type\":{"
+        "\"type\":\"object\","
+        "\"class\":\"class_name\"},"
+        "\"value\":{"
+        "\"node\":\"int\","
+        "\"value\":123}}");
 }
