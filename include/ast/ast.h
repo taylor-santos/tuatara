@@ -18,7 +18,7 @@ protected:
     yy::location loc;
 
 protected:
-    Node(const yy::location &loc);
+    explicit Node(const yy::location &loc);
     virtual void json(std::ostream &os) const = 0;
 
 public:
