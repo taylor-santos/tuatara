@@ -8,7 +8,9 @@
 
 namespace AST {
 
-class ValueDeclaration final : public Declaration {
+// Virtually inherit from Declaration so TypeValueDeclaration can
+// inherit from both ValueDeclaration and TypeDeclaration.
+class ValueDeclaration : virtual public Declaration {
 protected:
     std::unique_ptr<Expression> value;
 

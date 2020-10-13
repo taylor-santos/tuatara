@@ -8,7 +8,9 @@
 
 namespace AST {
 
-class TypeDeclaration final : public Declaration {
+// Virtually inherit from Declaration so TypeValueDeclaration can
+// inherit from both ValueDeclaration and TypeDeclaration.
+class TypeDeclaration : virtual public Declaration {
 protected:
     std::shared_ptr<TypeChecker::Type> type;
 
