@@ -14,7 +14,7 @@
 #include "type/object.h"
 
 using ExpressionPtr = std::unique_ptr<AST::Expression>;
-using LValuePtr     = std::unique_ptr<AST::Statement>;
+using LValuePtr     = std::unique_ptr<AST::LValue>;
 using StatementPtr  = std::unique_ptr<AST::Statement>;
 using TypePtr       = std::shared_ptr<TypeChecker::Type>;
 using StatementVec  = std::vector<StatementPtr>;
