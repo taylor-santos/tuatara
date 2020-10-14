@@ -2,6 +2,7 @@
 #define DRIVER_H
 
 #include "parser.h"
+#include "ast/statement.h"
 
 #define YY_DECL yy::parser::symbol_type yylex(Driver &drv)
 YY_DECL;
@@ -14,8 +15,10 @@ public:
     int parse(const std::string &f);
     // The name of the file being parsed.
     std::string file;
-    // The source code being parsed.
+    // The source code lines after invoking parse().
     std::vector<std::string> lines;
+    // The generated AST after invoking parse().
+    std::vector<std::unique_ptr<AST::Statement>> statements;
     // Whether to generate parser debug traces.
     bool trace_parsing;
 

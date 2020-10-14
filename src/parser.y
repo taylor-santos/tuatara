@@ -4,14 +4,16 @@
 
 %define api.token.constructor
 %define api.value.type variant
-//TODO: uncomment this line when the parser builds AST nodes:
-//%define api.value.automove
+%define api.value.automove
 %define parse.assert
 %define parse.trace
 %define parse.error verbose
 
 %code requires {
     #include "printer.h"
+    #include "common.h"
+
+    #include <memory>
 
     using namespace std;
 
@@ -70,54 +72,101 @@
 %token<double>
     FLOAT   "float literal"
 
+%type<ExpressionPtr>
+    literal
+    primary_expression
+    assignment
+    expression
+%type<LValuePtr>
+    lvalue
+%type<StatementPtr>
+    declaration
+    stmt
+%type<StatementVec>
+    stmts
+    opt_stmts
+%type<TypePtr>
+    type
+
 %start file
 
 %%
 
 file
-    : opt_stmts
+    : opt_stmts {
+        drv.statements = $1;
+    }
 
 opt_stmts
-    : %empty
+    : %empty {}
     | stmts
 
 stmts
-    : stmt
-    | stmts stmt
+    : stmt {
+        $$.push_back($1);
+    }
+    | stmts stmt {
+        $$ = $1;
+        $$.push_back($2);
+    }
 
 stmt
-    : declaration ";"
-    | expression ";"
+    : declaration ";" {
+        $$ = $1;
+    }
+    | expression ";" {
+        $$ = $1;
+    }
 
 declaration
-    : "var" assignment
-    | "var" "identifier" ":" type
+    : "var" "identifier" "=" expression {
+        $$ = make_unique<AST::ValueDeclaration>(@$, $2, $4);
+    }
+    | "var" "identifier" ":" type {
+        $$ = make_unique<AST::TypeDeclaration>(@$, $2, $4);
+    }
+    | "var" "identifier" ":" type "=" expression {
+        $$ = make_unique<AST::TypeValueDeclaration>(@$, $2, $4, $6);
+    }
 
 expression
     : primary_expression
     | assignment
 
 assignment
-    : "identifier" opt_type_decl "=" primary_expression
+    : lvalue "=" primary_expression {
+        $$ = make_unique<AST::Assignment>(@$, $1, $3);
+    }
 
 primary_expression
-    : "identifier"
-    | literal
+    : literal
+    | lvalue {
+        $$ = $1;
+    }
+
+lvalue
+    : "identifier" {
+        $$ = make_unique<AST::Variable>(@$, $1);
+    }
+    | "identifier" ":" type {
+        $$ = make_unique<AST::TypedVariable>(@$, $1, $3);
+    }
 
 literal
-    : "int literal"
-    | "float literal"
-    | "string literal"
-
-opt_type_decl
-    : %empty
-    | type_decl
-
-type_decl
-    : ":" type
+    : "int literal" {
+        $$ = make_unique<AST::Int>(@$, $1);
+    }
+    | "float literal" {
+        $$ = make_unique<AST::Float>(@$, $1);
+    }
+    | "string literal" {
+        $$ = make_unique<AST::String>(@$, $1);
+    }
 
 type
-    : "identifier"
+    : "identifier" {
+        $$ = make_unique<TypeChecker::Object>(@$, $1);
+    }
 
 %%
 

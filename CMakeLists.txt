@@ -74,5 +74,10 @@ if (MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE /W4 /analyze)
     target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
 else ()
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic -Wno-unused-parameter)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic
+            -Wno-unused-parameter -fprofile-arcs -ftest-coverage)
+    target_compile_options(${TESTING_NAME} PRIVATE -O0 -Wall -Wextra -pedantic
+            -Wno-unused-parameter -fprofile-arcs -ftest-coverage)
+    target_link_libraries(${PROJECT_NAME} -lgcov --coverage)
+    target_link_libraries(${TESTING_NAME} -lgcov --coverage)
 endif ()
