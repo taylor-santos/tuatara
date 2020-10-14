@@ -55,6 +55,8 @@ float   (-?[0-9]+\.[0-9]*|-?[0-9]*\.[0-9]+)((e|E)-?[0-9]+)?|[0-9]+(e|E)-?[0-9]+|
 "+"         return yy::parser::make_PLUS(loc);
 "+="        return yy::parser::make_PLUSEQ(loc);
 "-="        return yy::parser::make_MINUSEQ(loc);
+"*="        return yy::parser::make_TIMESEQ(loc);
+"/="        return yy::parser::make_DIVIDESEQ(loc);
 "=="        return yy::parser::make_EQ(loc);
 ">="        return yy::parser::make_GTEQ(loc);
 "<="        return yy::parser::make_LTEQ(loc);
