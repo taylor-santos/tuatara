@@ -13,7 +13,7 @@ Print::Error(const string &msg, const yy::location &location, const vector<strin
     cerr << *location.begin.filename << ":" << location.begin.line << ":" << location.begin.column
          << ": " << msg << endl;
     int num_width = to_string(location.end.line).length();
-    for (int i = location.begin.line; i <= location.end.line; i++) {
+    for (auto i = location.begin.line; i <= location.end.line; i++) {
         string line = lines[i - 1];
         replace(line.begin(), line.end(), '\t', ' ');
         size_t first = line.find_first_not_of(' ');
@@ -24,9 +24,9 @@ Print::Error(const string &msg, const yy::location &location, const vector<strin
         cerr << right << setw(num_width) << i << " | ";
         cerr << line << endl;
         cerr << string(num_width, ' ') << " | ";
-        unsigned long first_col = i == location.begin.line ? location.begin.column - 1 : first;
+        auto first_col = i == location.begin.line ? location.begin.column - 1 : first;
         cerr << string(first_col, ' ');
-        unsigned long last_col = i == location.end.line ? location.end.column - 1 : last + 1;
+        auto last_col = i == location.end.line ? location.end.column - 1 : last + 1;
         if (i == location.begin.line) {
             cerr << "^";
             last_col--;
