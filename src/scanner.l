@@ -46,6 +46,30 @@ float   (-?[0-9]+\.[0-9]*|-?[0-9]*\.[0-9]+)((e|E)-?[0-9]+)?|[0-9]+(e|E)-?[0-9]+|
 "="         return yy::parser::make_ASSIGN(loc);
 ";"         return yy::parser::make_SEMICOLON(loc);
 ":"         return yy::parser::make_COLON(loc);
+"("         return yy::parser::make_LPAREN(loc);
+")"         return yy::parser::make_RPAREN(loc);
+"["         return yy::parser::make_LSQUARE(loc);
+"]"         return yy::parser::make_RSQUARE(loc);
+"{"         return yy::parser::make_LCURLY(loc);
+"}"         return yy::parser::make_RCURLY(loc);
+"+"         return yy::parser::make_PLUS(loc);
+"+="        return yy::parser::make_PLUSEQ(loc);
+"-="        return yy::parser::make_MINUSEQ(loc);
+"=="        return yy::parser::make_EQ(loc);
+">="        return yy::parser::make_GTEQ(loc);
+"<="        return yy::parser::make_LTEQ(loc);
+">"         return yy::parser::make_GT(loc);
+"<"         return yy::parser::make_LT(loc);
+"*"         return yy::parser::make_TIMES(loc);
+"-"         return yy::parser::make_MINUS(loc);
+"/"         return yy::parser::make_DIVIDES(loc);
+"%"         return yy::parser::make_MODULO(loc);
+"&"         return yy::parser::make_AMPERSAND(loc);
+"|"         return yy::parser::make_PIPE(loc);
+"<<"        return yy::parser::make_LSHIFT(loc);
+">>"        return yy::parser::make_RSHIFT(loc);
+"&&"        return yy::parser::make_AND(loc);
+"||"        return yy::parser::make_OR(loc);
 
 {int}       {
                 errno = 0;
