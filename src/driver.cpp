@@ -1,19 +1,46 @@
 #include "driver.h"
-#include "parser.h"
+#include "parser.tab.hh"
+#include "scanner.h"
+#include "location.hh"
+
+#include <memory>
+
+namespace yy {
 
 Driver::Driver()
-    : trace_parsing(false)
-    , trace_scanning(false) {}
+    : scanner{std::make_unique<Scanner>()}
+    , parser{std::make_unique<Parser>(*this)}
+    , location{std::make_unique<yy::location>()} {
+    parser->set_debug_level(0);
+    lines.emplace_back("");
+}
+
+Driver::~Driver() {}
+
+void
+Driver::reset() {
+    location = std::make_unique<yy::location>();
+}
 
 int
-Driver::parse(const std::string &f) {
-    file = f;
-    location.initialize(&file);
-    scan_begin();
-
-    yy::parser parser(*this);
-    parser.set_debug_level(trace_parsing);
-    int res = parser.parse();
-    scan_end();
-    return res;
+Driver::parse(std::istream &in, std::ostream &out) {
+    scanner->switch_streams(&in, &out);
+    parser->parse();
+    return 0;
 }
+
+int
+Driver::parse_file(const char *path) {
+    std::ifstream s(path, std::ifstream::in);
+    std::string   filename(path);
+    location->initialize(&filename);
+    scanner->switch_streams(&s, &std::cerr);
+
+    parser->parse();
+
+    s.close();
+
+    return 0;
+}
+
+} // namespace yy

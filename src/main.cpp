@@ -13,8 +13,8 @@ main(int argc, char *argv[]) {
     }
     JSON::JSON::minimize = false;
     for (int i = 1; i < argc; i++) {
-        Driver drv;
-        if (drv.parse(argv[i])) {
+        yy::Driver drv;
+        if (drv.parse_file(argv[i])) {
             cerr << argv[i] << ": failed to parse" << endl;
             break;
         }

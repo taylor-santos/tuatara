@@ -7,24 +7,22 @@ find_package(BISON 3.2)
 find_package(FLEX)
 
 bison_target(
-        Parser ${CMAKE_SOURCE_DIR}/src/parser.y
-        ${CMAKE_CURRENT_BINARY_DIR}/parser.cpp
-        DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/parser.h
+        PARSER ${CMAKE_SOURCE_DIR}/src/parser.y
+        ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.cc
 )
 flex_target(
-        Scanner ${CMAKE_SOURCE_DIR}/src/scanner.l
-        ${CMAKE_CURRENT_BINARY_DIR}/scanner.cpp
-        DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/scanner.h
+        SCANNER ${CMAKE_SOURCE_DIR}/src/scanner.l
+        ${CMAKE_CURRENT_BINARY_DIR}/scanner.yy.cc
 )
-add_flex_bison_dependency(Scanner Parser)
+add_flex_bison_dependency(SCANNER PARSER)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR} include)
 
 file(GLOB_RECURSE SRC "src/*")
 
 add_executable(${PROJECT_NAME}
-        ${BISON_Parser_OUTPUTS}
-        ${FLEX_Scanner_OUTPUTS}
+        ${BISON_PARSER_OUTPUTS}
+        ${FLEX_SCANNER_OUTPUTS}
         ${SRC})
 
 # Tests
@@ -62,8 +60,8 @@ list(REMOVE_ITEM TEST_SRC "${CMAKE_SOURCE_DIR}/src/main.cpp")
 enable_testing()
 add_executable(
         ${TESTING_NAME}
-        ${BISON_Parser_OUTPUTS}
-        ${FLEX_Scanner_OUTPUTS}
+        ${BISON_PARSER_OUTPUTS}
+        ${FLEX_SCANNER_OUTPUTS}
         ${TEST_SRC}
 )
 # Link against gtest

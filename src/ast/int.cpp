@@ -6,7 +6,7 @@
 using namespace AST;
 using namespace std;
 
-Int::Int(const yy::location &loc, int value)
+Int::Int(const yy::location &loc, int64_t value)
     : Expression(loc)
     , value{value} {}
 
