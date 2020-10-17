@@ -1,107 +1,156 @@
 %{
-#include <iostream>
-#include <string>
-#include <sstream>
-#include <climits>
-#include <cmath>
 
+#include "parser.tab.hh"
+#include "scanner.h"
 #include "driver.h"
-#include "parser.h"
+
+#define STEP()                                                          \
+    do {                                                                \
+        driver.location->step ();                                       \
+    } while (0)
+
+#define COL(Col)				                                        \
+    driver.location->columns (Col)
+
+#define LINE(Line)				                                        \
+    do {						                                        \
+        driver.location->lines (Line);		                            \
+        driver.lines.push_back("");                                     \
+        STEP();                                                         \
+    } while (0)
+
+#define YY_USER_ACTION                                                  \
+    {                                                                   \
+        COL(yyleng);                                                    \
+        if (*yytext != '\n' && *yytext != '\r') {                       \
+            driver.lines.back() += yytext;                              \
+        }                                                               \
+    }
+
+
+typedef yy::Parser::token token;
+typedef yy::Parser::token_type token_type;
+
+#define LOC                                                             \
+    (*driver.location)
+
+#define return_token(TOK)                                               \
+    return yy::Parser::make_##TOK(*driver.location)
+#define return_value_token(TOK, value)                                  \
+    return yy::Parser::make_##TOK(value, *driver.location)
+
+#define yyterminate() return_token(EOF)
+
 %}
 
-%option noyywrap nounput batch debug noinput nounistd never-interactive
+%option debug
+%option c++
+%option noyywrap
+%option never-interactive
+%option yylineno
+%option nounput
+%option batch
+%option prefix="yy"
+%option stack
 
 ident   [a-zA-Z0-9][a-zA-Z0-9_]*
 str     \"([^\\\"\n]|\\.)*\"
-int     -?[0-9]+
-float   (-?[0-9]+\.[0-9]*|-?[0-9]*\.[0-9]+)((e|E)-?[0-9]+)?|[0-9]+(e|E)-?[0-9]+|-?inf|-?nan
+digit   [0-9]
+exp     [eE][+-]?{digit}+
+blank   [ \t]+
+nan     (?i:nan)
+inf     (?i:inf)
 
 %{
-    #define YY_USER_ACTION {            \
-        loc.columns(yyleng);            \
-        if (*yytext != '\n' &&          \
-            *yytext != '\r')            \
-            drv.lines.back() += yytext; \
-    }
+
+#include <climits>
+#include <cmath>
+#include <sstream>
+
+#define LEX_FLOAT()                                                     \
+    do {                                                                \
+        try {                                                           \
+            return_value_token(FLOAT, std::stod(yytext));               \
+        } catch (const std::out_of_range &e) {                          \
+            throw yy::Parser::syntax_error(                        \
+                LOC,                                                    \
+                std::string{"float is out of range: "} + yytext);       \
+        } catch (const std::invalid_argument &e) {                      \
+            throw yy::Parser::syntax_error(                        \
+                LOC,                                                    \
+                std::string{"invalid float: "} + yytext);               \
+        }                                                               \
+    } while(0)
+
+#define LEX_INT()                                                       \
+    do {                                                                \
+        try {                                                           \
+            return_value_token(INT, std::stoll(yytext));                \
+        } catch (const std::exception &e) {                             \
+            throw yy::Parser::syntax_error(LOC, e.what());         \
+        }                                                               \
+    } while(0)
+
 %}
 
 %%
 
 %{
-    yy::location& loc = drv.location;
-    loc.step();
+    STEP();
 %}
 
-[ \t]+      loc.step();
-[\n]        {
-                loc.lines(1);
-                loc.step();
-                drv.lines.push_back("");
-            }
-\r
+{blank}     STEP();
 
-"//".*
+"\n"+       LINE(yyleng);
+"\r"+
 
-"var"       return yy::parser::make_VAR(loc);
-"="         return yy::parser::make_ASSIGN(loc);
-";"         return yy::parser::make_SEMICOLON(loc);
-":"         return yy::parser::make_COLON(loc);
-"("         return yy::parser::make_LPAREN(loc);
-")"         return yy::parser::make_RPAREN(loc);
-"["         return yy::parser::make_LSQUARE(loc);
-"]"         return yy::parser::make_RSQUARE(loc);
-"{"         return yy::parser::make_LCURLY(loc);
-"}"         return yy::parser::make_RCURLY(loc);
-"+"         return yy::parser::make_PLUS(loc);
-"+="        return yy::parser::make_PLUSEQ(loc);
-"-="        return yy::parser::make_MINUSEQ(loc);
-"*="        return yy::parser::make_TIMESEQ(loc);
-"/="        return yy::parser::make_DIVIDESEQ(loc);
-"=="        return yy::parser::make_EQ(loc);
-">="        return yy::parser::make_GTEQ(loc);
-"<="        return yy::parser::make_LTEQ(loc);
-">"         return yy::parser::make_GT(loc);
-"<"         return yy::parser::make_LT(loc);
-"*"         return yy::parser::make_TIMES(loc);
-"-"         return yy::parser::make_MINUS(loc);
-"/"         return yy::parser::make_DIVIDES(loc);
-"%"         return yy::parser::make_MODULO(loc);
-"&"         return yy::parser::make_AMPERSAND(loc);
-"|"         return yy::parser::make_PIPE(loc);
-"<<"        return yy::parser::make_LSHIFT(loc);
-">>"        return yy::parser::make_RSHIFT(loc);
-"&&"        return yy::parser::make_AND(loc);
-"||"        return yy::parser::make_OR(loc);
+"//".*      // Ignore comments
 
-{int}       {
-                errno = 0;
-                long n = strtol(yytext, NULL, 10);
-                if (!(INT_MIN <= n && n <= INT_MAX && errno != ERANGE)) {
-                    throw yy::parser::syntax_error (
-                        loc,
-                        "integer is out of range: " + std::string(yytext)
-                    );
-                }
-                return yy::parser::make_INT(n, loc);
-            }
-{float}     {
-                errno = 0;
-                double n = strtod(yytext, NULL);
-                if (!(-HUGE_VAL <= n && n <= HUGE_VAL && errno != ERANGE)) {
-                    throw yy::parser::syntax_error (
-                        loc,
-                        "double is out of range: " + std::string(yytext)
-                    );
-                }
-                return yy::parser::make_FLOAT(n, loc);
-            }
-{ident}     return yy::parser::make_IDENT(yytext, loc);
+"var"       return_token(VAR);
+"="         return_token(ASSIGN);
+";"         return_token(SEMICOLON);
+":"         return_token(COLON);
+"("         return_token(LPAREN);
+")"         return_token(RPAREN);
+"["         return_token(LSQUARE);
+"]"         return_token(RSQUARE);
+"{"         return_token(LCURLY);
+"}"         return_token(RCURLY);
+"+"         return_token(PLUS);
+"+="        return_token(PLUSEQ);
+"-="        return_token(MINUSEQ);
+"*="        return_token(TIMESEQ);
+"/="        return_token(DIVIDESEQ);
+"=="        return_token(EQ);
+">="        return_token(GTEQ);
+"<="        return_token(LTEQ);
+">"         return_token(GT);
+"<"         return_token(LT);
+"*"         return_token(TIMES);
+"-"         return_token(MINUS);
+"/"         return_token(DIVIDES);
+"%"         return_token(MODULO);
+"&"         return_token(AMPERSAND);
+"|"         return_token(PIPE);
+"<<"        return_token(LSHIFT);
+">>"        return_token(RSHIFT);
+"&&"        return_token(AND);
+"||"        return_token(OR);
+
+{digit}+                    { LEX_INT(); }
+{digit}+{exp}               { LEX_FLOAT(); }
+{digit}*"."{digit}+({exp})? { LEX_FLOAT(); }
+{digit}+"."{digit}*({exp})? { LEX_FLOAT(); }
+{nan}                       { return_value_token(FLOAT, NAN); }
+{inf}                       { return_value_token(FLOAT, INFINITY); }
+
+{ident}     return_value_token(IDENT, yytext);
 {str}       {
-                string str = yytext;
-                assert(str[0] == '"');
-                assert(str[str.size()-1] == '"');
+                std::string str = yytext;
+                //assert(str[0] == '"');
+                //assert(str[str.size()-1] == '"');
                 str = str.substr(1, str.size()-2);
-                return yy::parser::make_STRING(str, loc);
+                return_value_token(STRING, str);
             }
 
 .           {
@@ -112,29 +161,36 @@ float   (-?[0-9]+\.[0-9]*|-?[0-9]*\.[0-9]+)((e|E)-?[0-9]+)?|[0-9]+(e|E)-?[0-9]+|
                 } else {
                     ss << "0x" << std::hex << (int)*yytext;
                 }
-                throw yy::parser::syntax_error(
-                    loc,
+                throw yy::Parser::syntax_error(
+                    LOC,
                     ss.str()
                 );
             }
 
-<<EOF>>     return yy::parser::make_EOF(loc);
+<<EOF>>     return_token(EOF);
 
 %%
 
-void
-Driver::scan_begin() {
-    yy_flex_debug = trace_scanning;
-    if (file.empty() || file == "-") {
-        yyin = stdin;
-    }
-    else if (!(yyin = fopen (file.c_str (), "r"))) {
-        std::cerr << "cannot open " << file << ": " << strerror(errno) << '\n';
-        exit(EXIT_FAILURE);
-    }
-}
+namespace yy {
+
+Scanner::Scanner()
+    : yyFlexLexer() {}
+
+Scanner::~Scanner() {}
 
 void
-Driver::scan_end() {
-    fclose(yyin);
+Scanner::set_debug(bool b) {
+    yy_flex_debug = b;
+}
+
+}
+
+#ifdef yylex
+#undef yylex
+#endif
+
+int
+yyFlexLexer::yylex() {
+    std::cerr << "Do not call yyFlexLexer::yylex()!" << std::endl;
+    return 0;
 }

@@ -7,13 +7,13 @@ namespace AST {
 
 class Int final : public Expression {
 private:
-    int value;
+    int64_t value;
 
 protected:
     void json(std::ostream &os) const override;
 
 public:
-    Int(const yy::location &loc, int value);
+    Int(const yy::location &loc, int64_t value);
     ~Int() override = default;
 };
 

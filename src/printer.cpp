@@ -10,8 +10,10 @@ using namespace std;
 
 void
 Print::Error(const string &msg, const yy::location &location, const vector<string> &lines) {
-    cerr << *location.begin.filename << ":" << location.begin.line << ":" << location.begin.column
-         << ": " << msg << endl;
+    if (location.begin.filename) {
+        cerr << *location.begin.filename << ":";
+    }
+    cerr << location.begin.line << ":" << location.begin.column << ": " << msg << endl;
     int num_width = to_string(location.end.line).length();
     for (auto i = location.begin.line; i <= location.end.line; i++) {
         string line = lines[i - 1];

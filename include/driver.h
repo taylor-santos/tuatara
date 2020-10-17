@@ -1,33 +1,42 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
-#include "parser.h"
-#include "ast/statement.h"
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <memory>
+#include <ast/statement.h>
 
-#define YY_DECL yy::parser::symbol_type yylex(Driver &drv)
-YY_DECL;
+namespace yy {
+/// Forward declarations of classes
+class Parser;
+class Scanner;
+class location;
 
 class Driver {
 public:
     Driver();
+    ~Driver();
 
-    // Run the parser on file f.  Return 0 on success.
-    int parse(const std::string &f);
-    // The name of the file being parsed.
-    std::string file;
-    // The source code lines after invoking parse().
-    std::vector<std::string> lines;
-    // The generated AST after invoking parse().
+    int parse(std::istream &in = std::cin, std::ostream &out = std::cerr);
+    int parse_file(const char *path);
+
+    void reset();
+
     std::vector<std::unique_ptr<AST::Statement>> statements;
-    // Whether to generate parser debug traces.
-    bool trace_parsing;
 
-    // Handling the scanner.
-    void scan_begin();
-    void scan_end();
-    // Whether to generate scanner debug traces.
-    bool trace_scanning;
-    // The token's location used by the scanner.
-    yy::location location;
+private:
+    std::unique_ptr<Scanner>      scanner;
+    std::unique_ptr<Parser>       parser;
+    std::unique_ptr<yy::location> location;
+    std::vector<std::string>      lines;
+
+    /// Allows Parser and Scanner to access private attributes
+    /// of the Driver class
+    friend class Parser;
+    friend class Scanner;
 };
+} // namespace yy
+
 #endif // DRIVER_H

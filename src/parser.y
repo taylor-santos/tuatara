@@ -1,7 +1,39 @@
-%skeleton "lalr1.cc"
-%require "3.2"
-%defines
+%{
+    #include "parser.tab.hh"
+    #include "scanner.h"
 
+    #define yylex driver.scanner->yylex
+%}
+
+%code requires {
+    #include <iostream>
+    #include "driver.h"
+    #include "location.hh"
+    #include "position.hh"
+    #include "common.h"
+}
+
+%code provides {
+    namespace yy {
+
+        inline void
+        yyerror(const char* msg) {
+            std::cerr << msg << std::endl;
+        }
+
+    }
+}
+
+%require "3.0"
+%language "C++"
+%locations
+%defines
+%token-table
+%parse-param {Driver &driver}
+%lex-param {Driver &driver}
+
+%define api.namespace {yy}
+%define api.parser.class {Parser}
 %define api.token.constructor
 %define api.value.type variant
 %define api.value.automove
@@ -9,28 +41,11 @@
 %define parse.trace
 %define parse.error verbose
 
-%code requires {
+%{
     #include "printer.h"
-    #include "common.h"
 
-    #include <memory>
-
-    using namespace std;
-
-    class Driver;
-}
-
-// The parsing context.
-%param { Driver &drv }
-
-%initial-action { drv.lines.push_back(""); }
-
-%locations
-
-%code {
-    #include "driver.h"
-    #include "location.hh"
-}
+    using std::make_unique, std::make_shared;
+%}
 
 %define api.token.prefix {TOK_}
 %token
@@ -66,10 +81,10 @@
     AND         "&&"
     OR          "||"
 
-%token<string>
+%token<std::string>
     IDENT   "identifier"
     STRING  "string literal"
-%token<int>
+%token<int64_t>
     INT     "int literal"
 %token<double>
     FLOAT   "float literal"
@@ -96,7 +111,7 @@
 
 file
     : opt_stmts {
-        drv.statements = $1;
+        driver.statements = $1;
     }
 
 opt_stmts
@@ -172,7 +187,11 @@ type
 
 %%
 
+namespace yy {
+
 void
-yy::parser::error(const location_type& l, const std::string& m) {
-    Print::Error(m, l, drv.lines);
+Parser::error(const location_type& l, const std::string& m) {
+    Print::Error(m, l, driver.lines);
+}
+
 }
