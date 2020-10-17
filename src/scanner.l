@@ -9,12 +9,12 @@
         driver.location->step ();                                       \
     } while (0)
 
-#define COL(Col)				                                        \
+#define COL(Col)                                                        \
     driver.location->columns (Col)
 
-#define LINE(Line)				                                        \
-    do {						                                        \
-        driver.location->lines (Line);		                            \
+#define LINE(Line)                                                      \
+    do {                                                                \
+        driver.location->lines (Line);                                  \
         driver.lines.push_back("");                                     \
         STEP();                                                         \
     } while (0)
