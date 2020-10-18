@@ -184,7 +184,7 @@ literal
         $$ = make_unique<AST::String>(@$, $1);
     }
     | "bool literal" {
-
+        $$ = make_unique<AST::Bool>(@$, $1);
     }
 
 type

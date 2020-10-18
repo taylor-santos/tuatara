@@ -56,6 +56,12 @@ JSON::Object::KeyValue(const string &key, const char *value) {
     out << '"' << value << '"';
 }
 
+void
+JSON::Object::KeyValue(const string &key, bool value) {
+    Key(key);
+    out << std::boolalpha << value;
+}
+
 JSON::Array::Array(ostream &out)
     : JSON(out) {
     out << "[";

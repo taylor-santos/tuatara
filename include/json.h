@@ -34,6 +34,7 @@ public:
     }
     void KeyValue(const std::string &key, const std::string &value);
     void KeyValue(const std::string &key, const char value[]);
+    void KeyValue(const std::string &key, bool value);
 };
 
 class Array final : public JSON {
