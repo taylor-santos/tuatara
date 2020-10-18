@@ -1,18 +1,6 @@
 #include "gtest/gtest.h"
 #include "location.hh"
-#include "json.h"
-
-#include "ast/int.h"
-#include "ast/float.h"
-#include "ast/string.h"
-#include "ast/variable.h"
-#include "ast/typed_variable.h"
-#include "ast/assignment.h"
-#include "ast/value_declaration.h"
-#include "ast/type_declaration.h"
-#include "ast/type_value_declaration.h"
-
-#include "type/object.h"
+#include "common.h"
 
 #include <memory>
 
@@ -41,6 +29,22 @@ TEST(ASTTest, StringNodeJSON) {
     String             node(loc, "StringNode");
     ss << node;
     EXPECT_EQ(ss.str(), R"({"node":"string","value":"StringNode"})");
+}
+
+TEST(ASTTest, TrueBoolNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    Bool               node(loc, true);
+    ss << node;
+    EXPECT_EQ(ss.str(), R"({"node":"bool","value":true})");
+}
+
+TEST(ASTTest, FalseBoolNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    Bool               node(loc, false);
+    ss << node;
+    EXPECT_EQ(ss.str(), R"({"node":"bool","value":false})");
 }
 
 TEST(ASTTest, VariableNodeJSON) {

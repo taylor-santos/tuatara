@@ -90,6 +90,8 @@
     INT     "int literal"
 %token<double>
     FLOAT   "float literal"
+%token<bool>
+    BOOL    "bool literal"
 
 %type<ExpressionPtr>
     literal
@@ -180,6 +182,9 @@ literal
     }
     | "string literal" {
         $$ = make_unique<AST::String>(@$, $1);
+    }
+    | "bool literal" {
+        $$ = make_unique<AST::Bool>(@$, $1);
     }
 
 type

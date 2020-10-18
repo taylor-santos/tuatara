@@ -107,8 +107,8 @@ inf     (?i:inf)
 "//".*      // Ignore comments
 
 "var"       return_token(VAR);
-"true"      return_token(TRUE);
-"false"     return_token(FALSE);
+"true"      return_value_token(BOOL, true);
+"false"     return_value_token(BOOL, false);
 "="         return_token(ASSIGN);
 ";"         return_token(SEMICOLON);
 ":"         return_token(COLON);
