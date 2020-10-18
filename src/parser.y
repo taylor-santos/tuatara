@@ -51,6 +51,8 @@
 %token
     EOF  0      "end of file"
     VAR         "var"
+    TRUE        "true"
+    FALSE       "false"
     ASSIGN      "="
     SEMICOLON   ";"
     COLON       ":"
