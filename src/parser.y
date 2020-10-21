@@ -24,7 +24,7 @@
     }
 }
 
-%require "3.0"
+%require "3.3"
 %language "C++"
 %locations
 %defines
