@@ -13,4 +13,4 @@ script:
   - ./build/all_tests
   
 after_success:
-  - coveralls --exclude build --exclude src/parser.y --exclude src/scanner.l --gcov-options '\-lp'
+  - coveralls --exclude build/googletest-src --exclude src/parser.y --exclude src/scanner.l --gcov-options '\-lp'
