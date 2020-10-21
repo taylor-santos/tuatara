@@ -136,3 +136,21 @@ TEST(ASTTest, TypeValueDeclarationNodeJSON) {
         "\"node\":\"int\","
         "\"value\":123}}");
 }
+
+TEST(ASTTest, BlockNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    StatementVec       stmts;
+    stmts.emplace_back(make_unique<Int>(loc, 123));
+    stmts.emplace_back(make_unique<Float>(loc, 45.6));
+    Block node(loc, move(stmts));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        "{\"node\":\"block\","
+        "\"statements\":[{"
+        "\"node\":\"int\","
+        "\"value\":123},"
+        "{\"node\":\"float\","
+        "\"value\":45.6}]}");
+}

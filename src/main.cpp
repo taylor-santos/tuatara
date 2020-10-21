@@ -17,11 +17,12 @@ main(int argc, char *argv[]) {
         if (drv.parse_file(argv[i])) {
             cerr << argv[i] << ": failed to parse" << endl;
             break;
-        }
-        JSON::Array arr(cout);
-        for (const auto &stmt : drv.statements) {
-            arr.Next();
-            cout << *stmt;
+        } else {
+            JSON::Array arr(cout);
+            for (const auto &stmt : drv.statements) {
+                arr.Next();
+                cout << *stmt;
+            }
         }
     }
 }

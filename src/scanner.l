@@ -72,11 +72,11 @@ inf     (?i:inf)
         try {                                                           \
             return_value_token(FLOAT, std::stod(yytext));               \
         } catch (const std::out_of_range &e) {                          \
-            throw yy::Parser::syntax_error(                        \
+            throw yy::Parser::syntax_error(                             \
                 LOC,                                                    \
                 std::string{"float is out of range: "} + yytext);       \
         } catch (const std::invalid_argument &e) {                      \
-            throw yy::Parser::syntax_error(                        \
+            throw yy::Parser::syntax_error(                             \
                 LOC,                                                    \
                 std::string{"invalid float: "} + yytext);               \
         }                                                               \
@@ -86,8 +86,14 @@ inf     (?i:inf)
     do {                                                                \
         try {                                                           \
             return_value_token(INT, std::stoll(yytext));                \
-        } catch (const std::exception &e) {                             \
-            throw yy::Parser::syntax_error(LOC, e.what());         \
+        } catch (const std::out_of_range &e) {                          \
+            throw yy::Parser::syntax_error(                             \
+                LOC,                                                    \
+                std::string{"int is out of range: "} + yytext);         \
+        } catch (const std::invalid_argument &e) {                      \
+            throw yy::Parser::syntax_error(                             \
+                LOC,                                                    \
+                std::string{"invalid int: "} + yytext);                 \
         }                                                               \
     } while(0)
 

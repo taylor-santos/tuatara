@@ -42,7 +42,16 @@ TEST(ScannerTest, IntOverflow) {
     std::ostringstream oss;
     scan.switch_streams(ss, oss);
     yy::Driver drv;
-    EXPECT_THROW(scan.yylex(drv), yy::Parser::syntax_error);
+    EXPECT_THROW(
+        {
+            try {
+                scan.yylex(drv);
+            } catch (const yy::Parser::syntax_error &e) {
+                EXPECT_EQ(e.what(), "int is out of range: " + std::to_string(max + 1));
+                throw; // Re-throw exception
+            }
+        },
+        yy::Parser::syntax_error);
     auto tok = scan.yylex(drv);
     EXPECT_EQ(tok.type_get(), 0) << "Expected entire input to be consumed";
     EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
@@ -141,5 +150,14 @@ TEST(ScannerTest, NoLeadingUnderscoresInIdent) {
     std::ostringstream oss;
     scan.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_THROW(scan.yylex(drv), yy::Parser::syntax_error);
+    EXPECT_THROW(
+        {
+            try {
+                scan.yylex(drv);
+            } catch (const yy::Parser::syntax_error &e) {
+                EXPECT_STREQ(e.what(), "invalid character: '_'");
+                throw; // Re-throw exception
+            }
+        },
+        yy::Parser::syntax_error);
 }

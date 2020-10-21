@@ -4,3 +4,8 @@ b = 1.2;
 var c = "Hello, world!";
 var d: int = a;
 d = 10;
+e = true;
+{
+    f = e;
+    g = 123;
+}

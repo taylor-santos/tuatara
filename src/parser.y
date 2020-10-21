@@ -135,12 +135,14 @@ stmts
     }
 
 stmt
-    : one_line_stmt
+    : one_line_stmt {
+        $$ = $1;
+    }
     | if_stmt {
         //TODO: If statement AST node
     }
     | "{" opt_stmts "}" {
-        //TODO: Scoped block AST node
+        $$ = make_unique<AST::Block>(@$, $2);
     }
 
 one_line_stmt
@@ -169,9 +171,11 @@ expression
 if_stmt
     : "if" expression "{" opt_stmts "}" opt_else {
         //TODO: If statement AST node
+        throw Parser::syntax_error(@1, "If statements not implemented");
     }
     | "if" expression one_line_stmt opt_else {
         //TODO: If statement AST node
+        throw Parser::syntax_error(@1, "If statements not implemented");
     }
 
 opt_else
