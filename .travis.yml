@@ -13,4 +13,4 @@ script:
   - ./build/all_tests
   
 after_success:
-  - coveralls -i src -i include -e src/parser.y -e src/scanner.l --gcov-options '\-lp'
+  - coveralls -i src -e src/main.cpp -e src/scanner.l -e src/parser.y --gcov-options '\-lp'
