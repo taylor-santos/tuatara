@@ -1,10 +1,11 @@
 language: cpp
+dist: trusty
 
 addons:
   apt:
     update: true
     packages:
-      - bison-3.2
+      - bison
       - flex
 
 script:
