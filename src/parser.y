@@ -51,6 +51,8 @@
 %token
     EOF  0      "end of file"
     VAR         "var"
+    IF          "if"
+    ELSE        "else"
     TRUE        "true"
     FALSE       "false"
     ASSIGN      "="
@@ -103,6 +105,7 @@
 %type<StatementPtr>
     declaration
     stmt
+    one_line_stmt
 %type<StatementVec>
     stmts
     opt_stmts
@@ -132,6 +135,15 @@ stmts
     }
 
 stmt
+    : one_line_stmt
+    | if_stmt {
+        //TODO: If statement AST node
+    }
+    | "{" opt_stmts "}" {
+        //TODO: Scoped block AST node
+    }
+
+one_line_stmt
     : declaration ";" {
         $$ = $1;
     }
@@ -153,6 +165,22 @@ declaration
 expression
     : primary_expression
     | assignment
+
+if_stmt
+    : "if" expression "{" opt_stmts "}" opt_else {
+        //TODO: If statement AST node
+    }
+    | "if" expression one_line_stmt opt_else {
+        //TODO: If statement AST node
+    }
+
+opt_else
+    : %empty {
+        //TODO: If statement AST node
+    }
+    | "else" stmt {
+        //TODO: If statement AST node
+    }
 
 assignment
     : lvalue "=" primary_expression {
