@@ -25,8 +25,7 @@ Driver::reset() {
 int
 Driver::parse(std::istream &in, std::ostream &out) {
     scanner->switch_streams(&in, &out);
-    parser->parse();
-    return 0;
+    return parser->parse();
 }
 
 int
@@ -36,11 +35,11 @@ Driver::parse_file(const char *path) {
     location->initialize(&filename);
     scanner->switch_streams(&s, &std::cerr);
 
-    parser->parse();
+    int result = parser->parse();
 
     s.close();
 
-    return 0;
+    return result;
 }
 
 } // namespace yy

@@ -51,6 +51,8 @@
 %token
     EOF  0      "end of file"
     VAR         "var"
+    IF          "if"
+    ELSE        "else"
     TRUE        "true"
     FALSE       "false"
     ASSIGN      "="
@@ -103,6 +105,7 @@
 %type<StatementPtr>
     declaration
     stmt
+    one_line_stmt
 %type<StatementVec>
     stmts
     opt_stmts
@@ -132,6 +135,17 @@ stmts
     }
 
 stmt
+    : one_line_stmt {
+        $$ = $1;
+    }
+    | if_stmt {
+        //TODO: If statement AST node
+    }
+    | "{" opt_stmts "}" {
+        $$ = make_unique<AST::Block>(@$, $2);
+    }
+
+one_line_stmt
     : declaration ";" {
         $$ = $1;
     }
@@ -153,6 +167,24 @@ declaration
 expression
     : primary_expression
     | assignment
+
+if_stmt
+    : "if" expression "{" opt_stmts "}" opt_else {
+        //TODO: If statement AST node
+        throw Parser::syntax_error(@1, "If statements not implemented");
+    }
+    | "if" expression one_line_stmt opt_else {
+        //TODO: If statement AST node
+        throw Parser::syntax_error(@1, "If statements not implemented");
+    }
+
+opt_else
+    : %empty {
+        //TODO: If statement AST node
+    }
+    | "else" stmt {
+        //TODO: If statement AST node
+    }
 
 assignment
     : lvalue "=" primary_expression {
