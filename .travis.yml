@@ -1,9 +1,15 @@
 language: cpp
-
 dist: focal
+
+before_install:
+  - pip install --user cpp-coveralls
 
 script:
   - mkdir -p build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Debug ..
   - make
+  - ctest
+  
+after_success:
+  - coveralls --exclude lib --exclude tests --gcov-options '\-lp'
