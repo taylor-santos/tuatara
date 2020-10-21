@@ -14,14 +14,14 @@ std::ostream &operator<<(std::ostream &os, const AST::Node &ast);
 namespace AST {
 
 class Node {
-protected:
+protected: // Fields
     yy::location loc;
 
-protected:
+protected: // Methods
     explicit Node(const yy::location &loc);
     virtual void json(std::ostream &os) const = 0;
 
-public:
+public: // Methods
     virtual ~Node() = default;
     friend std::ostream & ::operator<<(std::ostream &os, const Node &ast);
 };

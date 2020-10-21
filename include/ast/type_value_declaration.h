@@ -11,10 +11,10 @@ namespace AST {
 class TypeValueDeclaration final
     : public ValueDeclaration
     , public TypeDeclaration {
-protected:
+private: // Methods
     void json(std::ostream &os) const override;
 
-public:
+public: // Methods
     TypeValueDeclaration(
         const yy::location &               loc,
         const std::string &                variable,

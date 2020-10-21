@@ -6,13 +6,13 @@
 namespace AST {
 
 class Variable : public LValue {
-protected:
+protected: // Fields
     std::string name;
 
-protected:
+protected: // Methods
     void json(std::ostream &os) const override;
 
-public:
+public: // Methods
     Variable(const yy::location &loc, std::string name);
     ~Variable() override = default;
 };

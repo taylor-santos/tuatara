@@ -6,13 +6,13 @@
 namespace AST {
 
 class Bool final : public Expression {
-private:
+private: // Fields
     bool value;
 
-protected:
+private: // Methods
     void json(std::ostream &os) const override;
 
-public:
+public: // Methods
     Bool(const yy::location &loc, bool value);
     ~Bool() override = default;
 };

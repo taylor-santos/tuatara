@@ -6,7 +6,7 @@
 namespace AST {
 
 class Statement : public Node {
-protected:
+protected: // Methods
     explicit Statement(const yy::location &loc);
 };
 

@@ -106,6 +106,7 @@
     declaration
     stmt
     one_line_stmt
+    if_stmt
 %type<StatementVec>
     stmts
     opt_stmts
@@ -135,22 +136,16 @@ stmts
     }
 
 stmt
-    : one_line_stmt {
+    : one_line_stmt
+    | if_stmt
+
+one_line_stmt
+    : declaration ";"
+    | expression ";" {
         $$ = $1;
-    }
-    | if_stmt {
-        //TODO: If statement AST node
     }
     | "{" opt_stmts "}" {
         $$ = make_unique<AST::Block>(@$, $2);
-    }
-
-one_line_stmt
-    : declaration ";" {
-        $$ = $1;
-    }
-    | expression ";" {
-        $$ = $1;
     }
 
 declaration
@@ -169,21 +164,11 @@ expression
     | assignment
 
 if_stmt
-    : "if" expression "{" opt_stmts "}" opt_else {
-        //TODO: If statement AST node
-        throw Parser::syntax_error(@1, "If statements not implemented");
+    : "if" expression one_line_stmt {
+        $$ = make_unique<AST::If>(@$, $2, $3);
     }
-    | "if" expression one_line_stmt opt_else {
-        //TODO: If statement AST node
-        throw Parser::syntax_error(@1, "If statements not implemented");
-    }
-
-opt_else
-    : %empty {
-        //TODO: If statement AST node
-    }
-    | "else" stmt {
-        //TODO: If statement AST node
+    | "if" expression one_line_stmt "else" stmt {
+        $$ = make_unique<AST::If>(@$, $2, $3, $5);
     }
 
 assignment

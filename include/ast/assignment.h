@@ -8,19 +8,19 @@
 
 namespace AST {
 
-class Assignment : public Expression {
-protected:
+class Assignment final : public Expression {
+private: // Fields
     std::unique_ptr<LValue>     lhs;
     std::unique_ptr<Expression> rhs;
 
-public:
+private: // Methods
+    void json(std::ostream &os) const override;
+
+public: // Methods
     Assignment(
         const yy::location &        loc,
         std::unique_ptr<LValue>     lhs,
         std::unique_ptr<Expression> rhs);
-
-protected:
-    void json(std::ostream &os) const override;
 };
 
 } // namespace AST
