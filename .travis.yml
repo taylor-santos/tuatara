@@ -1,9 +1,9 @@
 language: cpp
 
-addons:
-  homebrew:
-    packages:
-      - bison
+before_install:
+  - brew update
+  - brew install flex
+  - brew install bison
 
 script:
   - mkdir -p build
