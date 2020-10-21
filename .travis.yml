@@ -1,9 +1,6 @@
 language: cpp
 
-before_install:
-  - brew update
-  - brew install flex
-  - brew install bison
+dist: focal
 
 script:
   - mkdir -p build
