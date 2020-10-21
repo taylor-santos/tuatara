@@ -1,11 +1,12 @@
 language: cpp
-dist: trusty
+
+before_install:
+  - sudo apt-get -y install bison
 
 addons:
   apt:
     update: true
     packages:
-      - cmake
       - bison
       - flex
 
