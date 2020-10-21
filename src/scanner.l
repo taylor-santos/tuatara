@@ -113,6 +113,8 @@ inf     (?i:inf)
 "//".*      // Ignore comments
 
 "var"       return_token(VAR);
+"if"        return_token(IF);
+"else"      return_token(ELSE);
 "true"      return_value_token(BOOL, true);
 "false"     return_value_token(BOOL, false);
 "="         return_token(ASSIGN);
