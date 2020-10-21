@@ -2,6 +2,7 @@ language: cpp
 
 before_install:
   - sudo apt-get update
+  - apt list -a bison
   - sudo apt-get -y install bison
 
 addons:
