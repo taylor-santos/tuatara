@@ -9,7 +9,6 @@
     #include <iostream>
     #include "driver.h"
     #include "location.hh"
-    #include "position.hh"
     #include "common.h"
 }
 
