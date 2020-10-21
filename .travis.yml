@@ -1,5 +1,12 @@
 language: cpp
 
+addons:
+  apt:
+    update: true
+    packages:
+      - bison
+      - flex
+
 script:
   - mkdir -p build
   - cd build
