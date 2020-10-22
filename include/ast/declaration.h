@@ -6,10 +6,10 @@
 namespace AST {
 
 class Declaration : public Statement {
-protected:
+protected: // Fields
     std::string variable;
 
-protected:
+protected: // Methods
     Declaration(const yy::location &loc, std::string variable);
 };
 

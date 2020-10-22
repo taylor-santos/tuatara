@@ -6,7 +6,7 @@
 namespace AST {
 
 class LValue : public Expression {
-protected:
+protected: // Methods
     explicit LValue(const yy::location &loc);
 };
 

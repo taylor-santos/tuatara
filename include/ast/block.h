@@ -9,15 +9,15 @@
 
 namespace AST {
 
-class Block : public Expression {
-protected:
+class Block final : public Expression {
+private: // Fields
     std::vector<std::unique_ptr<Statement>> stmts;
 
-public:
-    Block(const yy::location &loc, std::vector<std::unique_ptr<Statement>> stmts);
-
-protected:
+private: // Methods
     void json(std::ostream &os) const override;
+
+public: // Methods
+    Block(const yy::location &loc, std::vector<std::unique_ptr<Statement>> stmts);
 };
 
 } // namespace AST

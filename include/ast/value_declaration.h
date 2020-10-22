@@ -11,13 +11,13 @@ namespace AST {
 // Virtually inherit from Declaration so TypeValueDeclaration can
 // inherit from both ValueDeclaration and TypeDeclaration.
 class ValueDeclaration : virtual public Declaration {
-protected:
+protected: // Fields
     std::unique_ptr<Expression> value;
 
-protected:
+protected: // Methods
     void json(std::ostream &os) const override;
 
-public:
+public: // Methods
     ValueDeclaration(
         const yy::location &        loc,
         std::string                 variable,
