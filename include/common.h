@@ -13,6 +13,7 @@
 #include "ast/type_value_declaration.h"
 #include "ast/block.h"
 #include "ast/while.h"
+#include "ast/if.h"
 
 #include "type/object.h"
 

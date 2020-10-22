@@ -6,7 +6,7 @@
 namespace AST {
 
 class Expression : public Statement {
-protected:
+protected: // Methods
     explicit Expression(const yy::location &loc);
 };
 

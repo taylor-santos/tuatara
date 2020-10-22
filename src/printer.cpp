@@ -9,11 +9,15 @@
 using namespace std;
 
 void
-Print::Error(const string &msg, const yy::location &location, const vector<string> &lines) {
+Print::Error(
+    ostream &             out,
+    const string &        msg,
+    const yy::location &  location,
+    const vector<string> &lines) {
     if (location.begin.filename) {
-        cerr << *location.begin.filename << ":";
+        out << *location.begin.filename << ":";
     }
-    cerr << location.begin.line << ":" << location.begin.column << ": " << msg << endl;
+    out << location.begin.line << ":" << location.begin.column << ": " << msg << endl;
     int num_width = to_string(location.end.line).length();
     for (auto i = location.begin.line; i <= location.end.line; i++) {
         string line = lines[i - 1];
@@ -23,19 +27,19 @@ Print::Error(const string &msg, const yy::location &location, const vector<strin
         if (first == string::npos) {
             continue;
         }
-        cerr << right << setw(num_width) << i << " | ";
-        cerr << line << endl;
-        cerr << string(num_width, ' ') << " | ";
+        out << right << setw(num_width) << i << " | ";
+        out << line << endl;
+        out << string(num_width, ' ') << " | ";
         auto first_col = i == location.begin.line ? location.begin.column - 1 : first;
-        cerr << string(first_col, ' ');
+        out << string(first_col, ' ');
         auto last_col = i == location.end.line ? location.end.column - 1 : last + 1;
         if (i == location.begin.line) {
-            cerr << "^";
+            out << "^";
             last_col--;
         }
         if (last_col > first_col) {
-            cerr << string(last_col - first_col, '~');
+            out << string(last_col - first_col, '~');
         }
-        cerr << endl;
+        out << endl;
     }
 }

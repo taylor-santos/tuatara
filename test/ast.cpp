@@ -155,6 +155,46 @@ TEST(ASTTest, BlockNodeJSON) {
         "\"value\":45.6}]}");
 }
 
+TEST(ASTTest, IfNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    auto               cond = make_unique<Bool>(loc, true);
+    auto               stmt = make_unique<Int>(loc, 123);
+    If                 node(loc, move(cond), move(stmt));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        "{\"node\":\"if\","
+        "\"cond\":{"
+        "\"node\":\"bool\","
+        "\"value\":true},"
+        "\"statement\":{"
+        "\"node\":\"int\","
+        "\"value\":123}}");
+}
+
+TEST(ASTTest, IfElseNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    auto               cond      = make_unique<Bool>(loc, true);
+    auto               stmt      = make_unique<Int>(loc, 123);
+    auto               else_stmt = make_unique<Float>(loc, 4.56);
+    If                 node(loc, move(cond), move(stmt), move(else_stmt));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        "{\"node\":\"if\","
+        "\"cond\":{"
+        "\"node\":\"bool\","
+        "\"value\":true},"
+        "\"statement\":{"
+        "\"node\":\"int\","
+        "\"value\":123},"
+        "\"else\":{"
+        "\"node\":\"float\","
+        "\"value\":4.56}}");
+}
+
 TEST(ASTTest, WhileNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;

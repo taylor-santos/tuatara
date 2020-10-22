@@ -142,9 +142,7 @@ stmt
     | while_stmt
 
 one_line_stmt
-    : declaration ";" {
-        $$ = $1;
-    }
+    : declaration ";"
     | expression ";" {
         $$ = $1;
     }
@@ -168,22 +166,16 @@ expression
     | assignment
 
 if_stmt
-    : "if" expression one_line_stmt opt_else {
-        //TODO: If statement AST node
-        throw Parser::syntax_error(@1, "If statements not implemented");
+    : "if" expression one_line_stmt {
+        $$ = make_unique<AST::If>(@$, $2, $3);
     }
-
+    | "if" expression one_line_stmt "else" stmt {
+        $$ = make_unique<AST::If>(@$, $2, $3, $5);
+    }
+    
 while_stmt
     : "while" expression one_line_stmt {
         $$ = make_unique<AST::While>(@$, $2, $3);
-    }
-
-opt_else
-    : %empty {
-        //TODO: If statement AST node
-    }
-    | "else" stmt {
-        //TODO: If statement AST node
     }
 
 assignment
@@ -230,7 +222,7 @@ namespace yy {
 
 void
 Parser::error(const location_type& l, const std::string& m) {
-    Print::Error(m, l, driver.lines);
+    Print::Error(driver.output, m, l, driver.lines);
 }
 
 }

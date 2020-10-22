@@ -9,7 +9,15 @@ e = true;
     f = e;
     g = 123;
 }
+
 var cond = true;
 while cond {
     cond = false;
+}
+
+if true a = 10; else b = 20.;
+if false {
+    var x = a;
+} else {
+    var x = d;
 }

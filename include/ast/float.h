@@ -6,13 +6,13 @@
 namespace AST {
 
 class Float final : public Expression {
-private:
+private: // Fields
     double value;
 
-protected:
+private: // Methods
     void json(std::ostream &os) const override;
 
-public:
+public: // Methods
     Float(const yy::location &loc, double value);
     ~Float() override = default;
 };

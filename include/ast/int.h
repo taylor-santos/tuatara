@@ -6,13 +6,13 @@
 namespace AST {
 
 class Int final : public Expression {
-private:
+private: // Fields
     int64_t value;
 
-protected:
+private: // Methods
     void json(std::ostream &os) const override;
 
-public:
+public: // Methods
     Int(const yy::location &loc, int64_t value);
     ~Int() override = default;
 };
