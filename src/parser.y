@@ -51,6 +51,7 @@
     EOF  0      "end of file"
     VAR         "var"
     IF          "if"
+    WHILE       "while"
     ELSE        "else"
     TRUE        "true"
     FALSE       "false"
@@ -105,6 +106,8 @@
     declaration
     stmt
     one_line_stmt
+    if_stmt
+    while_stmt
 %type<StatementVec>
     stmts
     opt_stmts
@@ -134,15 +137,9 @@ stmts
     }
 
 stmt
-    : one_line_stmt {
-        $$ = $1;
-    }
-    | if_stmt {
-        //TODO: If statement AST node
-    }
-    | "{" opt_stmts "}" {
-        $$ = make_unique<AST::Block>(@$, $2);
-    }
+    : one_line_stmt
+    | if_stmt
+    | while_stmt
 
 one_line_stmt
     : declaration ";" {
@@ -150,6 +147,9 @@ one_line_stmt
     }
     | expression ";" {
         $$ = $1;
+    }
+    | "{" opt_stmts "}" {
+        $$ = make_unique<AST::Block>(@$, $2);
     }
 
 declaration
@@ -168,13 +168,14 @@ expression
     | assignment
 
 if_stmt
-    : "if" expression "{" opt_stmts "}" opt_else {
+    : "if" expression one_line_stmt opt_else {
         //TODO: If statement AST node
         throw Parser::syntax_error(@1, "If statements not implemented");
     }
-    | "if" expression one_line_stmt opt_else {
-        //TODO: If statement AST node
-        throw Parser::syntax_error(@1, "If statements not implemented");
+
+while_stmt
+    : "while" expression one_line_stmt {
+        $$ = make_unique<AST::While>(@$, $2, $3);
     }
 
 opt_else

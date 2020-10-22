@@ -114,6 +114,7 @@ inf     (?i:inf)
 
 "var"       return_token(VAR);
 "if"        return_token(IF);
+"while"     return_token(WHILE);
 "else"      return_token(ELSE);
 "true"      return_value_token(BOOL, true);
 "false"     return_value_token(BOOL, false);

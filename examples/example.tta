@@ -9,3 +9,7 @@ e = true;
     f = e;
     g = 123;
 }
+var cond = true;
+while cond {
+    cond = false;
+}
