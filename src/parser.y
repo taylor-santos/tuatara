@@ -9,7 +9,6 @@
     #include <iostream>
     #include "driver.h"
     #include "location.hh"
-    #include "position.hh"
     #include "common.h"
 }
 
@@ -24,7 +23,7 @@
     }
 }
 
-%require "3.0"
+%require "3.3"
 %language "C++"
 %locations
 %defines
