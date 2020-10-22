@@ -219,3 +219,15 @@ TEST(ParserTest, Block) {
             "\"value\":false}]}");
     }) << "Expected AST node to be a Block";
 }
+
+TEST(ParserTest, MissingSemicolon) {
+    std::istringstream iss("123");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 1) << "Expected Bison to return an error code";
+    EXPECT_EQ(
+        oss.str(),
+        "1:4: syntax error, unexpected end of file, expecting ;\n"
+        "1 | 123\n"
+        "  |    ^\n");
+}

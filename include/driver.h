@@ -27,10 +27,11 @@ public:
     std::vector<std::unique_ptr<AST::Statement>> statements;
 
 private:
-    std::unique_ptr<Scanner>      scanner;
-    std::unique_ptr<Parser>       parser;
-    std::unique_ptr<yy::location> location;
-    std::vector<std::string>      lines;
+    std::unique_ptr<Scanner>             scanner;
+    std::unique_ptr<Parser>              parser;
+    std::unique_ptr<yy::location>        location;
+    std::vector<std::string>             lines;
+    std::reference_wrapper<std::ostream> output;
 
     /// Allows Parser and Scanner to access private attributes
     /// of the Driver class
