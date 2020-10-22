@@ -229,7 +229,7 @@ namespace yy {
 
 void
 Parser::error(const location_type& l, const std::string& m) {
-    Print::Error(m, l, driver.lines);
+    Print::Error(driver.output, m, l, driver.lines);
 }
 
 }

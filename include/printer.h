@@ -8,8 +8,11 @@
 
 namespace Print {
 
-void
-Error(const std::string &msg, const yy::location &location, const std::vector<std::string> &lines);
+void Error(
+    std::ostream &                  out,
+    const std::string &             msg,
+    const yy::location &            location,
+    const std::vector<std::string> &lines);
 
 }
 
