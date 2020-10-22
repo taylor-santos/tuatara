@@ -194,3 +194,21 @@ TEST(ASTTest, IfElseNodeJSON) {
         "\"node\":\"float\","
         "\"value\":4.56}}");
 }
+
+TEST(ASTTest, WhileNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    auto               cond = make_unique<Bool>(loc, true);
+    auto               stmt = make_unique<Int>(loc, 123);
+    While              node(loc, move(cond), move(stmt));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        "{\"node\":\"while\","
+        "\"cond\":{"
+        "\"node\":\"bool\","
+        "\"value\":true},"
+        "\"statement\":{"
+        "\"node\":\"int\","
+        "\"value\":123}}");
+}

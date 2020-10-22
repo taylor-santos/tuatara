@@ -51,6 +51,7 @@
     EOF  0      "end of file"
     VAR         "var"
     IF          "if"
+    WHILE       "while"
     ELSE        "else"
     TRUE        "true"
     FALSE       "false"
@@ -106,6 +107,7 @@
     stmt
     one_line_stmt
     if_stmt
+    while_stmt
 %type<StatementVec>
     stmts
     opt_stmts
@@ -137,6 +139,7 @@ stmts
 stmt
     : one_line_stmt
     | if_stmt
+    | while_stmt
 
 one_line_stmt
     : declaration ";"
@@ -168,6 +171,11 @@ if_stmt
     }
     | "if" expression one_line_stmt "else" stmt {
         $$ = make_unique<AST::If>(@$, $2, $3, $5);
+    }
+    
+while_stmt
+    : "while" expression one_line_stmt {
+        $$ = make_unique<AST::While>(@$, $2, $3);
     }
 
 assignment
