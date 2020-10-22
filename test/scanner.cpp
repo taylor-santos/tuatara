@@ -161,3 +161,51 @@ TEST(ScannerTest, NoLeadingUnderscoresInIdent) {
         },
         yy::Parser::syntax_error);
 }
+
+TEST(ScannerTest, EmptyStringLiteral) {
+    yy::Scanner        scan;
+    std::istringstream iss(R"("")");
+    std::ostringstream oss;
+    scan.switch_streams(iss, oss);
+    yy::Driver drv;
+    {
+        auto tok = scan.yylex(drv);
+        auto got = tok.value.as<std::string>();
+        EXPECT_EQ(got, "");
+    }
+    auto tok = scan.yylex(drv);
+    EXPECT_EQ(tok.type_get(), 0) << "Expected entire input to be consumed";
+    EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
+}
+
+TEST(ScannerTest, StringLiteral) {
+    yy::Scanner        scan;
+    std::istringstream iss(R"("foo bar")");
+    std::ostringstream oss;
+    scan.switch_streams(iss, oss);
+    yy::Driver drv;
+    {
+        auto tok = scan.yylex(drv);
+        auto got = tok.value.as<std::string>();
+        EXPECT_EQ(got, "foo bar");
+    }
+    auto tok = scan.yylex(drv);
+    EXPECT_EQ(tok.type_get(), 0) << "Expected entire input to be consumed";
+    EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
+}
+
+TEST(ScannerTest, StringLiteralWithEscapedQuote) {
+    yy::Scanner        scan;
+    std::istringstream iss(R"("foo\"bar")");
+    std::ostringstream oss;
+    scan.switch_streams(iss, oss);
+    yy::Driver drv;
+    {
+        auto tok = scan.yylex(drv);
+        auto got = tok.value.as<std::string>();
+        EXPECT_EQ(got, R"(foo\"bar)");
+    }
+    auto tok = scan.yylex(drv);
+    EXPECT_EQ(tok.type_get(), 0) << "Expected entire input to be consumed";
+    EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
+}
