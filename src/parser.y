@@ -50,6 +50,7 @@
 %token
     EOF  0      "end of file"
     VAR         "var"
+    FUNC        "func"
     IF          "if"
     WHILE       "while"
     ELSE        "else"
@@ -64,6 +65,7 @@
     RSQUARE     "]"
     LCURLY      "{"
     RCURLY      "}"
+    COMMA       ","
     PLUS        "+"
     PLUSEQ      "+="
     MINUSEQ     "-="
@@ -196,6 +198,9 @@ lvalue
     | "identifier" ":" type {
         $$ = make_unique<AST::TypedVariable>(@$, $1, $3);
     }
+    | lvalue "(" opt_expr_list ")" {
+        throw yy::Parser::syntax_error(@$, "function call not implemented");
+    }
 
 literal
     : "int literal" {
@@ -215,6 +220,14 @@ type
     : "identifier" {
         $$ = make_unique<TypeChecker::Object>(@$, $1);
     }
+
+opt_expr_list
+    : %empty
+    | expr_list
+
+expr_list
+    : expression
+    | expr_list "," expression
 
 %%
 

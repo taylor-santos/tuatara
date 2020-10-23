@@ -113,6 +113,7 @@ inf     (?i:inf)
 "//".*      // Ignore comments
 
 "var"       return_token(VAR);
+"func"      return_token(VAR);
 "if"        return_token(IF);
 "while"     return_token(WHILE);
 "else"      return_token(ELSE);
@@ -127,6 +128,7 @@ inf     (?i:inf)
 "]"         return_token(RSQUARE);
 "{"         return_token(LCURLY);
 "}"         return_token(RCURLY);
+","         return_token(COMMA);
 "+"         return_token(PLUS);
 "+="        return_token(PLUSEQ);
 "-="        return_token(MINUSEQ);
