@@ -57,17 +57,23 @@ TEST(ParserTest, StringLiteral) {
 }
 
 TEST(ParserTest, BoolLiteral) {
-    std::istringstream iss("true;");
+    std::istringstream iss("true; false;");
     std::ostringstream oss;
     yy::Driver         drv;
     EXPECT_EQ(drv.parse(iss, oss), 0);
     EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    ASSERT_EQ(drv.statements.size(), 2) << "Expected statements list to have two statements";
     EXPECT_NO_THROW({
         const auto &       node = dynamic_cast<AST::Bool &>(*drv.statements[0]);
         std::ostringstream ss;
         ss << node;
         EXPECT_EQ(ss.str(), R"({"node":"bool","value":true})");
+    }) << "Expected AST node to be a Bool";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::Bool &>(*drv.statements[1]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(ss.str(), R"({"node":"bool","value":false})");
     }) << "Expected AST node to be a Bool";
 }
 
