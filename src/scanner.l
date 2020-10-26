@@ -15,7 +15,7 @@
 #define LINE(Line)                                                      \
     do {                                                                \
         driver.location->lines (Line);                                  \
-        driver.lines.push_back("");                                     \
+        driver.lines.insert(driver.lines.end(), Line, "");              \
         STEP();                                                         \
     } while (0)
 

@@ -57,17 +57,23 @@ TEST(ParserTest, StringLiteral) {
 }
 
 TEST(ParserTest, BoolLiteral) {
-    std::istringstream iss("true;");
+    std::istringstream iss("true; false;");
     std::ostringstream oss;
     yy::Driver         drv;
     EXPECT_EQ(drv.parse(iss, oss), 0);
     EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    ASSERT_EQ(drv.statements.size(), 2) << "Expected statements list to have two statements";
     EXPECT_NO_THROW({
         const auto &       node = dynamic_cast<AST::Bool &>(*drv.statements[0]);
         std::ostringstream ss;
         ss << node;
         EXPECT_EQ(ss.str(), R"({"node":"bool","value":true})");
+    }) << "Expected AST node to be a Bool";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::Bool &>(*drv.statements[1]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(ss.str(), R"({"node":"bool","value":false})");
     }) << "Expected AST node to be a Bool";
 }
 
@@ -114,11 +120,11 @@ TEST(ParserTest, TypedVariable) {
         ss << node;
         EXPECT_EQ(
             ss.str(),
-            "{\"node\":\"typed variable\","
-            "\"name\":\"abc\","
-            "\"type\":{"
-            "\"type\":\"object\","
-            "\"class\":\"int\"}}");
+            R"({"node":"typed variable",)"
+            R"("name":"abc",)"
+            R"("type":{)"
+            R"("type":"object",)"
+            R"("class":"int"}})");
     }) << "Expected AST node to be a TypedVariable";
 }
 
@@ -135,13 +141,13 @@ TEST(ParserTest, Assignment) {
         ss << node;
         EXPECT_EQ(
             ss.str(),
-            "{\"node\":\"assignment\","
-            "\"lhs\":{"
-            "\"node\":\"variable\","
-            "\"name\":\"abc\"},"
-            "\"rhs\":{"
-            "\"node\":\"int\","
-            "\"value\":5}}");
+            R"({"node":"assignment",)"
+            R"("lhs":{)"
+            R"("node":"variable",)"
+            R"("name":"abc"},)"
+            R"("rhs":{)"
+            R"("node":"int",)"
+            R"("value":5}})");
     }) << "Expected AST node to be an Assignment";
 }
 
@@ -158,11 +164,11 @@ TEST(ParserTest, ValueDeclaration) {
         ss << node;
         EXPECT_EQ(
             ss.str(),
-            "{\"node\":\"value declaration\","
-            "\"variable\":\"abc\","
-            "\"value\":{"
-            "\"node\":\"int\","
-            "\"value\":123}}");
+            R"({"node":"value declaration",)"
+            R"("variable":"abc",)"
+            R"("value":{)"
+            R"("node":"int",)"
+            R"("value":123}})");
     }) << "Expected AST node to be a ValueDeclaration";
 }
 
@@ -179,11 +185,11 @@ TEST(ParserTest, TypeDeclaration) {
         ss << node;
         EXPECT_EQ(
             ss.str(),
-            "{\"node\":\"type declaration\","
-            "\"variable\":\"abc\","
-            "\"type\":{"
-            "\"type\":\"object\","
-            "\"class\":\"int\"}}");
+            R"({"node":"type declaration",)"
+            R"("variable":"abc",)"
+            R"("type":{)"
+            R"("type":"object",)"
+            R"("class":"int"}})");
     }) << "Expected AST node to be a TypeDeclaration";
 }
 
@@ -200,14 +206,14 @@ TEST(ParserTest, TypeValueDeclaration) {
         ss << node;
         EXPECT_EQ(
             ss.str(),
-            "{\"node\":\"type value declaration\","
-            "\"variable\":\"abc\","
-            "\"type\":{"
-            "\"type\":\"object\","
-            "\"class\":\"int\"},"
-            "\"value\":{"
-            "\"node\":\"int\","
-            "\"value\":123}}");
+            R"({"node":"type value declaration",)"
+            R"("variable":"abc",)"
+            R"("type":{)"
+            R"("type":"object",)"
+            R"("class":"int"},)"
+            R"("value":{)"
+            R"("node":"int",)"
+            R"("value":123}})");
     }) << "Expected AST node to be a TypeValueDeclaration";
 }
 
@@ -224,14 +230,14 @@ TEST(ParserTest, Block) {
         ss << node;
         EXPECT_EQ(
             ss.str(),
-            "{\"node\":\"block\","
-            "\"statements\":[{"
-            "\"node\":\"int\","
-            "\"value\":5},"
-            "{\"node\":\"float\","
-            "\"value\":12.34},"
-            "{\"node\":\"bool\","
-            "\"value\":false}]}");
+            R"({"node":"block",)"
+            R"("statements":[{)"
+            R"("node":"int",)"
+            R"("value":5},)"
+            R"({"node":"float",)"
+            R"("value":12.34},)"
+            R"({"node":"bool",)"
+            R"("value":false}]})");
     }) << "Expected AST node to be a Block";
 }
 

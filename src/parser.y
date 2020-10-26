@@ -53,8 +53,6 @@
     IF          "if"
     WHILE       "while"
     ELSE        "else"
-    TRUE        "true"
-    FALSE       "false"
     NONE        "none"
     ASSIGN      "="
     SEMICOLON   ";"

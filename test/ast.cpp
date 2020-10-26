@@ -71,11 +71,11 @@ TEST(ASTTest, TypedVariableNodeJSON) {
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        "{\"node\":\"typed variable\","
-        "\"name\":\"var\","
-        "\"type\":{"
-        "\"type\":\"object\","
-        "\"class\":\"class_name\"}}");
+        R"({"node":"typed variable",)"
+        R"("name":"var",)"
+        R"("type":{)"
+        R"("type":"object",)"
+        R"("class":"class_name"}})");
 }
 
 TEST(ASTTest, AssignmentNodeJSON) {
@@ -87,13 +87,13 @@ TEST(ASTTest, AssignmentNodeJSON) {
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        "{\"node\":\"assignment\","
-        "\"lhs\":{"
-        "\"node\":\"variable\","
-        "\"name\":\"var\"},"
-        "\"rhs\":{"
-        "\"node\":\"int\","
-        "\"value\":123}}");
+        R"({"node":"assignment",)"
+        R"("lhs":{)"
+        R"("node":"variable",)"
+        R"("name":"var"},)"
+        R"("rhs":{)"
+        R"("node":"int",)"
+        R"("value":123}})");
 }
 
 TEST(ASTTest, ValueDeclarationNodeJSON) {
@@ -104,11 +104,11 @@ TEST(ASTTest, ValueDeclarationNodeJSON) {
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        "{\"node\":\"value declaration\","
-        "\"variable\":\"var\","
-        "\"value\":{"
-        "\"node\":\"int\","
-        "\"value\":123}}");
+        R"({"node":"value declaration",)"
+        R"("variable":"var",)"
+        R"("value":{)"
+        R"("node":"int",)"
+        R"("value":123}})");
 }
 
 TEST(ASTTest, TypeDeclarationNodeJSON) {
@@ -119,11 +119,11 @@ TEST(ASTTest, TypeDeclarationNodeJSON) {
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        "{\"node\":\"type declaration\","
-        "\"variable\":\"var\","
-        "\"type\":{"
-        "\"type\":\"object\","
-        "\"class\":\"class_name\"}}");
+        R"({"node":"type declaration",)"
+        R"("variable":"var",)"
+        R"("type":{)"
+        R"("type":"object",)"
+        R"("class":"class_name"}})");
 }
 
 TEST(ASTTest, TypeValueDeclarationNodeJSON) {
@@ -135,14 +135,14 @@ TEST(ASTTest, TypeValueDeclarationNodeJSON) {
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        "{\"node\":\"type value declaration\","
-        "\"variable\":\"var\","
-        "\"type\":{"
-        "\"type\":\"object\","
-        "\"class\":\"class_name\"},"
-        "\"value\":{"
-        "\"node\":\"int\","
-        "\"value\":123}}");
+        R"({"node":"type value declaration",)"
+        R"("variable":"var",)"
+        R"("type":{)"
+        R"("type":"object",)"
+        R"("class":"class_name"},)"
+        R"("value":{)"
+        R"("node":"int",)"
+        R"("value":123}})");
 }
 
 TEST(ASTTest, BlockNodeJSON) {
@@ -155,12 +155,12 @@ TEST(ASTTest, BlockNodeJSON) {
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        "{\"node\":\"block\","
-        "\"statements\":[{"
-        "\"node\":\"int\","
-        "\"value\":123},"
-        "{\"node\":\"float\","
-        "\"value\":45.6}]}");
+        R"({"node":"block",)"
+        R"("statements":[{)"
+        R"("node":"int",)"
+        R"("value":123},)"
+        R"({"node":"float",)"
+        R"("value":45.6}]})");
 }
 
 TEST(ASTTest, IfNodeJSON) {
@@ -172,13 +172,13 @@ TEST(ASTTest, IfNodeJSON) {
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        "{\"node\":\"if\","
-        "\"cond\":{"
-        "\"node\":\"bool\","
-        "\"value\":true},"
-        "\"statement\":{"
-        "\"node\":\"int\","
-        "\"value\":123}}");
+        R"({"node":"if",)"
+        R"("cond":{)"
+        R"("node":"bool",)"
+        R"("value":true},)"
+        R"("statement":{)"
+        R"("node":"int",)"
+        R"("value":123}})");
 }
 
 TEST(ASTTest, IfElseNodeJSON) {
@@ -191,16 +191,16 @@ TEST(ASTTest, IfElseNodeJSON) {
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        "{\"node\":\"if\","
-        "\"cond\":{"
-        "\"node\":\"bool\","
-        "\"value\":true},"
-        "\"statement\":{"
-        "\"node\":\"int\","
-        "\"value\":123},"
-        "\"else\":{"
-        "\"node\":\"float\","
-        "\"value\":4.56}}");
+        R"({"node":"if",)"
+        R"("cond":{)"
+        R"("node":"bool",)"
+        R"("value":true},)"
+        R"("statement":{)"
+        R"("node":"int",)"
+        R"("value":123},)"
+        R"("else":{)"
+        R"("node":"float",)"
+        R"("value":4.56}})");
 }
 
 TEST(ASTTest, WhileNodeJSON) {
