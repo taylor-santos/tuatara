@@ -55,6 +55,7 @@
     ELSE        "else"
     TRUE        "true"
     FALSE       "false"
+    NONE        "none"
     ASSIGN      "="
     SEMICOLON   ";"
     COLON       ":"
@@ -209,6 +210,9 @@ literal
     }
     | "bool literal" {
         $$ = make_unique<AST::Bool>(@$, $1);
+    }
+    | "none" {
+        $$ = make_unique<AST::None>(@$);
     }
 
 type

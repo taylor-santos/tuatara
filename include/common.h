@@ -5,6 +5,7 @@
 #include "ast/float.h"
 #include "ast/string.h"
 #include "ast/bool.h"
+#include "ast/none.h"
 #include "ast/variable.h"
 #include "ast/typed_variable.h"
 #include "ast/assignment.h"

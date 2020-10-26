@@ -47,6 +47,14 @@ TEST(ASTTest, FalseBoolNodeJSON) {
     EXPECT_EQ(ss.str(), R"({"node":"bool","value":false})");
 }
 
+TEST(ASTTest, NoneNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    None               node(loc);
+    ss << node;
+    EXPECT_EQ(ss.str(), R"({"node":"none"})");
+}
+
 TEST(ASTTest, VariableNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;

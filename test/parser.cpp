@@ -71,6 +71,21 @@ TEST(ParserTest, BoolLiteral) {
     }) << "Expected AST node to be a Bool";
 }
 
+TEST(ParserTest, NoneLiteral) {
+    std::istringstream iss("none;");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::None &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(ss.str(), R"({"node":"none"})");
+    }) << "Expected AST node to be a None";
+}
+
 TEST(ParserTest, Variable) {
     std::istringstream iss("abc;");
     std::ostringstream oss;

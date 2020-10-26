@@ -116,6 +116,7 @@ inf     (?i:inf)
 "if"        return_token(IF);
 "while"     return_token(WHILE);
 "else"      return_token(ELSE);
+"none"      return_token(NONE);
 "true"      return_value_token(BOOL, true);
 "false"     return_value_token(BOOL, false);
 "="         return_token(ASSIGN);
