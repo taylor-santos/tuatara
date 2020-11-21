@@ -113,7 +113,9 @@ inf     (?i:inf)
 "//".*      // Ignore comments
 
 "var"       return_token(VAR);
-"func"      return_token(VAR);
+"func"      return_token(FUNC);
+"->"        return_token(ARROW);
+"return"    return_token(RETURN);
 "if"        return_token(IF);
 "while"     return_token(WHILE);
 "else"      return_token(ELSE);

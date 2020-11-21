@@ -5,11 +5,11 @@
 
 namespace AST {
 
-class Variable : public LValue {
-protected: // Fields
+class Variable final : public LValue {
+private: // Fields
     std::string name;
 
-protected: // Methods
+private: // Methods
     void json(std::ostream &os) const override;
 
 public: // Methods

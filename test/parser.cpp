@@ -86,27 +86,6 @@ TEST(ParserTest, Variable) {
     }) << "Expected AST node to be a Variable";
 }
 
-TEST(ParserTest, TypedVariable) {
-    std::istringstream iss("abc: int;");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypedVariable &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            "{\"node\":\"typed variable\","
-            "\"name\":\"abc\","
-            "\"type\":{"
-            "\"type\":\"object\","
-            "\"class\":\"int\"}}");
-    }) << "Expected AST node to be a TypedVariable";
-}
-
 TEST(ParserTest, Assignment) {
     std::istringstream iss("abc = 5;");
     std::ostringstream oss;

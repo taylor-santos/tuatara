@@ -9,15 +9,66 @@ e = true;
     f = e;
     g = 123;
 }
-
 var cond = true;
 while cond {
     cond = false;
 }
-
 if true a = 10; else b = 20.;
 if false {
     var x = a;
 } else {
     var x = d;
 }
+func caller(fn: int->int, arg:int) -> int {
+    return arg;
+}
+
+var a: T;
+var a: (T);
+var a: (S, T);
+var a: T[];
+var a: (T)[];
+var a: (S, T)[];
+var a: T[][];
+var a: (T)[][];
+var a: (S, T)[][];
+var a: (T[], T);
+var a: ((T)[], T);
+var a: ((S, T)[], T);
+var a: (T[][], T);
+var a: ((T)[][], T);
+var a: ((S, T)[][], T);
+var a: ->;
+var a: T ->;
+var a: (T) ->;
+var a: (S, T) ->;
+var a: T[] ->;
+var a: (T)[] ->;
+var a: (S, T)[] ->;
+var a: T[][] ->;
+var a: (T)[][] ->;
+var a: (S, T)[][] ->;
+var a: (T[], T) ->;
+var a: ((T)[], T) ->;
+var a: ((S, T)[], T) ->;
+var a: (T[][], T) ->;
+var a: ((T)[][], T) ->;
+var a: ((S, T)[][], T) ->;
+var a: -> T;
+var a: -> (T);
+var a: -> (S, T);
+var a: -> T[];
+var a: -> (T)[];
+var a: -> (S, T)[];
+var a: -> T[][];
+var a: -> (T)[][];
+var a: -> (S, T)[][];
+var a: -> (T[], T);
+var a: -> ((T)[], T);
+var a: -> ((S, T)[], T);
+var a: -> (T[][], T);
+var a: -> ((T)[][], T);
+var a: -> ((S, T)[][], T);
+var a: A->B->C;
+var a: (A->B)->C;
+var a: (->T)[];

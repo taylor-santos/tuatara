@@ -55,21 +55,6 @@ TEST(ASTTest, VariableNodeJSON) {
     EXPECT_EQ(ss.str(), R"({"node":"variable","name":"var"})");
 }
 
-TEST(ASTTest, TypedVariableNodeJSON) {
-    std::ostringstream ss;
-    yy::location       loc;
-    auto               type = make_shared<TypeChecker::Object>(loc, "class_name");
-    TypedVariable      node(loc, "var", type);
-    ss << node;
-    EXPECT_EQ(
-        ss.str(),
-        "{\"node\":\"typed variable\","
-        "\"name\":\"var\","
-        "\"type\":{"
-        "\"type\":\"object\","
-        "\"class\":\"class_name\"}}");
-}
-
 TEST(ASTTest, AssignmentNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
