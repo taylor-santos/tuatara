@@ -146,7 +146,7 @@ TEST(ParserTest, TypeDeclaration) {
             "{\"node\":\"type declaration\","
             "\"variable\":\"abc\","
             "\"type\":{"
-            "\"type\":\"object\","
+            "\"kind\":\"object\","
             "\"class\":\"int\"}}");
     }) << "Expected AST node to be a TypeDeclaration";
 }
@@ -167,7 +167,7 @@ TEST(ParserTest, TypeValueDeclaration) {
             "{\"node\":\"type value declaration\","
             "\"variable\":\"abc\","
             "\"type\":{"
-            "\"type\":\"object\","
+            "\"kind\":\"object\","
             "\"class\":\"int\"},"
             "\"value\":{"
             "\"node\":\"int\","

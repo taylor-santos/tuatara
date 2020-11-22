@@ -19,11 +19,6 @@ Driver::Driver()
 
 Driver::~Driver() {}
 
-void
-Driver::reset() {
-    location = std::make_unique<yy::location>();
-}
-
 int
 Driver::parse(std::istream &in, std::ostream &out) {
     scanner->switch_streams(&in, &out);
