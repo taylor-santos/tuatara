@@ -20,5 +20,5 @@ if false {
     var x = d;
 }
 func caller(fn: int->int, arg:int) -> int {
-    return arg;
+    return fn(arg);
 }
