@@ -13,6 +13,6 @@ Array::Array(yy::location loc, shared_ptr<Type> type)
 void
 Array::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("type", "array");
+    obj.KeyValue("kind", "array");
     obj.KeyValue("type", *type);
 }

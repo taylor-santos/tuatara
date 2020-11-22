@@ -13,6 +13,6 @@ Object::Object(yy::location loc, string class_name)
 void
 Object::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("type", "object");
+    obj.KeyValue("kind", "object");
     obj.KeyValue("class", class_name);
 }

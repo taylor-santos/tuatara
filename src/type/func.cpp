@@ -17,7 +17,7 @@ Func::Func(
 void
 Func::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("type", "func");
+    obj.KeyValue("kind", "func");
     if (arg_type) {
         obj.KeyValue("arg", **arg_type);
     }
