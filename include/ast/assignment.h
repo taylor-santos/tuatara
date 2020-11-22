@@ -9,18 +9,18 @@
 namespace AST {
 
 class Assignment final : public Expression {
+public: // Methods
+    Assignment(
+        const yy::location &        loc,
+        std::unique_ptr<LValue>     lhs,
+        std::unique_ptr<Expression> rhs);
+
 private: // Fields
     std::unique_ptr<LValue>     lhs;
     std::unique_ptr<Expression> rhs;
 
 private: // Methods
     void json(std::ostream &os) const override;
-
-public: // Methods
-    Assignment(
-        const yy::location &        loc,
-        std::unique_ptr<LValue>     lhs,
-        std::unique_ptr<Expression> rhs);
 };
 
 } // namespace AST

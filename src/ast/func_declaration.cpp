@@ -22,7 +22,7 @@ void
 FuncDeclaration::json(ostream &os) const {
     JSON::Object obj(os);
     obj.KeyValue("node", "function declaration");
-    obj.KeyValue("variable", variable);
+    obj.KeyValue("variable", getVariable());
     {
         obj.Key("args");
         JSON::Array arr(os);

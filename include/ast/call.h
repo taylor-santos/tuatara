@@ -9,19 +9,19 @@
 namespace AST {
 
 class Call final : public LValue {
-private: // Fields
-    std::unique_ptr<Expression>              function;
-    std::vector<std::unique_ptr<Expression>> args;
-
-private: // Methods
-    void json(std::ostream &os) const override;
-
 public: // Methods
     Call(
         const yy::location &                     loc,
         std::unique_ptr<Expression>              function,
         std::vector<std::unique_ptr<Expression>> args);
     ~Call() override = default;
+
+private: // Fields
+    std::unique_ptr<Expression>              function;
+    std::vector<std::unique_ptr<Expression>> args;
+
+private: // Methods
+    void json(std::ostream &os) const override;
 };
 
 } // namespace AST

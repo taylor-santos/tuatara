@@ -11,14 +11,6 @@
 namespace AST {
 
 class FuncDeclaration final : public Declaration {
-private: // Fields
-    std::vector<std::pair<std::string, std::shared_ptr<TypeChecker::Type>>> args;
-    std::optional<std::shared_ptr<TypeChecker::Type>>                       ret_type;
-    std::unique_ptr<Statement>                                              body;
-
-private: // Methods
-    void json(std::ostream &os) const override;
-
 public: // Methods
     FuncDeclaration(
         const yy::location &                                                    loc,
@@ -26,6 +18,14 @@ public: // Methods
         std::vector<std::pair<std::string, std::shared_ptr<TypeChecker::Type>>> args,
         std::optional<std::shared_ptr<TypeChecker::Type>>                       ret_type,
         std::unique_ptr<Statement>                                              body);
+
+private: // Fields
+    std::vector<std::pair<std::string, std::shared_ptr<TypeChecker::Type>>> args;
+    std::optional<std::shared_ptr<TypeChecker::Type>>                       ret_type;
+    std::unique_ptr<Statement>                                              body;
+
+private: // Methods
+    void json(std::ostream &os) const override;
 };
 
 } // namespace AST

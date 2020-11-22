@@ -8,16 +8,16 @@
 
 namespace TypeChecker {
 
-class Tuple : public Type {
-private:
-    std::vector<std::shared_ptr<Type>> types;
-
-protected:
-    void json(std::ostream &os) const override;
-
-public:
+class Tuple final : public Type {
+public: // Fields
     Tuple(yy::location loc, std::vector<std::shared_ptr<Type>> types);
     ~Tuple() override = default;
+
+private: // Fields
+    std::vector<std::shared_ptr<Type>> types;
+
+private: // Methods
+    void json(std::ostream &os) const override;
 };
 
 } // namespace TypeChecker

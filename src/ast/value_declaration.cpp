@@ -15,7 +15,12 @@ void
 ValueDeclaration::json(ostream &os) const {
     JSON::Object obj(os);
     obj.KeyValue("node", "value declaration");
-    obj.KeyValue("variable", variable);
+    obj.KeyValue("variable", getVariable());
     obj.Key("value");
     os << *value;
+}
+
+const unique_ptr<Expression> &
+ValueDeclaration::getValue() const {
+    return value;
 }

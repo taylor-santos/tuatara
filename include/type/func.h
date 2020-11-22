@@ -8,20 +8,20 @@
 
 namespace TypeChecker {
 
-class Func : public Type {
-private:
-    std::optional<std::shared_ptr<Type>> arg_type;
-    std::optional<std::shared_ptr<Type>> ret_type;
-
-protected:
-    void json(std::ostream &os) const override;
-
-public:
+class Func final : public Type {
+public: // Methods
     Func(
         yy::location                         loc,
         std::optional<std::shared_ptr<Type>> arg_type,
         std::optional<std::shared_ptr<Type>> ret_type);
     ~Func() override = default;
+
+private: // Fields
+    std::optional<std::shared_ptr<Type>> arg_type;
+    std::optional<std::shared_ptr<Type>> ret_type;
+
+private: // Methods
+    void json(std::ostream &os) const override;
 };
 
 } // namespace TypeChecker

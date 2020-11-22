@@ -11,6 +11,13 @@
 namespace AST {
 
 class If final : public Statement {
+public: // Methods
+    If(const yy::location &loc, std::unique_ptr<Expression> cond, std::unique_ptr<Statement> stmt);
+    If(const yy::location &        loc,
+       std::unique_ptr<Expression> cond,
+       std::unique_ptr<Statement>  stmt,
+       std::unique_ptr<Statement>  else_stmt);
+
 private: // Fields
     std::unique_ptr<Expression>               cond;
     std::unique_ptr<Statement>                stmt;
@@ -18,13 +25,6 @@ private: // Fields
 
 private: // Methods
     void json(std::ostream &os) const override;
-
-public: // Methods
-    If(const yy::location &loc, std::unique_ptr<Expression> cond, std::unique_ptr<Statement> stmt);
-    If(const yy::location &        loc,
-       std::unique_ptr<Expression> cond,
-       std::unique_ptr<Statement>  stmt,
-       std::unique_ptr<Statement>  else_stmt);
 };
 
 } // namespace AST
