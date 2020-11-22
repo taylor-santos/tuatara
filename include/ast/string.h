@@ -6,15 +6,15 @@
 namespace AST {
 
 class String final : public Expression {
+public: // Methods
+    String(const yy::location &loc, std::string value);
+    ~String() override = default;
+
 private: // Fields
     std::string value;
 
 private: // Methods
     void json(std::ostream &os) const override;
-
-public: // Methods
-    String(const yy::location &loc, std::string value);
-    ~String() override = default;
 };
 
 } // namespace AST

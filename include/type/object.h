@@ -5,16 +5,16 @@
 
 namespace TypeChecker {
 
-class Object : public Type {
-protected:
-    std::string class_name;
-
-protected:
-    void json(std::ostream &os) const override;
-
-public:
+class Object final : public Type {
+public: // Fields
     Object(yy::location loc, std::string class_name);
     ~Object() override = default;
+
+private: // Fields
+    std::string class_name;
+
+private: // Methods
+    void json(std::ostream &os) const override;
 };
 
 } // namespace TypeChecker

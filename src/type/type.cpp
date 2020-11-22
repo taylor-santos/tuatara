@@ -4,7 +4,12 @@ using namespace std;
 using namespace TypeChecker;
 
 Type::Type(yy::location loc)
-    : loc{loc} {}
+    : loc_{loc} {}
+
+const yy::location &
+Type::loc() const {
+    return loc_;
+}
 
 ostream &
 operator<<(ostream &os, const Type &type) {

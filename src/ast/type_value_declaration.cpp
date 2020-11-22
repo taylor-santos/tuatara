@@ -20,9 +20,9 @@ void
 TypeValueDeclaration::json(ostream &os) const {
     JSON::Object obj(os);
     obj.KeyValue("node", "type value declaration");
-    obj.KeyValue("variable", variable);
+    obj.KeyValue("variable", getVariable());
     obj.Key("type");
-    os << *type;
+    os << *getType();
     obj.Key("value");
-    os << *value;
+    os << *getValue();
 }

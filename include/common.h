@@ -6,21 +6,31 @@
 #include "ast/string.h"
 #include "ast/bool.h"
 #include "ast/variable.h"
-#include "ast/typed_variable.h"
 #include "ast/assignment.h"
 #include "ast/type_declaration.h"
 #include "ast/value_declaration.h"
 #include "ast/type_value_declaration.h"
+#include "ast/func_declaration.h"
+#include "ast/return.h"
+#include "ast/call.h"
 #include "ast/block.h"
 #include "ast/while.h"
 #include "ast/if.h"
 
 #include "type/object.h"
+#include "type/tuple.h"
+#include "type/array.h"
+#include "type/func.h"
 
 using ExpressionPtr = std::unique_ptr<AST::Expression>;
 using LValuePtr     = std::unique_ptr<AST::LValue>;
 using StatementPtr  = std::unique_ptr<AST::Statement>;
 using TypePtr       = std::shared_ptr<TypeChecker::Type>;
 using StatementVec  = std::vector<StatementPtr>;
+using ExpressionVec = std::vector<ExpressionPtr>;
+using TypeVec       = std::vector<TypePtr>;
+using OptType       = std::optional<TypePtr>;
+using NamedType     = std::pair<std::string, TypePtr>;
+using NamedTypeVec  = std::vector<NamedType>;
 
 #endif // COMMON_H

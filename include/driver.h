@@ -22,8 +22,6 @@ public:
     int parse(std::istream &in = std::cin, std::ostream &out = std::cerr);
     int parse_file(const char *path);
 
-    void reset();
-
     std::vector<std::unique_ptr<AST::Statement>> statements;
 
 private:

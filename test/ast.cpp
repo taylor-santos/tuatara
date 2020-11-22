@@ -55,21 +55,6 @@ TEST(ASTTest, VariableNodeJSON) {
     EXPECT_EQ(ss.str(), R"({"node":"variable","name":"var"})");
 }
 
-TEST(ASTTest, TypedVariableNodeJSON) {
-    std::ostringstream ss;
-    yy::location       loc;
-    auto               type = make_shared<TypeChecker::Object>(loc, "class_name");
-    TypedVariable      node(loc, "var", type);
-    ss << node;
-    EXPECT_EQ(
-        ss.str(),
-        R"({"node":"typed variable",)"
-        R"("name":"var",)"
-        R"("type":{)"
-        R"("type":"object",)"
-        R"("class":"class_name"}})");
-}
-
 TEST(ASTTest, AssignmentNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
@@ -114,7 +99,7 @@ TEST(ASTTest, TypeDeclarationNodeJSON) {
         R"({"node":"type declaration",)"
         R"("variable":"var",)"
         R"("type":{)"
-        R"("type":"object",)"
+        R"("kind":"object",)"
         R"("class":"class_name"}})");
 }
 
@@ -130,7 +115,7 @@ TEST(ASTTest, TypeValueDeclarationNodeJSON) {
         R"({"node":"type value declaration",)"
         R"("variable":"var",)"
         R"("type":{)"
-        R"("type":"object",)"
+        R"("kind":"object",)"
         R"("class":"class_name"},)"
         R"("value":{)"
         R"("node":"int",)"
@@ -211,4 +196,72 @@ TEST(ASTTest, WhileNodeJSON) {
         "\"statement\":{"
         "\"node\":\"int\","
         "\"value\":123}}");
+}
+
+TEST(ASTTest, CallNodeJSON) {
+    std::ostringstream             ss;
+    yy::location                   loc;
+    auto                           func = make_unique<Variable>(loc, "a");
+    vector<unique_ptr<Expression>> args;
+    args.emplace_back(make_unique<Variable>(loc, "b"));
+    Call node(loc, move(func), move(args));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        R"({"node":"function call",)"
+        R"("function":{)"
+        R"("node":"variable",)"
+        R"("name":"a"},)"
+        R"("args":[{)"
+        R"("node":"variable",)"
+        R"("name":"b"}]})");
+}
+
+TEST(ASTTest, FuncDeclarationNodeJSON) {
+    std::ostringstream                                  ss;
+    yy::location                                        loc;
+    string                                              name = "foo";
+    vector<pair<string, shared_ptr<TypeChecker::Type>>> args;
+    args.emplace_back(make_pair("arg", make_shared<TypeChecker::Object>(loc, "S")));
+    auto            ret  = make_shared<TypeChecker::Object>(loc, "T");
+    auto            stmt = make_unique<Variable>(loc, "b");
+    FuncDeclaration node(loc, name, move(args), move(ret), move(stmt));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        R"({"node":"function declaration",)"
+        R"("variable":"foo",)"
+        R"("args":[{)"
+        R"("name":"arg",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"S"}}],)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"T"},)"
+        R"("body":{)"
+        R"("node":"variable",)"
+        R"("name":"b"}})");
+}
+
+TEST(ASTTest, ReturnNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    Return             node(loc);
+    ss << node;
+    EXPECT_EQ(ss.str(), R"({"node":"return"})");
+}
+
+TEST(ASTTest, ReturnValueNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    auto               val = make_unique<Int>(loc, 5);
+    Return             node(loc, move(val));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        R"({"node":"return",)"
+        R"("returns":{)"
+        R"("node":"int",)"
+        R"("value":5}})");
 }

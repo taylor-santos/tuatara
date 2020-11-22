@@ -15,7 +15,12 @@ void
 TypeDeclaration::json(ostream &os) const {
     JSON::Object obj(os);
     obj.KeyValue("node", "type declaration");
-    obj.KeyValue("variable", variable);
+    obj.KeyValue("variable", getVariable());
     obj.Key("type");
     os << *type;
+}
+
+const shared_ptr<TypeChecker::Type> &
+TypeDeclaration::getType() const {
+    return type;
 }

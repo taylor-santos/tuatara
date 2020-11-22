@@ -11,15 +11,15 @@ namespace AST {
 class TypeValueDeclaration final
     : public ValueDeclaration
     , public TypeDeclaration {
-private: // Methods
-    void json(std::ostream &os) const override;
-
 public: // Methods
     TypeValueDeclaration(
         const yy::location &               loc,
         const std::string &                variable,
         std::shared_ptr<TypeChecker::Type> type,
         std::unique_ptr<Expression>        value);
+
+private: // Methods
+    void json(std::ostream &os) const override;
 };
 
 } // namespace AST
