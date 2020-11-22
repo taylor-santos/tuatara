@@ -251,7 +251,7 @@ opt_type
 
 type
     : array_type
-    | opt_type "->" opt_array_type {
+    | opt_array_type "->" opt_type {
         $$ = make_shared<TypeChecker::Func>(@$, $1, $3);
     }
 
