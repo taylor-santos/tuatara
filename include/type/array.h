@@ -1,13 +1,15 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
-#include <memory>
-
 #include "type/type.h"
 
 namespace TypeChecker {
 
 class Array final : public Type {
+public: // Aliases
+    using Ptr = std::shared_ptr<Array>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     Array(yy::location loc, Type::Ptr type);
     ~Array() override = default;

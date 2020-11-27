@@ -4,11 +4,13 @@
 #include "expression.h"
 #include "lvalue.h"
 
-#include <memory>
-
 namespace AST {
 
 class Assignment final : public Expression {
+public: // Aliases
+    using Ptr = std::unique_ptr<Assignment>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     Assignment(const yy::location &loc, LValue::Ptr lhs, Expression::Ptr rhs);
 

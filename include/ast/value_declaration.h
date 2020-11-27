@@ -4,13 +4,15 @@
 #include "declaration.h"
 #include "expression.h"
 
-#include <memory>
-
 namespace AST {
 
 // Virtually inherit from Declaration so TypeValueDeclaration can
 // inherit from both ValueDeclaration and TypeDeclaration.
 class ValueDeclaration : virtual public Declaration {
+public: // Aliases
+    using Ptr = std::unique_ptr<ValueDeclaration>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     ValueDeclaration(const yy::location &loc, std::string variable, Expression::Ptr value);
 

@@ -1,16 +1,18 @@
 #ifndef WHILE_H
 #define WHILE_H
 
-#include <vector>
-#include <memory>
-#include <optional>
-
 #include "statement.h"
 #include "expression.h"
+
+#include <optional>
 
 namespace AST {
 
 class While final : public Statement {
+public: // Aliases
+    using Ptr = std::unique_ptr<While>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     While(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt);
 

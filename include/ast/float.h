@@ -6,6 +6,10 @@
 namespace AST {
 
 class Float final : public Expression {
+public: // Aliases
+    using Ptr = std::unique_ptr<Float>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     Float(const yy::location &loc, double value);
     ~Float() override = default;

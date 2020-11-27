@@ -3,12 +3,13 @@
 
 #include "lvalue.h"
 
-#include <memory>
-#include <vector>
-
 namespace AST {
 
 class Call final : public LValue {
+public: // Aliases
+    using Ptr = std::unique_ptr<Call>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     Call(const yy::location &loc, Expression::Ptr function, Expression::Vec args);
     ~Call() override = default;

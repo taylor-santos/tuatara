@@ -6,6 +6,10 @@
 namespace AST {
 
 class String final : public Expression {
+public: // Aliases
+    using Ptr = std::unique_ptr<String>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     String(const yy::location &loc, std::string value);
     ~String() override = default;

@@ -5,11 +5,14 @@
 #include "expression.h"
 
 #include <optional>
-#include <memory>
 
 namespace AST {
 
 class Return final : public Statement {
+public: // Aliases
+    using Ptr = std::unique_ptr<Return>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     Return(const yy::location &loc);
     Return(const yy::location &loc, Expression::Ptr value);

@@ -2,6 +2,8 @@
 #define AST_H
 
 #include <iostream> // std::ostream
+#include <vector>
+#include <memory>
 
 #include "location.hh"
 
@@ -14,6 +16,10 @@ std::ostream &operator<<(std::ostream &os, const AST::Node &ast);
 namespace AST {
 
 class Node {
+public: // Aliases
+    using Ptr = std::unique_ptr<Node>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     virtual ~Node() = default;
     friend std::ostream & ::operator<<(std::ostream &os, const Node &ast);

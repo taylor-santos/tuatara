@@ -15,7 +15,7 @@ std::ostream &operator<<(std::ostream &os, const TypeChecker::Type &type);
 namespace TypeChecker {
 
 class Type {
-public:
+public: // Aliases
     using Ptr = std::shared_ptr<Type>;
     using Vec = std::vector<Ptr>;
 

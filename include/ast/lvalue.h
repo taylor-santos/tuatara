@@ -6,7 +6,7 @@
 namespace AST {
 
 class LValue : public Expression {
-public:
+public: // Aliases
     using Ptr = std::unique_ptr<LValue>;
     using Vec = std::vector<Ptr>;
 

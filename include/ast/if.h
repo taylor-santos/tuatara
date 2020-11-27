@@ -1,16 +1,18 @@
 #ifndef IF_H
 #define IF_H
 
-#include <vector>
-#include <memory>
-#include <optional>
-
 #include "statement.h"
 #include "expression.h"
+
+#include <optional>
 
 namespace AST {
 
 class If final : public Statement {
+public: // Aliases
+    using Ptr = std::unique_ptr<If>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     If(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt);
     If(const yy::location &loc,

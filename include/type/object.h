@@ -6,6 +6,10 @@
 namespace TypeChecker {
 
 class Object final : public Type {
+public: // Aliases
+    using Ptr = std::shared_ptr<Object>;
+    using Vec = std::vector<Ptr>;
+
 public: // Fields
     Object(yy::location loc, std::string class_name);
     ~Object() override = default;

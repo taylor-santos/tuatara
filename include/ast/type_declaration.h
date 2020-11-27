@@ -4,13 +4,15 @@
 #include "declaration.h"
 #include "type/type.h"
 
-#include <memory>
-
 namespace AST {
 
 // Virtually inherit from Declaration so TypeValueDeclaration can
 // inherit from both ValueDeclaration and TypeDeclaration.
 class TypeDeclaration : virtual public Declaration {
+public: // Aliases
+    using Ptr = std::unique_ptr<TypeDeclaration>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     TypeDeclaration(const yy::location &loc, std::string variable, TypeChecker::Type::Ptr type);
 

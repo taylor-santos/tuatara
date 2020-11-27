@@ -6,7 +6,7 @@
 namespace AST {
 
 class Expression : public Statement {
-public:
+public: // Aliases
     using Ptr = std::unique_ptr<Expression>;
     using Vec = std::vector<Ptr>;
 

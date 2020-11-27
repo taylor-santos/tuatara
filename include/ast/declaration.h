@@ -6,6 +6,7 @@
 namespace AST {
 
 class Declaration : public Statement {
+public: // Aliases
     using Ptr = std::unique_ptr<Declaration>;
     using Vec = std::vector<Ptr>;
 

@@ -4,13 +4,15 @@
 #include "declaration.h"
 #include "type/type.h"
 
-#include <memory>
-#include <vector>
 #include <optional>
 
 namespace AST {
 
 class FuncDeclaration final : public Declaration {
+public: // Aliases
+    using Ptr = std::unique_ptr<FuncDeclaration>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     FuncDeclaration(
         const yy::location &                                        loc,

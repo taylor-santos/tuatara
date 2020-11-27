@@ -4,13 +4,15 @@
 #include "value_declaration.h"
 #include "type_declaration.h"
 
-#include <memory>
-
 namespace AST {
 
 class TypeValueDeclaration final
     : public ValueDeclaration
     , public TypeDeclaration {
+public: // Aliases
+    using Ptr = std::unique_ptr<TypeValueDeclaration>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     TypeValueDeclaration(
         const yy::location &   loc,

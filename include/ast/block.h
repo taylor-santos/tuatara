@@ -4,12 +4,13 @@
 #include "expression.h"
 #include "lvalue.h"
 
-#include <memory>
-#include <vector>
-
 namespace AST {
 
 class Block final : public Expression {
+public: // Aliases
+    using Ptr = std::unique_ptr<Block>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     Block(const yy::location &loc, Statement::Vec stmts);
 
