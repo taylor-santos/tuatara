@@ -1,27 +1,29 @@
 #ifndef IF_H
 #define IF_H
 
-#include <vector>
-#include <memory>
-#include <optional>
-
 #include "statement.h"
 #include "expression.h"
+
+#include <optional>
 
 namespace AST {
 
 class If final : public Statement {
+public: // Aliases
+    using Ptr = std::unique_ptr<If>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
-    If(const yy::location &loc, std::unique_ptr<Expression> cond, std::unique_ptr<Statement> stmt);
-    If(const yy::location &        loc,
-       std::unique_ptr<Expression> cond,
-       std::unique_ptr<Statement>  stmt,
-       std::unique_ptr<Statement>  else_stmt);
+    If(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt);
+    If(const yy::location &loc,
+       Expression::Ptr     cond,
+       Statement::Ptr      stmt,
+       Statement::Ptr      else_stmt);
 
 private: // Fields
-    std::unique_ptr<Expression>               cond;
-    std::unique_ptr<Statement>                stmt;
-    std::optional<std::unique_ptr<Statement>> else_stmt;
+    Expression::Ptr               cond;
+    Statement::Ptr                stmt;
+    std::optional<Statement::Ptr> else_stmt;
 
 private: // Methods
     void json(std::ostream &os) const override;

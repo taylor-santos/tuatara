@@ -6,6 +6,10 @@
 namespace AST {
 
 class Variable final : public LValue {
+public: // Aliases
+    using Ptr = std::unique_ptr<Variable>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     Variable(const yy::location &loc, std::string name);
     ~Variable() override = default;

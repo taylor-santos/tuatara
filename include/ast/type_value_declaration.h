@@ -4,19 +4,21 @@
 #include "value_declaration.h"
 #include "type_declaration.h"
 
-#include <memory>
-
 namespace AST {
 
 class TypeValueDeclaration final
     : public ValueDeclaration
     , public TypeDeclaration {
+public: // Aliases
+    using Ptr = std::unique_ptr<TypeValueDeclaration>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     TypeValueDeclaration(
-        const yy::location &               loc,
-        const std::string &                variable,
-        std::shared_ptr<TypeChecker::Type> type,
-        std::unique_ptr<Expression>        value);
+        const yy::location &   loc,
+        const std::string &    variable,
+        TypeChecker::Type::Ptr type,
+        Expression::Ptr        value);
 
 private: // Methods
     void json(std::ostream &os) const override;

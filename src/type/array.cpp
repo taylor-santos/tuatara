@@ -6,7 +6,7 @@
 using namespace TypeChecker;
 using namespace std;
 
-Array::Array(yy::location loc, shared_ptr<Type> type)
+Array::Array(yy::location loc, Type::Ptr type)
     : Type(loc)
     , type{move(type)} {}
 

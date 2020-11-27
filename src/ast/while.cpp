@@ -4,7 +4,7 @@
 using namespace AST;
 using namespace std;
 
-While::While(const yy::location &loc, std::unique_ptr<Expression> cond, unique_ptr<Statement> stmt)
+While::While(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt)
     : Statement(loc)
     , cond{move(cond)}
     , stmt{move(stmt)} {}

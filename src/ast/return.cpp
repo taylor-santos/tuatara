@@ -9,7 +9,7 @@ using namespace std;
 Return::Return(const yy::location &loc)
     : Statement(loc) {}
 
-Return::Return(const yy::location &loc, std::unique_ptr<Expression> value)
+Return::Return(const yy::location &loc, Expression::Ptr value)
     : Statement(loc)
     , value{move(value)} {}
 

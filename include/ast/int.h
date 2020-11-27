@@ -6,6 +6,10 @@
 namespace AST {
 
 class Int final : public Expression {
+public: // Aliases
+    using Ptr = std::unique_ptr<Int>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     Int(const yy::location &loc, int64_t value);
     ~Int() override = default;

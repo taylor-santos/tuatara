@@ -6,6 +6,10 @@
 namespace AST {
 
 class Expression : public Statement {
+public: // Aliases
+    using Ptr = std::unique_ptr<Expression>;
+    using Vec = std::vector<Ptr>;
+
 protected: // Methods
     explicit Expression(const yy::location &loc);
 };

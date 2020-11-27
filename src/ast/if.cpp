@@ -4,16 +4,12 @@
 using namespace AST;
 using namespace std;
 
-If::If(const yy::location &loc, std::unique_ptr<Expression> cond, unique_ptr<Statement> stmt)
+If::If(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt)
     : Statement(loc)
     , cond{move(cond)}
     , stmt{move(stmt)} {}
 
-If::If(
-    const yy::location &        loc,
-    std::unique_ptr<Expression> cond,
-    unique_ptr<Statement>       stmt,
-    unique_ptr<Statement>       else_stmt)
+If::If(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt, Statement::Ptr else_stmt)
     : Statement(loc)
     , cond{move(cond)}
     , stmt{move(stmt)}

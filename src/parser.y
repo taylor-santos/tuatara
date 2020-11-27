@@ -44,6 +44,7 @@
     #include "printer.h"
 
     using std::make_unique, std::make_shared, std::make_pair;
+    using namespace AST;
 %}
 
 %define api.token.prefix {TOK_}
@@ -97,14 +98,14 @@
 %token<bool>
     BOOL    "bool literal"
 
-%type<ExpressionPtr>
+%type<AST::Expression::Ptr>
     literal
     primary_expression
     assignment
     expression
-%type<LValuePtr>
+%type<AST::LValue::Ptr>
     lvalue
-%type<StatementPtr>
+%type<AST::Statement::Ptr>
     declaration
     func_decl
     stmt
@@ -113,17 +114,17 @@
     while_stmt
     return_stmt
     stmt_block
-%type<StatementVec>
+%type<AST::Statement::Vec>
     stmts
     opt_stmts
-%type<ExpressionVec>
+%type<AST::Expression::Vec>
     expr_list
     opt_expr_list
-%type<TypePtr>
+%type<TypeChecker::Type::Ptr>
     type
     array_type
     base_type
-%type<TypeVec>
+%type<TypeChecker::Type::Vec>
     types
 %type<OptType>
     opt_type

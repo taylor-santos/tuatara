@@ -6,10 +6,7 @@
 using namespace AST;
 using namespace std;
 
-Call::Call(
-    const yy::location &                     loc,
-    std::unique_ptr<Expression>              function,
-    std::vector<std::unique_ptr<Expression>> args)
+Call::Call(const yy::location &loc, Expression::Ptr function, Expression::Vec args)
     : LValue(loc)
     , function{move(function)}
     , args{move(args)} {}

@@ -4,20 +4,19 @@
 #include "expression.h"
 #include "lvalue.h"
 
-#include <memory>
-
 namespace AST {
 
 class Assignment final : public Expression {
+public: // Aliases
+    using Ptr = std::unique_ptr<Assignment>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
-    Assignment(
-        const yy::location &        loc,
-        std::unique_ptr<LValue>     lhs,
-        std::unique_ptr<Expression> rhs);
+    Assignment(const yy::location &loc, LValue::Ptr lhs, Expression::Ptr rhs);
 
 private: // Fields
-    std::unique_ptr<LValue>     lhs;
-    std::unique_ptr<Expression> rhs;
+    LValue::Ptr     lhs;
+    Expression::Ptr rhs;
 
 private: // Methods
     void json(std::ostream &os) const override;

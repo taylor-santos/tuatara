@@ -4,17 +4,18 @@
 #include "expression.h"
 #include "lvalue.h"
 
-#include <memory>
-#include <vector>
-
 namespace AST {
 
 class Block final : public Expression {
+public: // Aliases
+    using Ptr = std::unique_ptr<Block>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
-    Block(const yy::location &loc, std::vector<std::unique_ptr<Statement>> stmts);
+    Block(const yy::location &loc, Statement::Vec stmts);
 
 private: // Fields
-    std::vector<std::unique_ptr<Statement>> stmts;
+    Statement::Vec stmts;
 
 private: // Methods
     void json(std::ostream &os) const override;

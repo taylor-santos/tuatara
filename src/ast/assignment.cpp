@@ -6,7 +6,7 @@
 using namespace AST;
 using namespace std;
 
-Assignment::Assignment(const yy::location &loc, unique_ptr<LValue> lhs, unique_ptr<Expression> rhs)
+Assignment::Assignment(const yy::location &loc, LValue::Ptr lhs, Expression::Ptr rhs)
     : Expression(loc)
     , lhs{move(lhs)}
     , rhs{move(rhs)} {}
