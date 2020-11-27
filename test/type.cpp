@@ -26,8 +26,8 @@ TEST(TypeTest, ArrayJSON) {
 }
 
 TEST(TypeTest, TupleJSON) {
-    yy::location                          loc;
-    vector<shared_ptr<TypeChecker::Type>> types;
+    yy::location           loc;
+    TypeChecker::Type::Vec types;
     types.reserve(2);
     types.emplace_back(make_shared<TypeChecker::Object>(loc, "S"));
     types.emplace_back(make_shared<TypeChecker::Object>(loc, "T"));
@@ -43,36 +43,36 @@ TEST(TypeTest, TupleJSON) {
 }
 
 TEST(TypeTest, NullaryVoidFuncJSON) {
-    yy::location                            loc;
-    optional<shared_ptr<TypeChecker::Type>> arg, ret;
-    TypeChecker::Func                       func(loc, arg, ret);
-    std::stringstream                       ss;
+    yy::location                     loc;
+    optional<TypeChecker::Type::Ptr> arg, ret;
+    TypeChecker::Func                func(loc, arg, ret);
+    std::stringstream                ss;
     ss << func;
     EXPECT_EQ(ss.str(), R"({"kind":"func"})");
 }
 
 TEST(TypeTest, NullaryFuncJSON) {
-    yy::location                            loc;
-    optional<shared_ptr<TypeChecker::Type>> arg, ret = make_shared<TypeChecker::Object>(loc, "T");
-    TypeChecker::Func                       func(loc, arg, ret);
-    std::stringstream                       ss;
+    yy::location                     loc;
+    optional<TypeChecker::Type::Ptr> arg, ret = make_shared<TypeChecker::Object>(loc, "T");
+    TypeChecker::Func                func(loc, arg, ret);
+    std::stringstream                ss;
     ss << func;
     EXPECT_EQ(ss.str(), R"({"kind":"func","returns":{"kind":"object","class":"T"}})");
 }
 
 TEST(TypeTest, VoidFuncJSON) {
-    yy::location                            loc;
-    optional<shared_ptr<TypeChecker::Type>> ret, arg = make_shared<TypeChecker::Object>(loc, "T");
-    TypeChecker::Func                       func(loc, arg, ret);
-    std::stringstream                       ss;
+    yy::location                     loc;
+    optional<TypeChecker::Type::Ptr> ret, arg = make_shared<TypeChecker::Object>(loc, "T");
+    TypeChecker::Func                func(loc, arg, ret);
+    std::stringstream                ss;
     ss << func;
     EXPECT_EQ(ss.str(), R"({"kind":"func","arg":{"kind":"object","class":"T"}})");
 }
 
 TEST(TypeTest, FuncJSON) {
-    yy::location                            loc;
-    optional<shared_ptr<TypeChecker::Type>> arg = make_shared<TypeChecker::Object>(loc, "S"),
-                                            ret = make_shared<TypeChecker::Object>(loc, "T");
+    yy::location                     loc;
+    optional<TypeChecker::Type::Ptr> arg = make_shared<TypeChecker::Object>(loc, "S"),
+                                     ret = make_shared<TypeChecker::Object>(loc, "T");
     TypeChecker::Func func(loc, arg, ret);
     std::stringstream ss;
     ss << func;

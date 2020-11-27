@@ -10,15 +10,12 @@ namespace TypeChecker {
 
 class Func final : public Type {
 public: // Methods
-    Func(
-        yy::location                         loc,
-        std::optional<std::shared_ptr<Type>> arg_type,
-        std::optional<std::shared_ptr<Type>> ret_type);
+    Func(yy::location loc, std::optional<Type::Ptr> arg_type, std::optional<Type::Ptr> ret_type);
     ~Func() override = default;
 
 private: // Fields
-    std::optional<std::shared_ptr<Type>> arg_type;
-    std::optional<std::shared_ptr<Type>> ret_type;
+    std::optional<Type::Ptr> arg_type;
+    std::optional<Type::Ptr> ret_type;
 
 private: // Methods
     void json(std::ostream &os) const override;

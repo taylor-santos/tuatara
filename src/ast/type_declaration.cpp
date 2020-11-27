@@ -7,7 +7,7 @@ using namespace AST;
 using namespace TypeChecker;
 using namespace std;
 
-TypeDeclaration::TypeDeclaration(const yy::location &loc, string variable, shared_ptr<Type> type)
+TypeDeclaration::TypeDeclaration(const yy::location &loc, string variable, Type::Ptr type)
     : Declaration(loc, move(variable))
     , type{move(type)} {}
 
@@ -20,7 +20,7 @@ TypeDeclaration::json(ostream &os) const {
     os << *type;
 }
 
-const shared_ptr<TypeChecker::Type> &
+const TypeChecker::Type::Ptr &
 TypeDeclaration::getType() const {
     return type;
 }

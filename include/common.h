@@ -22,15 +22,8 @@
 #include "type/array.h"
 #include "type/func.h"
 
-using ExpressionPtr = std::unique_ptr<AST::Expression>;
-using LValuePtr     = std::unique_ptr<AST::LValue>;
-using StatementPtr  = std::unique_ptr<AST::Statement>;
-using TypePtr       = std::shared_ptr<TypeChecker::Type>;
-using StatementVec  = std::vector<StatementPtr>;
-using ExpressionVec = std::vector<ExpressionPtr>;
-using TypeVec       = std::vector<TypePtr>;
-using OptType       = std::optional<TypePtr>;
-using NamedType     = std::pair<std::string, TypePtr>;
-using NamedTypeVec  = std::vector<NamedType>;
+using OptType      = std::optional<TypeChecker::Type::Ptr>;
+using NamedType    = std::pair<std::string, TypeChecker::Type::Ptr>;
+using NamedTypeVec = std::vector<NamedType>;
 
 #endif // COMMON_H

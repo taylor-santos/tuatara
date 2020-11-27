@@ -125,7 +125,7 @@ TEST(ASTTest, TypeValueDeclarationNodeJSON) {
 TEST(ASTTest, BlockNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
-    StatementVec       stmts;
+    Statement::Vec     stmts;
     stmts.emplace_back(make_unique<Int>(loc, 123));
     stmts.emplace_back(make_unique<Float>(loc, 45.6));
     Block node(loc, move(stmts));
@@ -199,10 +199,10 @@ TEST(ASTTest, WhileNodeJSON) {
 }
 
 TEST(ASTTest, CallNodeJSON) {
-    std::ostringstream             ss;
-    yy::location                   loc;
-    auto                           func = make_unique<Variable>(loc, "a");
-    vector<unique_ptr<Expression>> args;
+    std::ostringstream ss;
+    yy::location       loc;
+    auto               func = make_unique<Variable>(loc, "a");
+    Expression::Vec    args;
     args.emplace_back(make_unique<Variable>(loc, "b"));
     Call node(loc, move(func), move(args));
     ss << node;
@@ -218,10 +218,10 @@ TEST(ASTTest, CallNodeJSON) {
 }
 
 TEST(ASTTest, FuncDeclarationNodeJSON) {
-    std::ostringstream                                  ss;
-    yy::location                                        loc;
-    string                                              name = "foo";
-    vector<pair<string, shared_ptr<TypeChecker::Type>>> args;
+    std::ostringstream                           ss;
+    yy::location                                 loc;
+    string                                       name = "foo";
+    vector<pair<string, TypeChecker::Type::Ptr>> args;
     args.emplace_back(make_pair("arg", make_shared<TypeChecker::Object>(loc, "S")));
     auto            ret  = make_shared<TypeChecker::Object>(loc, "T");
     auto            stmt = make_unique<Variable>(loc, "b");

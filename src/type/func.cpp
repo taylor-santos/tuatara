@@ -6,10 +6,7 @@
 using namespace TypeChecker;
 using namespace std;
 
-Func::Func(
-    yy::location               loc,
-    optional<shared_ptr<Type>> arg_type,
-    optional<shared_ptr<Type>> ret_type)
+Func::Func(yy::location loc, optional<Type::Ptr> arg_type, optional<Type::Ptr> ret_type)
     : Type(loc)
     , arg_type{move(arg_type)}
     , ret_type{move(ret_type)} {}

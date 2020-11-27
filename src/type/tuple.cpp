@@ -4,7 +4,7 @@
 using namespace TypeChecker;
 using namespace std;
 
-Tuple::Tuple(yy::location loc, vector<shared_ptr<Type>> types)
+Tuple::Tuple(yy::location loc, vector<Type::Ptr> types)
     : Type(loc)
     , types{move(types)} {}
 

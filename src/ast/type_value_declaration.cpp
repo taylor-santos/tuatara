@@ -8,10 +8,10 @@ using namespace TypeChecker;
 using namespace std;
 
 TypeValueDeclaration::TypeValueDeclaration(
-    const yy::location &   loc,
-    const string &         variable,
-    shared_ptr<Type>       type,
-    unique_ptr<Expression> value)
+    const yy::location &loc,
+    const string &      variable,
+    Type::Ptr           type,
+    Expression::Ptr     value)
     : Declaration(loc, variable)
     , ValueDeclaration(loc, variable, move(value))
     , TypeDeclaration(loc, variable, move(type)) {}

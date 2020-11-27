@@ -10,15 +10,12 @@ namespace AST {
 
 class Call final : public LValue {
 public: // Methods
-    Call(
-        const yy::location &                     loc,
-        std::unique_ptr<Expression>              function,
-        std::vector<std::unique_ptr<Expression>> args);
+    Call(const yy::location &loc, Expression::Ptr function, Expression::Vec args);
     ~Call() override = default;
 
 private: // Fields
-    std::unique_ptr<Expression>              function;
-    std::vector<std::unique_ptr<Expression>> args;
+    Expression::Ptr function;
+    Expression::Vec args;
 
 private: // Methods
     void json(std::ostream &os) const override;

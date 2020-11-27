@@ -12,17 +12,14 @@ namespace AST {
 // inherit from both ValueDeclaration and TypeDeclaration.
 class TypeDeclaration : virtual public Declaration {
 public: // Methods
-    TypeDeclaration(
-        const yy::location &               loc,
-        std::string                        variable,
-        std::shared_ptr<TypeChecker::Type> type);
+    TypeDeclaration(const yy::location &loc, std::string variable, TypeChecker::Type::Ptr type);
 
 protected: // Methods
-    const std::shared_ptr<TypeChecker::Type> &getType() const;
-    void                                      json(std::ostream &os) const override;
+    const TypeChecker::Type::Ptr &getType() const;
+    void                          json(std::ostream &os) const override;
 
 private: // Fields
-    std::shared_ptr<TypeChecker::Type> type;
+    TypeChecker::Type::Ptr type;
 };
 
 } // namespace AST

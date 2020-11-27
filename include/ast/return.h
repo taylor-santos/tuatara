@@ -12,10 +12,10 @@ namespace AST {
 class Return final : public Statement {
 public: // Methods
     Return(const yy::location &loc);
-    Return(const yy::location &loc, std::unique_ptr<Expression> value);
+    Return(const yy::location &loc, Expression::Ptr value);
 
 private: // Fields
-    std::optional<std::unique_ptr<Expression>> value;
+    std::optional<Expression::Ptr> value;
 
 private: // Methods
     void json(std::ostream &os) const override;

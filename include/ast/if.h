@@ -12,16 +12,16 @@ namespace AST {
 
 class If final : public Statement {
 public: // Methods
-    If(const yy::location &loc, std::unique_ptr<Expression> cond, std::unique_ptr<Statement> stmt);
-    If(const yy::location &        loc,
-       std::unique_ptr<Expression> cond,
-       std::unique_ptr<Statement>  stmt,
-       std::unique_ptr<Statement>  else_stmt);
+    If(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt);
+    If(const yy::location &loc,
+       Expression::Ptr     cond,
+       Statement::Ptr      stmt,
+       Statement::Ptr      else_stmt);
 
 private: // Fields
-    std::unique_ptr<Expression>               cond;
-    std::unique_ptr<Statement>                stmt;
-    std::optional<std::unique_ptr<Statement>> else_stmt;
+    Expression::Ptr               cond;
+    Statement::Ptr                stmt;
+    std::optional<Statement::Ptr> else_stmt;
 
 private: // Methods
     void json(std::ostream &os) const override;

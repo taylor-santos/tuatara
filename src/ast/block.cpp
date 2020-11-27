@@ -4,7 +4,7 @@
 using namespace AST;
 using namespace std;
 
-Block::Block(const yy::location &loc, vector<unique_ptr<Statement>> stmts)
+Block::Block(const yy::location &loc, Statement::Vec stmts)
     : Expression(loc)
     , stmts{move(stmts)} {}
 

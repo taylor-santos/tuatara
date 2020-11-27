@@ -3,6 +3,9 @@
 
 #include "location.hh"
 
+#include <memory>
+#include <vector>
+
 // Namespace and class must be forward declared for operator<< to work properly
 namespace TypeChecker {
 class Type;
@@ -12,6 +15,10 @@ std::ostream &operator<<(std::ostream &os, const TypeChecker::Type &type);
 namespace TypeChecker {
 
 class Type {
+public:
+    using Ptr = std::shared_ptr<Type>;
+    using Vec = std::vector<Ptr>;
+
 public: // Methods
     virtual ~Type() = default;
     friend std::ostream & ::operator<<(std::ostream &os, const Type &type);

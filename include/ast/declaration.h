@@ -6,6 +6,9 @@
 namespace AST {
 
 class Declaration : public Statement {
+    using Ptr = std::unique_ptr<Declaration>;
+    using Vec = std::vector<Ptr>;
+
 protected: // Methods
     Declaration(const yy::location &loc, std::string variable);
     const std::string &getVariable() const;

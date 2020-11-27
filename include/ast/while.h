@@ -12,14 +12,11 @@ namespace AST {
 
 class While final : public Statement {
 public: // Methods
-    While(
-        const yy::location &        loc,
-        std::unique_ptr<Expression> cond,
-        std::unique_ptr<Statement>  stmt);
+    While(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt);
 
 private: // Fields
-    std::unique_ptr<Expression> cond;
-    std::unique_ptr<Statement>  stmt;
+    Expression::Ptr cond;
+    Statement::Ptr  stmt;
 
 private: // Methods
     void json(std::ostream &os) const override;

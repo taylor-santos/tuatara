@@ -8,11 +8,11 @@ using namespace TypeChecker;
 using namespace std;
 
 FuncDeclaration::FuncDeclaration(
-    const yy::location &                   loc,
-    string                                 variable,
-    vector<pair<string, shared_ptr<Type>>> args,
-    optional<shared_ptr<Type>>             ret_type,
-    unique_ptr<Statement>                  body)
+    const yy::location &            loc,
+    string                          variable,
+    vector<pair<string, Type::Ptr>> args,
+    optional<Type::Ptr>             ret_type,
+    Statement::Ptr                  body)
     : Declaration(loc, move(variable))
     , args{move(args)}
     , ret_type{move(ret_type)}

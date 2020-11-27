@@ -9,11 +9,11 @@ namespace TypeChecker {
 
 class Array final : public Type {
 public: // Methods
-    Array(yy::location loc, std::shared_ptr<Type> type);
+    Array(yy::location loc, Type::Ptr type);
     ~Array() override = default;
 
 private: // Fields
-    std::shared_ptr<Type> type;
+    Type::Ptr type;
 
 private: // Methods
     void json(std::ostream &os) const override;

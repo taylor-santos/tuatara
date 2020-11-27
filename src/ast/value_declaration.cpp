@@ -4,10 +4,7 @@
 using namespace AST;
 using namespace std;
 
-ValueDeclaration::ValueDeclaration(
-    const yy::location &   loc,
-    string                 variable,
-    unique_ptr<Expression> value)
+ValueDeclaration::ValueDeclaration(const yy::location &loc, string variable, Expression::Ptr value)
     : Declaration(loc, move(variable))
     , value{move(value)} {}
 
@@ -20,7 +17,7 @@ ValueDeclaration::json(ostream &os) const {
     os << *value;
 }
 
-const unique_ptr<Expression> &
+const Expression::Ptr &
 ValueDeclaration::getValue() const {
     return value;
 }
