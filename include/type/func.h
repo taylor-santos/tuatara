@@ -3,6 +3,8 @@
 
 #include "type/type.h"
 
+#include <optional>
+
 namespace TypeChecker {
 
 class Func final : public Type {
