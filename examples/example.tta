@@ -22,3 +22,12 @@ if false {
 func caller(fn: int->int, arg:int) -> int {
     return fn(arg);
 }
+
+class Foo {
+    x: int;
+    y: double;
+    fn: int -> (int, int);
+    func someMethod(z: int) -> double;
+    operator+(other: Foo) -> Foo;
+    new(x: int, y: int);
+}
