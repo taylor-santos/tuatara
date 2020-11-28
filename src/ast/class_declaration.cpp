@@ -20,6 +20,13 @@ ClassDeclaration::json(ostream &os) const {
     JSON::Object obj(os);
     obj.KeyValue("node", "class declaration");
     obj.KeyValue("name", getVariable());
+    obj.Key("supers");
+    {
+        JSON::Array arr(os);
+        for (const auto &super : supers) {
+            arr.String(super);
+        }
+    }
     obj.Key("fields");
     {
         JSON::Array arr(os);
