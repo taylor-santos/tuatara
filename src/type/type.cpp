@@ -4,11 +4,11 @@ using namespace std;
 using namespace TypeChecker;
 
 Type::Type(yy::location loc)
-    : loc_{loc} {}
+    : loc{loc} {}
 
 const yy::location &
-Type::loc() const {
-    return loc_;
+Type::getLoc() const {
+    return loc;
 }
 
 ostream &

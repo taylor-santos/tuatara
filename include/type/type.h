@@ -25,11 +25,11 @@ public: // Methods
 
 protected: // Methods
     explicit Type(yy::location loc);
-    const yy::location &loc() const;
+    const yy::location &getLoc() const;
     virtual void        json(std::ostream &os) const = 0;
 
 private: // Fields
-    yy::location loc_;
+    yy::location loc;
 };
 
 } // namespace TypeChecker
