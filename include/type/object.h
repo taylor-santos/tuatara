@@ -1,5 +1,5 @@
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef TYPE_OBJECT_H
+#define TYPE_OBJECT_H
 
 #include "type/type.h"
 
@@ -23,4 +23,4 @@ private: // Methods
 
 } // namespace TypeChecker
 
-#endif // OBJECT_H
+#endif // TYPE_OBJECT_H

@@ -1,5 +1,5 @@
-#ifndef RETURN_H
-#define RETURN_H
+#ifndef AST_RETURN_H
+#define AST_RETURN_H
 
 #include "statement.h"
 #include "expression.h"
@@ -26,4 +26,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // RETURN_H
+#endif // AST_RETURN_H

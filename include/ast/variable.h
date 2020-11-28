@@ -1,5 +1,5 @@
-#ifndef VARIABLE_H
-#define VARIABLE_H
+#ifndef AST_VARIABLE_H
+#define AST_VARIABLE_H
 
 #include "lvalue.h"
 
@@ -23,4 +23,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // VARIABLE_H
+#endif // AST_VARIABLE_H

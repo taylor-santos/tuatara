@@ -1,5 +1,5 @@
-#ifndef FUNC_H
-#define FUNC_H
+#ifndef TYPE_FUNC_H
+#define TYPE_FUNC_H
 
 #include "type/type.h"
 
@@ -26,4 +26,4 @@ private: // Methods
 
 } // namespace TypeChecker
 
-#endif // FUNC_H
+#endif // TYPE_FUNC_H

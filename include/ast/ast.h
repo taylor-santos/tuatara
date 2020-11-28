@@ -1,5 +1,5 @@
-#ifndef AST_H
-#define AST_H
+#ifndef AST_AST_H
+#define AST_AST_H
 
 #include <iostream> // std::ostream
 #include <vector>
@@ -34,4 +34,4 @@ private: // Fields
 
 } // namespace AST
 
-#endif // AST_H
+#endif // AST_AST_H

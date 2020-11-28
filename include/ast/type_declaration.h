@@ -1,5 +1,5 @@
-#ifndef TYPE_DECLARATION_H
-#define TYPE_DECLARATION_H
+#ifndef AST_TYPE_DECLARATION_H
+#define AST_TYPE_DECLARATION_H
 
 #include "declaration.h"
 #include "type/type.h"
@@ -26,4 +26,4 @@ private: // Fields
 
 } // namespace AST
 
-#endif // TYPE_DECLARATION_H
+#endif // AST_TYPE_DECLARATION_H

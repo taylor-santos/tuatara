@@ -1,5 +1,5 @@
-#ifndef VALUE_DECLARATION_H
-#define VALUE_DECLARATION_H
+#ifndef AST_VALUE_DECLARATION_H
+#define AST_VALUE_DECLARATION_H
 
 #include "declaration.h"
 #include "expression.h"
@@ -26,4 +26,4 @@ private: // Fields
 
 } // namespace AST
 
-#endif // VALUE_DECLARATION_H
+#endif // AST_VALUE_DECLARATION_H

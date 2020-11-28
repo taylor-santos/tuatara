@@ -1,5 +1,5 @@
-#ifndef STRING_H
-#define STRING_H
+#ifndef AST_STRING_H
+#define AST_STRING_H
 
 #include "expression.h"
 
@@ -23,4 +23,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // STRING_H
+#endif // AST_STRING_H

@@ -1,5 +1,5 @@
-#ifndef BOOL_H
-#define BOOL_H
+#ifndef AST_BOOL_H
+#define AST_BOOL_H
 
 #include "expression.h"
 
@@ -23,4 +23,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // BOOL_H
+#endif // AST_BOOL_H

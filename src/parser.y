@@ -44,7 +44,6 @@
     #include "printer.h"
 
     using std::make_unique, std::make_shared, std::make_pair;
-    using namespace AST;
 %}
 
 %define api.token.prefix {TOK_}
@@ -67,30 +66,11 @@
     LCURLY      "{"
     RCURLY      "}"
     COMMA       ","
-    PLUS        "+"
-    PLUSEQ      "+="
-    MINUSEQ     "-="
-    TIMESEQ     "*="
-    DIVIDESEQ   "/="
-    EQ          "=="
-    GTEQ        ">="
-    LTEQ        "<="
-    GT          ">"
-    LT          "<"
-    TIMES       "*"
-    MINUS       "-"
-    DIVIDES     "/"
-    MODULO      "%"
-    AMPERSAND   "&"
-    PIPE        "|"
-    LSHIFT      "<<"
-    RSHIFT      ">>"
-    AND         "&&"
-    OR          "||"
 
 %token<std::string>
-    IDENT   "identifier"
-    STRING  "string literal"
+    IDENT       "identifier"
+    STRING      "string literal"
+    OPERATOR    "operator"
 %token<int64_t>
     INT     "int literal"
 %token<double>
@@ -101,8 +81,12 @@
 %type<AST::Expression::Ptr>
     literal
     primary_expression
-    assignment
     expression
+    operator_expression
+%type<AST::Expression::Vec>
+    tuple_expression
+%type<std::optional<AST::Expression::Ptr>>
+    opt_expression
 %type<AST::LValue::Ptr>
     lvalue
 %type<AST::Statement::Ptr>
@@ -117,9 +101,6 @@
 %type<AST::Statement::Vec>
     stmts
     opt_stmts
-%type<AST::Expression::Vec>
-    expr_list
-    opt_expr_list
 %type<TypeChecker::Type::Ptr>
     type
     array_type
@@ -134,6 +115,8 @@
     types_decl
 %type<NamedType>
     type_decl
+%type<std::string>
+    operation
 
 %start file
 
@@ -187,9 +170,39 @@ declaration
     }
     | func_decl
 
+opt_expression
+    : %empty {}
+    | expression {
+        $$ = $1;
+    }
+
 expression
     : primary_expression
-    | assignment
+    | operator_expression
+    | tuple_expression {
+        $$ = make_unique<AST::Tuple>(@$, $1);
+    }
+
+tuple_expression
+    : primary_expression "," primary_expression {
+        $$.push_back($1);
+        $$.push_back($3);
+    }
+    | tuple_expression "," primary_expression {
+        $$ = $1;
+        $$.push_back($3);
+    }
+
+operator_expression
+    : primary_expression operation primary_expression {
+        $$ = make_unique<AST::Operator>(@$, $2, $1, $3);
+    }
+
+operation
+    : "operator"
+    | "=" {
+        $$ = "=";
+    }
 
 if_stmt
     : "if" expression one_line_stmt {
@@ -211,10 +224,6 @@ return_stmt
     | "return" expression ";" {
         $$ = make_unique<AST::Return>(@$, $2);
     }
-assignment
-    : lvalue "=" primary_expression {
-        $$ = make_unique<AST::Assignment>(@$, $1, $3);
-    }
 
 primary_expression
     : literal
@@ -226,7 +235,7 @@ lvalue
     : "identifier" {
         $$ = make_unique<AST::Variable>(@$, $1);
     }
-    | primary_expression "(" opt_expr_list ")" {
+    | primary_expression "(" opt_expression ")" {
         $$ = make_unique<AST::Call>(@$, $1, $3);
     }
 
@@ -281,19 +290,6 @@ types
         $$.push_back($1);
     }
     | types "," type {
-        $$ = $1;
-        $$.push_back($3);
-    }
-
-opt_expr_list
-    : %empty {}
-    | expr_list
-
-expr_list
-    : expression {
-        $$.push_back($1);
-    }
-    | expr_list "," expression {
         $$ = $1;
         $$.push_back($3);
     }

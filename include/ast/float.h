@@ -1,5 +1,5 @@
-#ifndef FLOAT_H
-#define FLOAT_H
+#ifndef AST_FLOAT_H
+#define AST_FLOAT_H
 
 #include "expression.h"
 
@@ -23,4 +23,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // FLOAT_H
+#endif // AST_FLOAT_H

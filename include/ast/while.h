@@ -1,5 +1,5 @@
-#ifndef WHILE_H
-#define WHILE_H
+#ifndef AST_WHILE_H
+#define AST_WHILE_H
 
 #include "statement.h"
 #include "expression.h"
@@ -26,4 +26,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // WHILE_H
+#endif // AST_WHILE_H

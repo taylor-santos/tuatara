@@ -1,5 +1,5 @@
-#ifndef FUNC_DECLARATION_H
-#define FUNC_DECLARATION_H
+#ifndef AST_FUNC_DECLARATION_H
+#define AST_FUNC_DECLARATION_H
 
 #include "declaration.h"
 #include "type/type.h"
@@ -32,4 +32,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // FUNC_DECLARATION_H
+#endif // AST_FUNC_DECLARATION_H

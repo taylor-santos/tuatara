@@ -1,5 +1,5 @@
-#ifndef IF_H
-#define IF_H
+#ifndef AST_IF_H
+#define AST_IF_H
 
 #include "statement.h"
 #include "expression.h"
@@ -31,4 +31,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // IF_H
+#endif // AST_IF_H

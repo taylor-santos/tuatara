@@ -1,5 +1,5 @@
-#ifndef EXPRESSION_H
-#define EXPRESSION_H
+#ifndef AST_EXPRESSION_H
+#define AST_EXPRESSION_H
 
 #include "statement.h"
 
@@ -16,4 +16,4 @@ protected: // Methods
 
 } // namespace AST
 
-#endif // EXPRESSION_H
+#endif // AST_EXPRESSION_H

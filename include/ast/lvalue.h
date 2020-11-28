@@ -1,5 +1,5 @@
-#ifndef LVALUE_H
-#define LVALUE_H
+#ifndef AST_LVALUE_H
+#define AST_LVALUE_H
 
 #include "expression.h"
 
@@ -16,4 +16,4 @@ protected: // Methods
 
 } // namespace AST
 
-#endif // LVALUE_H
+#endif // AST_LVALUE_H

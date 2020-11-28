@@ -1,7 +1,9 @@
-#ifndef CALL_H
-#define CALL_H
+#ifndef AST_CALL_H
+#define AST_CALL_H
 
 #include "lvalue.h"
+
+#include <optional>
 
 namespace AST {
 
@@ -11,12 +13,12 @@ public: // Aliases
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    Call(const yy::location &loc, Expression::Ptr function, Expression::Vec args);
+    Call(const yy::location &loc, Expression::Ptr function, std::optional<Expression::Ptr> arg);
     ~Call() override = default;
 
 private: // Fields
-    Expression::Ptr function;
-    Expression::Vec args;
+    Expression::Ptr                function;
+    std::optional<Expression::Ptr> arg;
 
 private: // Methods
     void json(std::ostream &os) const override;
@@ -24,4 +26,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // CALL_H
+#endif // AST_CALL_H
