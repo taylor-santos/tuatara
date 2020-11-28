@@ -568,3 +568,197 @@ TEST(ParserTest, MissingSemicolon) {
         "1 | 123\n"
         "  |    ^\n");
 }
+
+TEST(ParserTest, TupleExpression) {
+    std::istringstream iss(R"(1, 2.5, false, "foo";)");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::Tuple &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(
+            ss.str(),
+            R"({"node":"tuple",)"
+            R"("expressions":[{)"
+            R"("node":"int",)"
+            R"("value":1},)"
+            R"({"node":"float",)"
+            R"("value":2.5},)"
+            R"({"node":"bool",)"
+            R"("value":false},)"
+            R"({"node":"string",)"
+            R"("value":"foo"}]})");
+    }) << "Expected AST node to be a Tuple";
+}
+
+TEST(ParserTest, Operators) {
+    std::istringstream iss(R"(a #$% b;)");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::Operator &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(
+            ss.str(),
+            R"({"node":"operator",)"
+            R"("operation":"#$%",)"
+            R"("lhs":{)"
+            R"("node":"variable",)"
+            R"("name":"a"},)"
+            R"("rhs":{)"
+            R"("node":"variable",)"
+            R"("name":"b"}})");
+    }) << "Expected AST node to be an Operator";
+}
+
+TEST(ParserTest, AssignOperator) {
+    std::istringstream iss(R"(a = b;)");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::Operator &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(
+            ss.str(),
+            R"({"node":"operator",)"
+            R"("operation":"=",)"
+            R"("lhs":{)"
+            R"("node":"variable",)"
+            R"("name":"a"},)"
+            R"("rhs":{)"
+            R"("node":"variable",)"
+            R"("name":"b"}})");
+    }) << "Expected AST node to be an Operator";
+}
+
+TEST(ParserTest, LessThanOperator) {
+    std::istringstream iss(R"(a < b;)");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::Operator &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(
+            ss.str(),
+            R"({"node":"operator",)"
+            R"("operation":"<",)"
+            R"("lhs":{)"
+            R"("node":"variable",)"
+            R"("name":"a"},)"
+            R"("rhs":{)"
+            R"("node":"variable",)"
+            R"("name":"b"}})");
+    }) << "Expected AST node to be an Operator";
+}
+
+TEST(ParserTest, GreaterThanOperator) {
+    std::istringstream iss(R"(a > b;)");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::Operator &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(
+            ss.str(),
+            R"({"node":"operator",)"
+            R"("operation":">",)"
+            R"("lhs":{)"
+            R"("node":"variable",)"
+            R"("name":"a"},)"
+            R"("rhs":{)"
+            R"("node":"variable",)"
+            R"("name":"b"}})");
+    }) << "Expected AST node to be an Operator";
+}
+
+TEST(ParserTest, ClassDeclaration) {
+    std::istringstream iss(R"(
+        class Foo: Bar {
+            x: int;
+            fn: int -> int;
+            func method(a:int, b:int) -> int;
+            operator + (other: foo) -> Foo;
+            new(x: int);
+        }
+    )");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::ClassDeclaration &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(
+            ss.str(),
+            R"({"node":"class declaration",)"
+            R"("name":"Foo",)"
+            R"("supers":[)"
+            R"("Bar"],)"
+            R"("fields":[{)"
+            R"("name":"x",)"
+            R"("type":{)"
+            R"("kind":"object",)"
+            R"("class":"int"}},)"
+            R"({"name":"fn",)"
+            R"("type":{)"
+            R"("kind":"func",)"
+            R"("arg":{)"
+            R"("kind":"object",)"
+            R"("class":"int"},)"
+            R"("returns":{)"
+            R"("kind":"object",)"
+            R"("class":"int"}}}],)"
+            R"("methods":[{)"
+            R"("name":"method",)"
+            R"("args":[{)"
+            R"("name":"a",)"
+            R"("type":{)"
+            R"("kind":"object",)"
+            R"("class":"int"}},)"
+            R"({"name":"b",)"
+            R"("type":{)"
+            R"("kind":"object",)"
+            R"("class":"int"}}],)"
+            R"("return type":{)"
+            R"("kind":"object",)"
+            R"("class":"int"}}],)"
+            R"("operators":[{)"
+            R"("operation":"+",)"
+            R"("arg":{)"
+            R"("name":"other",)"
+            R"("type":{)"
+            R"("kind":"object",)"
+            R"("class":"foo"}},)"
+            R"("return type":{)"
+            R"("kind":"object",)"
+            R"("class":"Foo"}}],)"
+            R"("constructors":[{)"
+            R"("args":[{)"
+            R"("name":"x",)"
+            R"("type":{)"
+            R"("kind":"object",)"
+            R"("class":"int"}}]}]})");
+    }) << "Expected AST node to be an Operator";
+}

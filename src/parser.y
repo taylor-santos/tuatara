@@ -360,7 +360,9 @@ class_decl
 
 opt_supers
     : %empty {}
-    | supers
+    | ":" supers {
+        $$ = $2;
+    }
 
 supers
     : super {
