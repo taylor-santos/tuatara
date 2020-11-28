@@ -53,6 +53,10 @@
     FUNC        "func"
     ARROW       "->"
     RETURN      "return"
+    CLASS       "class"
+    IMPL        "impl"
+    NEW         "new"
+    OPERATOR    "operator"
     IF          "if"
     WHILE       "while"
     ELSE        "else"
@@ -65,12 +69,14 @@
     RSQUARE     "]"
     LCURLY      "{"
     RCURLY      "}"
+    LANGLE      "<"
+    RANGLE      ">"
     COMMA       ","
 
 %token<std::string>
     IDENT       "identifier"
     STRING      "string literal"
-    OPERATOR    "operator"
+    OPERATION   "operation"
 %token<int64_t>
     INT     "int literal"
 %token<double>
@@ -92,6 +98,7 @@
 %type<AST::Statement::Ptr>
     declaration
     func_decl
+    class_decl
     stmt
     one_line_stmt
     if_stmt
@@ -117,6 +124,26 @@
     type_decl
 %type<std::string>
     operation
+    super
+%type<std::vector<std::string>>
+    opt_supers
+    supers
+%type<AST::ClassDeclaration::Members>
+    opt_member_decls
+    member_decls
+%type<AST::ClassDeclaration::Arg>
+    arg
+%type<std::vector<AST::ClassDeclaration::Arg>>
+    opt_args
+    args
+%type<AST::ClassDeclaration::Field>
+    field_decl
+%type<AST::ClassDeclaration::Method>
+    method_decl
+%type<AST::ClassDeclaration::Operator>
+    operator_decl
+%type<AST::ClassDeclaration::Constructor>
+    ctor_decl
 
 %start file
 
@@ -169,6 +196,7 @@ declaration
         $$ = make_unique<AST::TypeValueDeclaration>(@$, $2, $4, $6);
     }
     | func_decl
+    | class_decl
 
 opt_expression
     : %empty {}
@@ -199,9 +227,15 @@ operator_expression
     }
 
 operation
-    : "operator"
+    : "operation"
     | "=" {
         $$ = "=";
+    }
+    | "<" {
+        $$ = "<";
+    }
+    | ">" {
+        $$ = ">";
     }
 
 if_stmt
@@ -317,6 +351,101 @@ types_decl
 type_decl
     : "identifier" ":" type {
         $$ = make_pair($1, $3);
+    }
+
+class_decl
+    : "class" "identifier" opt_supers "{" opt_member_decls "}" {
+        $$ = make_unique<AST::ClassDeclaration>(@$, $2, $3, $5);
+    }
+
+opt_supers
+    : %empty {}
+    | ":" supers {
+        $$ = $2;
+    }
+
+supers
+    : super {
+        $$.push_back($1);
+    }
+    | supers "," super {
+        $$ = $1;
+        $$.push_back($3);
+    }
+
+super
+    : "identifier"
+
+opt_member_decls
+    : %empty {}
+    | member_decls
+
+member_decls
+    : field_decl {
+        $$.fields.push_back($1);
+    }
+    | method_decl {
+        $$.methods.push_back($1);
+    }
+    | operator_decl {
+        $$.operators.push_back($1);
+    }
+    | ctor_decl {
+        $$.ctors.push_back($1);
+    }
+    | member_decls field_decl {
+        $$ = $1;
+        $$.fields.push_back($2);
+    }
+    | member_decls method_decl {
+        $$ = $1;
+        $$.methods.push_back($2);
+    }
+    | member_decls operator_decl {
+        $$ = $1;
+        $$.operators.push_back($2);
+    }
+    | member_decls ctor_decl {
+        $$ = $1;
+        $$.ctors.push_back($2);
+    }
+
+opt_args
+    : %empty {}
+    | args
+
+args
+    : arg {
+        $$.push_back($1);
+    }
+    | args "," arg {
+        $$ = $1;
+        $$.push_back($3);
+    }
+
+arg
+    : "identifier" ":" type {
+        $$ = AST::ClassDeclaration::Arg{$1, $3};
+    }
+
+field_decl
+    : "identifier" ":" type ";" {
+        $$ = AST::ClassDeclaration::Field{$1, $3};
+    }
+
+method_decl
+    : "func" "identifier" "(" opt_args ")" "->" opt_type ";" {
+        $$ = AST::ClassDeclaration::Method{$2, $4, $7};
+    }
+
+operator_decl
+    : "operator" operation "(" arg ")" "->" opt_type ";" {
+        $$ = AST::ClassDeclaration::Operator{$2, $4, $7};
+    }
+
+ctor_decl
+    : "new" "(" opt_args ")" ";" {
+        $$ = AST::ClassDeclaration::Constructor{$3};
     }
 
 %%

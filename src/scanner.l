@@ -60,7 +60,7 @@ exp     [eE][+-]?{digit}+
 blank   [ \t]+
 nan     (?i:nan)
 inf     (?i:inf)
-op      [+-*/=%<>&!@#$^~]+
+op      [+\-*/\\=%<>&!@#$^~]+
 
 %{
 
@@ -117,6 +117,10 @@ op      [+-*/=%<>&!@#$^~]+
 "func"      return_token(FUNC);
 "->"        return_token(ARROW);
 "return"    return_token(RETURN);
+"class"     return_token(CLASS);
+"impl"      return_token(IMPL);
+"operator"  return_token(OPERATOR);
+"new"       return_token(NEW);
 "if"        return_token(IF);
 "while"     return_token(WHILE);
 "else"      return_token(ELSE);
@@ -131,8 +135,10 @@ op      [+-*/=%<>&!@#$^~]+
 "]"         return_token(RSQUARE);
 "{"         return_token(LCURLY);
 "}"         return_token(RCURLY);
+"<"         return_token(LANGLE);
+">"         return_token(RANGLE);
 ","         return_token(COMMA);
-op          return_value_token(OPERATOR, yytext);
+{op}        return_value_token(OPERATION, yytext);
 
 {digit}+                    { LEX_INT(); }
 {digit}+{exp}               { LEX_FLOAT(); }

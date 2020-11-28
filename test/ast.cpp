@@ -265,3 +265,58 @@ TEST(ASTTest, ReturnValueNodeJSON) {
         R"("node":"int",)"
         R"("value":5}})");
 }
+
+TEST(ASTTest, ClassDeclarationNodeJSON) {
+    std::ostringstream        ss;
+    yy::location              loc;
+    vector<string>            supers;
+    ClassDeclaration::Members members;
+    members.fields.push_back({"field", make_shared<TypeChecker::Object>(loc, "A")});
+    members.methods.push_back(
+        {"method",
+         {{"arg", make_shared<TypeChecker::Object>(loc, "B")}},
+         make_shared<TypeChecker::Object>(loc, "C")});
+    members.operators.push_back(
+        {"+",
+         {"other", make_shared<TypeChecker::Object>(loc, "class_name")},
+         make_shared<TypeChecker::Object>(loc, "class_name")});
+    members.ctors.push_back({{{"arg", make_shared<TypeChecker::Object>(loc, "D")}}});
+    ClassDeclaration node(loc, "class_name", {"super"}, move(members));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        R"({"node":"class declaration",)"
+        R"("name":"class_name",)"
+        R"("supers":["super"],)"
+        R"("fields":[{)"
+        R"("name":"field",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"A"}}],)"
+        R"("methods":[{)"
+        R"("name":"method",)"
+        R"("args":[{)"
+        R"("name":"arg",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"B"}}],)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"C"}}],)"
+        R"("operators":[{)"
+        R"("operation":"+",)"
+        R"("arg":{)"
+        R"("name":"other",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"class_name"}},)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"class_name"}}],)"
+        R"("constructors":[{)"
+        R"("args":[{)"
+        R"("name":"arg",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"D"}}]}]})");
+}
