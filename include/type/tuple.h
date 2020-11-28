@@ -1,5 +1,5 @@
-#ifndef TUPLE_H
-#define TUPLE_H
+#ifndef TYPE_TUPLE_H
+#define TYPE_TUPLE_H
 
 #include "type/type.h"
 
@@ -23,4 +23,4 @@ private: // Methods
 
 } // namespace TypeChecker
 
-#endif // TUPLE_H
+#endif // TYPE_TUPLE_H

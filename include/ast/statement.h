@@ -1,5 +1,5 @@
-#ifndef STATEMENT_H
-#define STATEMENT_H
+#ifndef AST_STATEMENT_H
+#define AST_STATEMENT_H
 
 #include "ast.h"
 
@@ -16,4 +16,4 @@ protected: // Methods
 
 } // namespace AST
 
-#endif // STATEMENT_H
+#endif // AST_STATEMENT_H

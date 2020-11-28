@@ -6,7 +6,6 @@
 #include "ast/string.h"
 #include "ast/bool.h"
 #include "ast/variable.h"
-#include "ast/assignment.h"
 #include "ast/type_declaration.h"
 #include "ast/value_declaration.h"
 #include "ast/type_value_declaration.h"
@@ -16,6 +15,8 @@
 #include "ast/block.h"
 #include "ast/while.h"
 #include "ast/if.h"
+#include "ast/tuple.h"
+#include "ast/operator.h"
 
 #include "type/object.h"
 #include "type/tuple.h"

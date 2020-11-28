@@ -1,5 +1,5 @@
-#ifndef DECLARATION_H
-#define DECLARATION_H
+#ifndef AST_DECLARATION_H
+#define AST_DECLARATION_H
 
 #include "statement.h"
 
@@ -20,4 +20,4 @@ private: // Fields
 
 } // namespace AST
 
-#endif // DECLARATION_H
+#endif // AST_DECLARATION_H

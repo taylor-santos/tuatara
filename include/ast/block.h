@@ -1,5 +1,5 @@
-#ifndef BLOCK_H
-#define BLOCK_H
+#ifndef AST_BLOCK_H
+#define AST_BLOCK_H
 
 #include "expression.h"
 #include "lvalue.h"
@@ -23,4 +23,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // BLOCK_H
+#endif // AST_BLOCK_H

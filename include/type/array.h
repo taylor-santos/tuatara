@@ -1,5 +1,5 @@
-#ifndef ARRAY_H
-#define ARRAY_H
+#ifndef TYPE_ARRAY_H
+#define TYPE_ARRAY_H
 
 #include "type/type.h"
 
@@ -23,4 +23,4 @@ private: // Methods
 
 } // namespace TypeChecker
 
-#endif // ARRAY_H
+#endif // TYPE_ARRAY_H

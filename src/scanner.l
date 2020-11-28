@@ -60,6 +60,7 @@ exp     [eE][+-]?{digit}+
 blank   [ \t]+
 nan     (?i:nan)
 inf     (?i:inf)
+op      [+-*/=%<>&!@#$^~]+
 
 %{
 
@@ -131,26 +132,7 @@ inf     (?i:inf)
 "{"         return_token(LCURLY);
 "}"         return_token(RCURLY);
 ","         return_token(COMMA);
-"+"         return_token(PLUS);
-"+="        return_token(PLUSEQ);
-"-="        return_token(MINUSEQ);
-"*="        return_token(TIMESEQ);
-"/="        return_token(DIVIDESEQ);
-"=="        return_token(EQ);
-">="        return_token(GTEQ);
-"<="        return_token(LTEQ);
-">"         return_token(GT);
-"<"         return_token(LT);
-"*"         return_token(TIMES);
-"-"         return_token(MINUS);
-"/"         return_token(DIVIDES);
-"%"         return_token(MODULO);
-"&"         return_token(AMPERSAND);
-"|"         return_token(PIPE);
-"<<"        return_token(LSHIFT);
-">>"        return_token(RSHIFT);
-"&&"        return_token(AND);
-"||"        return_token(OR);
+op          return_value_token(OPERATOR, yytext);
 
 {digit}+                    { LEX_INT(); }
 {digit}+{exp}               { LEX_FLOAT(); }

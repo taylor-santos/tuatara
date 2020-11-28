@@ -55,16 +55,17 @@ TEST(ASTTest, VariableNodeJSON) {
     EXPECT_EQ(ss.str(), R"({"node":"variable","name":"var"})");
 }
 
-TEST(ASTTest, AssignmentNodeJSON) {
+TEST(ASTTest, OperatorNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
     auto               lhs = make_unique<Variable>(loc, "var");
     auto               rhs = make_unique<Int>(loc, 123);
-    Assignment         node(loc, move(lhs), move(rhs));
+    Operator           node(loc, "+", move(lhs), move(rhs));
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        R"({"node":"assignment",)"
+        R"({"node":"operator",)"
+        R"("operation":"+",)"
         R"("lhs":{)"
         R"("node":"variable",)"
         R"("name":"var"},)"
@@ -202,9 +203,8 @@ TEST(ASTTest, CallNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
     auto               func = make_unique<Variable>(loc, "a");
-    Expression::Vec    args;
-    args.emplace_back(make_unique<Variable>(loc, "b"));
-    Call node(loc, move(func), move(args));
+    auto               arg  = make_unique<Variable>(loc, "b");
+    Call               node(loc, move(func), move(arg));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -212,9 +212,9 @@ TEST(ASTTest, CallNodeJSON) {
         R"("function":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("args":[{)"
+        R"("arg":{)"
         R"("node":"variable",)"
-        R"("name":"b"}]})");
+        R"("name":"b"}})");
 }
 
 TEST(ASTTest, FuncDeclarationNodeJSON) {

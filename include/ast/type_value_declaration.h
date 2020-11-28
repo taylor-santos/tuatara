@@ -1,5 +1,5 @@
-#ifndef TYPE_VALUE_DECLARATION_H
-#define TYPE_VALUE_DECLARATION_H
+#ifndef AST_TYPE_VALUE_DECLARATION_H
+#define AST_TYPE_VALUE_DECLARATION_H
 
 #include "value_declaration.h"
 #include "type_declaration.h"
@@ -26,4 +26,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // TYPE_DECLARATION_H
+#endif // AST_TYPE_DECLARATION_H

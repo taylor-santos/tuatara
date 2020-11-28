@@ -100,19 +100,20 @@ TEST(ParserTest, Assignment) {
     EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
     ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
     EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Assignment &>(*drv.statements[0]);
+        const auto &       node = dynamic_cast<AST::Operator &>(*drv.statements[0]);
         std::ostringstream ss;
         ss << node;
         EXPECT_EQ(
             ss.str(),
-            R"({"node":"assignment",)"
+            R"({"node":"operator",)"
+            R"("operation":"=",)"
             R"("lhs":{)"
             R"("node":"variable",)"
             R"("name":"abc"},)"
             R"("rhs":{)"
             R"("node":"int",)"
             R"("value":5}})");
-    }) << "Expected AST node to be an Assignment";
+    }) << "Expected AST node to be an Operator";
 }
 
 TEST(ParserTest, ValueDeclaration) {
@@ -328,8 +329,7 @@ TEST(ParserTest, FunctionCallNoArgs) {
             R"({"node":"function call",)"
             R"("function":{)"
             R"("node":"variable",)"
-            R"("name":"foo"},)"
-            R"("args":[]})");
+            R"("name":"foo"}})");
     }) << "Expected AST node to be a Function Call";
 }
 
@@ -350,9 +350,9 @@ TEST(ParserTest, FunctionCallOneArg) {
             R"("function":{)"
             R"("node":"variable",)"
             R"("name":"foo"},)"
-            R"("args":[{)"
+            R"("arg":{)"
             R"("node":"int",)"
-            R"("value":123}]})");
+            R"("value":123}})");
     }) << "Expected AST node to be a Function Call";
 }
 
@@ -373,11 +373,13 @@ TEST(ParserTest, FunctionCallTwoArgs) {
             R"("function":{)"
             R"("node":"variable",)"
             R"("name":"foo"},)"
-            R"("args":[{)"
+            R"("arg":{)"
+            R"("node":"tuple",)"
+            R"("expressions":[{)"
             R"("node":"int",)"
             R"("value":123},)"
             R"({"node":"int",)"
-            R"("value":456}]})");
+            R"("value":456}]}})");
     }) << "Expected AST node to be a Function Call";
 }
 

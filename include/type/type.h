@@ -1,5 +1,5 @@
-#ifndef TYPE_H
-#define TYPE_H
+#ifndef TYPE_TYPE_H
+#define TYPE_TYPE_H
 
 #include "location.hh"
 
@@ -34,4 +34,4 @@ private: // Fields
 
 } // namespace TypeChecker
 
-#endif // TYPE_H
+#endif // TYPE_TYPE_H

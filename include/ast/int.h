@@ -1,5 +1,5 @@
-#ifndef INT_H
-#define INT_H
+#ifndef AST_INT_H
+#define AST_INT_H
 
 #include "expression.h"
 
@@ -23,4 +23,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // INT_H
+#endif // AST_INT_H
