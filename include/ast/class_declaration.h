@@ -2,6 +2,7 @@
 #define AST_CLASS_DECLARATION_H
 
 #include "declaration.h"
+#include "func_declaration.h"
 #include "type/type.h"
 
 #include <optional>
@@ -22,11 +23,6 @@ public: // Classes
         std::string            name;
         TypeChecker::Type::Ptr type;
     };
-    struct Method {
-        std::string                           name;
-        std::vector<Arg>                      args;
-        std::optional<TypeChecker::Type::Ptr> ret_type;
-    };
     struct Operator {
         std::string                           operation;
         Arg                                   arg;
@@ -36,10 +32,10 @@ public: // Classes
         std::vector<Arg> args;
     };
     struct Members {
-        std::vector<Field>       fields;
-        std::vector<Method>      methods;
-        std::vector<Operator>    operators;
-        std::vector<Constructor> ctors;
+        std::vector<Field>                fields;
+        std::vector<FuncDeclaration::Ptr> methods;
+        std::vector<Operator>             operators;
+        std::vector<Constructor>          ctors;
     };
 
 public: // Methods

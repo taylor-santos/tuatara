@@ -10,6 +10,7 @@
 #include "ast/value_declaration.h"
 #include "ast/type_value_declaration.h"
 #include "ast/func_declaration.h"
+#include "ast/func_impl.h"
 #include "ast/class_declaration.h"
 #include "ast/return.h"
 #include "ast/call.h"

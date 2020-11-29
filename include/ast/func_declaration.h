@@ -8,7 +8,7 @@
 
 namespace AST {
 
-class FuncDeclaration final : public Declaration {
+class FuncDeclaration : public Declaration {
 public: // Aliases
     using Ptr = std::unique_ptr<FuncDeclaration>;
     using Vec = std::vector<Ptr>;
@@ -18,13 +18,15 @@ public: // Methods
         const yy::location &                                        loc,
         std::string                                                 variable,
         std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> args,
-        std::optional<TypeChecker::Type::Ptr>                       ret_type,
-        Statement::Ptr                                              body);
+        std::optional<TypeChecker::Type::Ptr>                       ret_type);
+
+protected: // Methods
+    const std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> &getArgs() const;
+    const std::optional<TypeChecker::Type::Ptr> &                      getRetType() const;
 
 private: // Fields
     std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> args;
     std::optional<TypeChecker::Type::Ptr>                       ret_type;
-    Statement::Ptr                                              body;
 
 private: // Methods
     void json(std::ostream &os) const override;

@@ -223,9 +223,8 @@ TEST(ASTTest, FuncDeclarationNodeJSON) {
     string                                       name = "foo";
     vector<pair<string, TypeChecker::Type::Ptr>> args;
     args.emplace_back(make_pair("arg", make_shared<TypeChecker::Object>(loc, "S")));
-    auto            ret  = make_shared<TypeChecker::Object>(loc, "T");
-    auto            stmt = make_unique<Variable>(loc, "b");
-    FuncDeclaration node(loc, name, move(args), move(ret), move(stmt));
+    auto            ret = make_shared<TypeChecker::Object>(loc, "T");
+    FuncDeclaration node(loc, name, move(args), move(ret));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -238,10 +237,7 @@ TEST(ASTTest, FuncDeclarationNodeJSON) {
         R"("class":"S"}}],)"
         R"("return type":{)"
         R"("kind":"object",)"
-        R"("class":"T"},)"
-        R"("body":{)"
-        R"("node":"variable",)"
-        R"("name":"b"}})");
+        R"("class":"T"}})");
 }
 
 TEST(ASTTest, ReturnNodeJSON) {
@@ -272,10 +268,13 @@ TEST(ASTTest, ClassDeclarationNodeJSON) {
     vector<string>            supers;
     ClassDeclaration::Members members;
     members.fields.push_back({"field", make_shared<TypeChecker::Object>(loc, "A")});
-    members.methods.push_back(
-        {"method",
-         {{"arg", make_shared<TypeChecker::Object>(loc, "B")}},
-         make_shared<TypeChecker::Object>(loc, "C")});
+    vector<pair<string, TypeChecker::Type::Ptr>> method_args{
+        {{"arg", make_shared<TypeChecker::Object>(loc, "B")}}};
+    members.methods.push_back(make_unique<FuncDeclaration>(
+        loc,
+        "method",
+        method_args,
+        make_shared<TypeChecker::Object>(loc, "C")));
     members.operators.push_back(
         {"+",
          {"other", make_shared<TypeChecker::Object>(loc, "class_name")},
@@ -294,7 +293,8 @@ TEST(ASTTest, ClassDeclarationNodeJSON) {
         R"("kind":"object",)"
         R"("class":"A"}}],)"
         R"("methods":[{)"
-        R"("name":"method",)"
+        R"("node":"function declaration",)"
+        R"("variable":"method",)"
         R"("args":[{)"
         R"("name":"arg",)"
         R"("type":{)"
