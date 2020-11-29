@@ -35,4 +35,5 @@ FuncImpl::json(ostream &os) const {
     if (retType) {
         obj.KeyValue("return type", **retType);
     }
+    obj.KeyValue("body", *body);
 }

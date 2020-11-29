@@ -240,6 +240,33 @@ TEST(ASTTest, FuncDeclarationNodeJSON) {
         R"("class":"T"}})");
 }
 
+TEST(ASTTest, FuncImplNodeJSON) {
+    std::ostringstream                           ss;
+    yy::location                                 loc;
+    string                                       name = "foo";
+    vector<pair<string, TypeChecker::Type::Ptr>> args;
+    args.emplace_back(make_pair("arg", make_shared<TypeChecker::Object>(loc, "S")));
+    auto     ret  = make_shared<TypeChecker::Object>(loc, "T");
+    auto     stmt = make_unique<Variable>(loc, "b");
+    FuncImpl node(loc, name, move(args), move(ret), move(stmt));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        R"({"node":"function impl",)"
+        R"("variable":"foo",)"
+        R"("args":[{)"
+        R"("name":"arg",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"S"}}],)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"T"},)"
+        R"("body":{)"
+        R"("node":"variable",)"
+        R"("name":"b"}})");
+}
+
 TEST(ASTTest, ReturnNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
