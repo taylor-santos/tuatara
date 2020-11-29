@@ -42,21 +42,7 @@ ClassDeclaration::json(ostream &os) const {
         JSON::Array arr(os);
         for (const auto &method : members.methods) {
             arr.Next();
-            JSON::Object methodObj(os);
-            methodObj.KeyValue("name", method.name);
-            methodObj.Key("args");
-            {
-                JSON::Array argArr(os);
-                for (const auto &arg : method.args) {
-                    argArr.Next();
-                    JSON::Object argObj(os);
-                    argObj.KeyValue("name", arg.name);
-                    argObj.KeyValue("type", *arg.type);
-                }
-            }
-            if (method.ret_type) {
-                methodObj.KeyValue("return type", **method.ret_type);
-            }
+            os << *method;
         }
     }
     obj.Key("operators");

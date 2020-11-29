@@ -11,12 +11,10 @@ FuncDeclaration::FuncDeclaration(
     const yy::location &            loc,
     string                          variable,
     vector<pair<string, Type::Ptr>> args,
-    optional<Type::Ptr>             ret_type,
-    Statement::Ptr                  body)
+    optional<Type::Ptr>             ret_type)
     : Declaration(loc, move(variable))
     , args{move(args)}
-    , ret_type{move(ret_type)}
-    , body{move(body)} {}
+    , ret_type{move(ret_type)} {}
 
 void
 FuncDeclaration::json(ostream &os) const {
@@ -36,5 +34,14 @@ FuncDeclaration::json(ostream &os) const {
     if (ret_type) {
         obj.KeyValue("return type", **ret_type);
     }
-    obj.KeyValue("body", *body);
+}
+
+const vector<pair<string, TypeChecker::Type::Ptr>> &
+FuncDeclaration::getArgs() const {
+    return args;
+}
+
+const optional<TypeChecker::Type::Ptr> &
+FuncDeclaration::getRetType() const {
+    return ret_type;
 }

@@ -97,7 +97,7 @@
     lvalue
 %type<AST::Statement::Ptr>
     declaration
-    func_decl
+    func_impl
     class_decl
     stmt
     one_line_stmt
@@ -138,8 +138,8 @@
     args
 %type<AST::ClassDeclaration::Field>
     field_decl
-%type<AST::ClassDeclaration::Method>
-    method_decl
+%type<AST::FuncDeclaration::Ptr>
+    func_decl
 %type<AST::ClassDeclaration::Operator>
     operator_decl
 %type<AST::ClassDeclaration::Constructor>
@@ -195,7 +195,10 @@ declaration
     | "var" "identifier" ":" type "=" expression ";" {
         $$ = make_unique<AST::TypeValueDeclaration>(@$, $2, $4, $6);
     }
-    | func_decl
+    | func_decl ";" {
+        $$ = $1;
+    }
+    | func_impl
     | class_decl
 
 opt_expression
@@ -329,8 +332,13 @@ types
     }
 
 func_decl
+    : "func" "identifier" "(" opt_types_decl ")" "->" opt_type {
+        $$ = make_unique<AST::FuncDeclaration>(@$, $2, $4, $7);
+    }
+
+func_impl
     : "func" "identifier" "(" opt_types_decl ")" "->" opt_type stmt_block {
-        $$ = make_unique<AST::FuncDeclaration>(@$, $2, $4, $7, $8);
+        $$ = make_unique<AST::FuncImpl>(@$, $2, $4, $7, $8);
     }
 
 opt_types_decl
@@ -381,31 +389,31 @@ opt_member_decls
     | member_decls
 
 member_decls
-    : field_decl {
+    : field_decl ";" {
         $$.fields.push_back($1);
     }
-    | method_decl {
+    | func_decl ";" {
         $$.methods.push_back($1);
     }
-    | operator_decl {
+    | operator_decl ";" {
         $$.operators.push_back($1);
     }
-    | ctor_decl {
+    | ctor_decl ";" {
         $$.ctors.push_back($1);
     }
-    | member_decls field_decl {
+    | member_decls field_decl ";" {
         $$ = $1;
         $$.fields.push_back($2);
     }
-    | member_decls method_decl {
+    | member_decls func_decl ";" {
         $$ = $1;
         $$.methods.push_back($2);
     }
-    | member_decls operator_decl {
+    | member_decls operator_decl ";" {
         $$ = $1;
         $$.operators.push_back($2);
     }
-    | member_decls ctor_decl {
+    | member_decls ctor_decl ";" {
         $$ = $1;
         $$.ctors.push_back($2);
     }
@@ -429,22 +437,17 @@ arg
     }
 
 field_decl
-    : "identifier" ":" type ";" {
+    : "identifier" ":" type {
         $$ = AST::ClassDeclaration::Field{$1, $3};
     }
 
-method_decl
-    : "func" "identifier" "(" opt_args ")" "->" opt_type ";" {
-        $$ = AST::ClassDeclaration::Method{$2, $4, $7};
-    }
-
 operator_decl
-    : "operator" operation "(" arg ")" "->" opt_type ";" {
+    : "operator" operation "(" arg ")" "->" opt_type {
         $$ = AST::ClassDeclaration::Operator{$2, $4, $7};
     }
 
 ctor_decl
-    : "new" "(" opt_args ")" ";" {
+    : "new" "(" opt_args ")" {
         $$ = AST::ClassDeclaration::Constructor{$3};
     }
 

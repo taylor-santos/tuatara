@@ -731,7 +731,8 @@ TEST(ParserTest, ClassDeclaration) {
             R"("kind":"object",)"
             R"("class":"int"}}}],)"
             R"("methods":[{)"
-            R"("name":"method",)"
+            R"("node":"function declaration",)"
+            R"("variable":"method",)"
             R"("args":[{)"
             R"("name":"a",)"
             R"("type":{)"
@@ -761,4 +762,37 @@ TEST(ParserTest, ClassDeclaration) {
             R"("kind":"object",)"
             R"("class":"int"}}]}]})");
     }) << "Expected AST node to be an Operator";
+}
+
+TEST(ParserTest, FuncImpl) {
+    std::istringstream iss(R"(func foo(x: int) -> int { return x; })");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::FuncImpl &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(
+            ss.str(),
+            R"({"node":"function impl",)"
+            R"("variable":"foo",)"
+            R"("args":[{)"
+            R"("name":"x",)"
+            R"("type":{)"
+            R"("kind":"object",)"
+            R"("class":"int"}}],)"
+            R"("return type":{)"
+            R"("kind":"object",)"
+            R"("class":"int"},)"
+            R"("body":{)"
+            R"("node":"block",)"
+            R"("statements":[{)"
+            R"("node":"return",)"
+            R"("returns":{)"
+            R"("node":"variable",)"
+            R"("name":"x"}}]}})");
+    }) << "Expected AST node to be a FuncImpl";
 }
