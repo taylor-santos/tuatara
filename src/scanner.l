@@ -53,6 +53,8 @@ typedef yy::Parser::token_type token_type;
 %option prefix="yy"
 %option stack
 
+%x COMMENT
+
 ident   [a-zA-Z0-9][a-zA-Z0-9_]*
 str     \"([^\\\"\n]|\\.)*\"
 digit   [0-9]
@@ -112,6 +114,17 @@ op      [+\-*/\\=%<>&!@#$^~]+
 "\r"+
 
 "//".*      // Ignore comments
+
+"/*"        yy_push_state(COMMENT);
+"*/"        throw yy::Parser::syntax_error(LOC, "unexpected */ outside of block comment");
+<COMMENT>{
+    "/*"        yy_push_state(COMMENT);
+    "*/"        yy_pop_state();
+    "\n"+       LINE(yyleng);
+    "\r"+
+    .
+    <<EOF>>     throw yy::Parser::syntax_error(LOC, "unexpected EOF in block comment");
+}
 
 "var"       return_token(VAR);
 "func"      return_token(FUNC);

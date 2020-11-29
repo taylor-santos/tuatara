@@ -144,6 +144,94 @@ TEST(ScannerTest, Comment) {
     EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
 }
 
+TEST(ScannerTest, BlockComment) {
+    yy::Scanner        scan;
+    std::istringstream iss(R"(/* Block comments can span
+                                 multiple lines. */)");
+    std::ostringstream oss;
+    scan.switch_streams(iss, oss);
+    yy::Driver drv;
+    auto       tok = scan.yylex(drv);
+    EXPECT_EQ(tok.type_get(), 0) << "Expected entire input to be consumed";
+    EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
+}
+
+TEST(ScannerTest, BlockCommentsMustClose) {
+    yy::Scanner        scan;
+    std::istringstream iss(R"(/* Block comments must be closed.
+                                 If the file ends inside a block comment,
+                                 it is an error.)");
+    std::ostringstream oss;
+    scan.switch_streams(iss, oss);
+    yy::Driver drv;
+    EXPECT_THROW(
+        {
+            try {
+                auto tok = scan.yylex(drv);
+            } catch (const yy::Parser::syntax_error &e) {
+                EXPECT_STREQ(e.what(), "unexpected EOF in block comment");
+                throw; // Re-throw exception
+            }
+        },
+        yy::Parser::syntax_error);
+    EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
+}
+
+TEST(ScannerTest, NestedBlockComment) {
+    yy::Scanner        scan;
+    std::istringstream iss(R"(/* Block comments can be
+                              /* nested */ but every
+                                 comment opening /* needs to be matched
+                                 by an equivalent closing */ */)");
+    std::ostringstream oss;
+    scan.switch_streams(iss, oss);
+    yy::Driver drv;
+    auto       tok = scan.yylex(drv);
+    EXPECT_EQ(tok.type_get(), 0) << "Expected entire input to be consumed";
+    EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
+}
+
+TEST(ScannerTest, NestedBlockCommentsMustClose) {
+    yy::Scanner        scan;
+    std::istringstream iss(R"(/* Nested Block comments must also be closed.
+                              /* Even if the inner block is closed, */
+                                 failing to close the outer block by the end of
+                                 the file is an error.)");
+    std::ostringstream oss;
+    scan.switch_streams(iss, oss);
+    yy::Driver drv;
+    EXPECT_THROW(
+        {
+            try {
+                auto tok = scan.yylex(drv);
+            } catch (const yy::Parser::syntax_error &e) {
+                EXPECT_STREQ(e.what(), "unexpected EOF in block comment");
+                throw; // Re-throw exception
+            }
+        },
+        yy::Parser::syntax_error);
+    EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
+}
+
+TEST(ScannerTest, MisplacedBlockCommentClose) {
+    yy::Scanner        scan;
+    std::istringstream iss(R"(  */  )");
+    std::ostringstream oss;
+    scan.switch_streams(iss, oss);
+    yy::Driver drv;
+    EXPECT_THROW(
+        {
+            try {
+                auto tok = scan.yylex(drv);
+            } catch (const yy::Parser::syntax_error &e) {
+                EXPECT_STREQ(e.what(), "unexpected */ outside of block comment");
+                throw; // Re-throw exception
+            }
+        },
+        yy::Parser::syntax_error);
+    EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
+}
+
 TEST(ScannerTest, NoLeadingUnderscoresInIdent) {
     yy::Scanner        scan;
     std::istringstream iss("_NoLeadingUnderscores");
