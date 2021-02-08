@@ -14,19 +14,21 @@
 #include "ast/class_declaration.h"
 #include "ast/return.h"
 #include "ast/call.h"
+#include "ast/index.h"
 #include "ast/block.h"
 #include "ast/while.h"
 #include "ast/if.h"
 #include "ast/tuple.h"
 #include "ast/operator.h"
 
+#include "type/sum.h"
 #include "type/object.h"
-#include "type/tuple.h"
+#include "type/product.h"
 #include "type/array.h"
 #include "type/func.h"
 
 using OptType      = std::optional<TypeChecker::Type::Ptr>;
-using NamedType    = std::pair<std::string, TypeChecker::Type::Ptr>;
+using NamedType    = TypeChecker::Type::Named;
 using NamedTypeVec = std::vector<NamedType>;
 
 #endif // COMMON_H

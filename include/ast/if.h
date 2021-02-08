@@ -15,15 +15,12 @@ public: // Aliases
 
 public: // Methods
     If(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt);
-    If(const yy::location &loc,
-       Expression::Ptr     cond,
-       Statement::Ptr      stmt,
-       Statement::Ptr      else_stmt);
+    If(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt, Statement::Ptr elseStmt);
 
 private: // Fields
     Expression::Ptr               cond;
     Statement::Ptr                stmt;
-    std::optional<Statement::Ptr> else_stmt;
+    std::optional<Statement::Ptr> elseStmt;
 
 private: // Methods
     void json(std::ostream &os) const override;

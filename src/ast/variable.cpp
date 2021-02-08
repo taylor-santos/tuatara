@@ -1,10 +1,9 @@
 #include "ast/variable.h"
 #include "json.h"
 
-#include <utility>
-
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Variable::Variable(const yy::location &loc, string name)
     : LValue(loc)
@@ -16,3 +15,5 @@ Variable::json(ostream &os) const {
     obj.KeyValue("node", "variable");
     obj.KeyValue("name", name);
 }
+
+} // namespace AST

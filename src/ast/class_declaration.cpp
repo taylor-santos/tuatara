@@ -1,10 +1,10 @@
 #include "ast/class_declaration.h"
 
-#include <utility>
 #include "json.h"
 
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 ClassDeclaration::ClassDeclaration(
     const yy::location &     loc,
@@ -38,13 +38,7 @@ ClassDeclaration::json(ostream &os) const {
         }
     }
     obj.Key("methods");
-    {
-        JSON::Array arr(os);
-        for (const auto &method : members.methods) {
-            arr.Next();
-            os << *method;
-        }
-    }
+    { JSON::Array(os) << members.methods; }
     obj.Key("operators");
     {
         JSON::Array arr(os);
@@ -55,11 +49,11 @@ ClassDeclaration::json(ostream &os) const {
             operatorObj.Key("arg");
             {
                 JSON::Object argObj(os);
-                argObj.KeyValue("name", op.arg.name);
-                argObj.KeyValue("type", *op.arg.type);
+                argObj.KeyValue("name", op.arg.first);
+                argObj.KeyValue("type", *op.arg.second);
             }
-            if (op.ret_type) {
-                operatorObj.KeyValue("return type", **op.ret_type);
+            if (op.retType) {
+                operatorObj.KeyValue("return type", **op.retType);
             }
         }
     }
@@ -75,10 +69,12 @@ ClassDeclaration::json(ostream &os) const {
                 for (const auto &arg : ctor.args) {
                     argArr.Next();
                     JSON::Object argObj(os);
-                    argObj.KeyValue("name", arg.name);
-                    argObj.KeyValue("type", *arg.type);
+                    argObj.KeyValue("name", arg.first);
+                    argObj.KeyValue("type", *arg.second);
                 }
             }
         }
     }
 }
+
+} // namespace AST

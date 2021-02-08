@@ -43,7 +43,7 @@
 %{
     #include "printer.h"
 
-    using std::make_unique, std::make_shared, std::make_pair;
+    using std::make_unique, std::make_pair;
 %}
 
 %define api.token.prefix {TOK_}
@@ -60,6 +60,8 @@
     IF          "if"
     WHILE       "while"
     ELSE        "else"
+    THEN        "then"
+    DO          "do"
     ASSIGN      "="
     SEMICOLON   ";"
     COLON       ":"
@@ -72,6 +74,8 @@
     LANGLE      "<"
     RANGLE      ">"
     COMMA       ","
+    AND         "&"
+    OR          "|"
 
 %token<std::string>
     IDENT       "identifier"
@@ -110,13 +114,16 @@
     opt_stmts
 %type<TypeChecker::Type::Ptr>
     type
+    sum_type
+    product_type
     array_type
     base_type
 %type<TypeChecker::Type::Vec>
-    types
+    sum_type_list
+    product_type_list
 %type<OptType>
     opt_type
-    opt_array_type
+    opt_sum_type
 %type<NamedTypeVec>
     opt_types_decl
     types_decl
@@ -131,11 +138,6 @@
 %type<AST::ClassDeclaration::Members>
     opt_member_decls
     member_decls
-%type<AST::ClassDeclaration::Arg>
-    arg
-%type<std::vector<AST::ClassDeclaration::Arg>>
-    opt_args
-    args
 %type<AST::ClassDeclaration::Field>
     field_decl
 %type<AST::FuncDeclaration::Ptr>
@@ -208,24 +210,24 @@ opt_expression
     }
 
 expression
-    : primary_expression
-    | operator_expression
+    : operator_expression
     | tuple_expression {
         $$ = make_unique<AST::Tuple>(@$, $1);
     }
 
 tuple_expression
-    : primary_expression "," primary_expression {
+    : operator_expression "," operator_expression {
         $$.push_back($1);
         $$.push_back($3);
     }
-    | tuple_expression "," primary_expression {
+    | tuple_expression "," operator_expression {
         $$ = $1;
         $$.push_back($3);
     }
 
 operator_expression
-    : primary_expression operation primary_expression {
+    : primary_expression
+    | primary_expression operation primary_expression {
         $$ = make_unique<AST::Operator>(@$, $2, $1, $3);
     }
 
@@ -240,18 +242,21 @@ operation
     | ">" {
         $$ = ">";
     }
+    | "|" {
+        $$ = "|";
+    }
 
 if_stmt
-    : "if" expression one_line_stmt {
-        $$ = make_unique<AST::If>(@$, $2, $3);
+    : "if" expression "then" one_line_stmt {
+        $$ = make_unique<AST::If>(@$, $2, $4);
     }
-    | "if" expression one_line_stmt "else" stmt {
-        $$ = make_unique<AST::If>(@$, $2, $3, $5);
+    | "if" expression "then" one_line_stmt "else" stmt {
+        $$ = make_unique<AST::If>(@$, $2, $4, $6);
     }
 
 while_stmt
-    : "while" expression one_line_stmt {
-        $$ = make_unique<AST::While>(@$, $2, $3);
+    : "while" expression "do" one_line_stmt {
+        $$ = make_unique<AST::While>(@$, $2, $4);
     }
 
 return_stmt
@@ -267,6 +272,9 @@ primary_expression
     | lvalue {
         $$ = $1;
     }
+    | "(" expression ")" {
+        $$ = $2;
+    }
 
 lvalue
     : "identifier" {
@@ -274,6 +282,9 @@ lvalue
     }
     | primary_expression "(" opt_expression ")" {
         $$ = make_unique<AST::Call>(@$, $1, $3);
+    }
+    | primary_expression "[" expression "]" {
+        $$ = make_unique<AST::Index>(@$, $1, $3);
     }
 
 literal
@@ -297,48 +308,81 @@ opt_type
     }
 
 type
-    : array_type
-    | opt_array_type "->" opt_type {
-        $$ = make_shared<TypeChecker::Func>(@$, $1, $3);
+    : sum_type
+    | opt_sum_type "->" opt_type {
+        $$ = make_unique<TypeChecker::Func>(@$, $1, $3);
     }
 
-opt_array_type
+opt_sum_type
     : %empty {}
-    | array_type {
+    | sum_type {
         $$ = $1;
+    }
+
+sum_type
+    : product_type {
+        $$ = $1;
+    }
+    | sum_type_list {
+        $$ = make_unique<TypeChecker::Sum>(@$, $1);
+    }
+
+sum_type_list
+    : product_type "|" product_type {
+        $$.push_back($1);
+        $$.push_back($3);
+    }
+    | sum_type_list "|" product_type {
+        $$ = $1;
+        $$.push_back($3);
+    }
+
+product_type
+    : array_type {
+        $$ = $1;
+    }
+    | product_type_list {
+        $$ = make_unique<TypeChecker::Product>(@$, $1);
+    }
+
+product_type_list
+    : array_type "&" array_type {
+        $$.push_back($1);
+        $$.push_back($3);
+    }
+    | product_type_list "&" array_type {
+        $$ = $1;
+        $$.push_back($3);
     }
 
 array_type
     : base_type
     | array_type "[" "]" {
-        $$ = make_shared<TypeChecker::Array>(@$, $1);
+        $$ = make_unique<TypeChecker::Array>(@$, $1);
     }
 
 base_type
     : "identifier" {
-        $$ = make_shared<TypeChecker::Object>(@$, $1);
+        $$ = make_unique<TypeChecker::Object>(@$, $1);
     }
-    | "(" types ")" {
-        $$ = make_shared<TypeChecker::Tuple>(@$, $2);
-    }
-
-types
-    : type {
-        $$.push_back($1);
-    }
-    | types "," type {
-        $$ = $1;
-        $$.push_back($3);
+    | "(" type ")" {
+        $$ = $2;
     }
 
 func_decl
-    : "func" "identifier" "(" opt_types_decl ")" "->" opt_type {
+    : "func" "identifier" "(" opt_types_decl ")" "->" type {
         $$ = make_unique<AST::FuncDeclaration>(@$, $2, $4, $7);
+    }
+    | "func" "identifier" "(" opt_types_decl ")" {
+        $$ = make_unique<AST::FuncDeclaration>(@$, $2, $4);
     }
 
 func_impl
-    : "func" "identifier" "(" opt_types_decl ")" "->" opt_type stmt_block {
+    : "func" "identifier" "(" opt_types_decl ")" "->" type stmt_block {
         $$ = make_unique<AST::FuncImpl>(@$, $2, $4, $7, $8);
+    }
+    | "func" "identifier" "(" opt_types_decl ")" stmt_block {
+        $$ = make_unique<AST::FuncImpl>(@$, $2, $4, $6);
     }
 
 opt_types_decl
@@ -418,36 +462,18 @@ member_decls
         $$.ctors.push_back($2);
     }
 
-opt_args
-    : %empty {}
-    | args
-
-args
-    : arg {
-        $$.push_back($1);
-    }
-    | args "," arg {
-        $$ = $1;
-        $$.push_back($3);
-    }
-
-arg
-    : "identifier" ":" type {
-        $$ = AST::ClassDeclaration::Arg{$1, $3};
-    }
-
 field_decl
     : "identifier" ":" type {
         $$ = AST::ClassDeclaration::Field{$1, $3};
     }
 
 operator_decl
-    : "operator" operation "(" arg ")" "->" opt_type {
+    : "operator" operation "(" type_decl ")" "->" opt_type {
         $$ = AST::ClassDeclaration::Operator{$2, $4, $7};
     }
 
 ctor_decl
-    : "new" "(" opt_args ")" {
+    : "new" "(" opt_types_decl ")" {
         $$ = AST::ClassDeclaration::Constructor{$3};
     }
 

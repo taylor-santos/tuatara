@@ -12,7 +12,8 @@ public: // Aliases
 
 protected: // Methods
     Declaration(const yy::location &loc, std::string variable);
-    const std::string &getVariable() const;
+
+    [[nodiscard]] const std::string &getVariable() const;
 
 private: // Fields
     std::string variable;

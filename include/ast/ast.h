@@ -7,12 +7,6 @@
 
 #include "location.hh"
 
-// Namespace and class must be forward declared for operator<< to work properly
-namespace AST {
-class Node;
-}
-std::ostream &operator<<(std::ostream &os, const AST::Node &ast);
-
 namespace AST {
 
 class Node {
@@ -22,7 +16,7 @@ public: // Aliases
 
 public: // Methods
     virtual ~Node() = default;
-    friend std::ostream & ::operator<<(std::ostream &os, const Node &ast);
+    friend std::ostream &operator<<(std::ostream &os, const Node &ast);
 
 protected: // Methods
     explicit Node(const yy::location &loc);

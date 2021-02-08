@@ -1,10 +1,9 @@
 #include "ast/bool.h"
 #include "json.h"
 
-#include <utility>
-
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Bool::Bool(const yy::location &loc, bool value)
     : Expression(loc)
@@ -16,3 +15,5 @@ Bool::json(ostream &os) const {
     obj.KeyValue("node", "bool");
     obj.KeyValue("value", value);
 }
+
+} // namespace AST

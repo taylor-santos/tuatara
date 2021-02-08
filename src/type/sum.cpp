@@ -1,17 +1,18 @@
-#include "type/tuple.h"
+#include "type/sum.h"
 #include "json.h"
 
-using namespace TypeChecker;
 using namespace std;
 
-Tuple::Tuple(yy::location loc, vector<Type::Ptr> types)
+namespace TypeChecker {
+
+Sum::Sum(yy::location loc, Type::Vec types)
     : Type(loc)
     , types{move(types)} {}
 
 void
-Tuple::json(ostream &os) const {
+Sum::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("kind", "tuple");
+    obj.KeyValue("kind", "sum");
     obj.Key("types");
     JSON::Array arr(os);
     for (const auto &type : types) {
@@ -19,3 +20,5 @@ Tuple::json(ostream &os) const {
         os << *type;
     }
 }
+
+} // namespace TypeChecker

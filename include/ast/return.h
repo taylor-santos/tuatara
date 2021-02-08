@@ -14,7 +14,7 @@ public: // Aliases
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    Return(const yy::location &loc);
+    explicit Return(const yy::location &loc);
     Return(const yy::location &loc, Expression::Ptr value);
 
 private: // Fields

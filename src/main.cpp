@@ -14,15 +14,11 @@ main(int argc, char *argv[]) {
     JSON::JSON::minimize = false;
     for (int i = 1; i < argc; i++) {
         yy::Driver drv;
-        if (drv.parse_file(argv[i])) {
+        if (drv.parseFile(argv[i])) {
             cerr << argv[i] << ": failed to parse" << endl;
             break;
         } else {
-            JSON::Array arr(cout);
-            for (const auto &stmt : drv.statements) {
-                arr.Next();
-                cout << *stmt;
-            }
+            JSON::Array(cout) << drv.statements;
         }
     }
 }

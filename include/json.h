@@ -2,6 +2,7 @@
 #define JSON_H
 
 #include <iostream>
+#include <functional>
 
 namespace JSON {
 
@@ -28,10 +29,7 @@ public:
     explicit Object(std::ostream &out = std::cout);
     ~Object() override;
     template<class T>
-    void KeyValue(const std::string &key, const T &value) {
-        Key(key);
-        out << value;
-    }
+    void KeyValue(const std::string &key, const T &value);
     void KeyValue(const std::string &key, const std::string &value);
     void KeyValue(const std::string &key, const char value[]);
     void KeyValue(const std::string &key, bool value);
@@ -43,7 +41,26 @@ public:
     ~Array() override;
     void Next();
     void String(const std::string &str);
+    template<class T>
+    Array &operator<<(const T &container);
 };
+
+template<class T>
+void
+Object::KeyValue(const std::string &key, const T &value) {
+    Key(key);
+    out << value;
+}
+
+template<class T>
+Array &
+Array::operator<<(const T &container) {
+    for (const auto &t : container) {
+        Next();
+        out << *t;
+    }
+    return *this;
+}
 
 } // namespace JSON
 

@@ -1,7 +1,8 @@
 #include "ast/ast.h"
 
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Node::Node(const yy::location &loc)
     : loc(loc) {}
@@ -11,3 +12,5 @@ operator<<(ostream &os, const Node &ast) {
     ast.json(os);
     return os;
 }
+
+} // namespace AST

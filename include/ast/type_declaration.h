@@ -17,8 +17,8 @@ public: // Methods
     TypeDeclaration(const yy::location &loc, std::string variable, TypeChecker::Type::Ptr type);
 
 protected: // Methods
-    const TypeChecker::Type::Ptr &getType() const;
-    void                          json(std::ostream &os) const override;
+    [[nodiscard]] const TypeChecker::Type::Ptr &getType() const;
+    void                                        json(std::ostream &os) const override;
 
 private: // Fields
     TypeChecker::Type::Ptr type;

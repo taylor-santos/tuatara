@@ -6,27 +6,23 @@
 #include <memory>
 #include <vector>
 
-// Namespace and class must be forward declared for operator<< to work properly
-namespace TypeChecker {
-class Type;
-}
-std::ostream &operator<<(std::ostream &os, const TypeChecker::Type &type);
-
 namespace TypeChecker {
 
 class Type {
 public: // Aliases
-    using Ptr = std::shared_ptr<Type>;
-    using Vec = std::vector<Ptr>;
+    using Ptr   = std::unique_ptr<Type>;
+    using Vec   = std::vector<Ptr>;
+    using Named = std::pair<std::string, Ptr>;
 
 public: // Methods
     virtual ~Type() = default;
-    friend std::ostream & ::operator<<(std::ostream &os, const Type &type);
+    friend std::ostream &operator<<(std::ostream &os, const Type &type);
 
 protected: // Methods
     explicit Type(yy::location loc);
-    const yy::location &getLoc() const;
-    virtual void        json(std::ostream &os) const = 0;
+    virtual void json(std::ostream &os) const = 0;
+
+    [[nodiscard]] const yy::location &getLoc() const;
 
 private: // Fields
     yy::location loc;

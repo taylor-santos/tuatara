@@ -92,8 +92,8 @@ TEST(ASTTest, ValueDeclarationNodeJSON) {
 TEST(ASTTest, TypeDeclarationNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
-    auto               type = make_shared<TypeChecker::Object>(loc, "class_name");
-    TypeDeclaration    node(loc, "var", type);
+    auto               type = make_unique<TypeChecker::Object>(loc, "class_name");
+    TypeDeclaration    node(loc, "var", move(type));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -107,9 +107,9 @@ TEST(ASTTest, TypeDeclarationNodeJSON) {
 TEST(ASTTest, TypeValueDeclarationNodeJSON) {
     std::ostringstream   ss;
     yy::location         loc;
-    auto                 type = make_shared<TypeChecker::Object>(loc, "class_name");
+    auto                 type = make_unique<TypeChecker::Object>(loc, "class_name");
     auto                 val  = make_unique<Int>(loc, 123);
-    TypeValueDeclaration node(loc, "var", type, move(val));
+    TypeValueDeclaration node(loc, "var", move(type), move(val));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -162,10 +162,10 @@ TEST(ASTTest, IfNodeJSON) {
 TEST(ASTTest, IfElseNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
-    auto               cond      = make_unique<Bool>(loc, true);
-    auto               stmt      = make_unique<Int>(loc, 123);
-    auto               else_stmt = make_unique<Float>(loc, 4.56);
-    If                 node(loc, move(cond), move(stmt), move(else_stmt));
+    auto               cond     = make_unique<Bool>(loc, true);
+    auto               stmt     = make_unique<Int>(loc, 123);
+    auto               elseStmt = make_unique<Float>(loc, 4.56);
+    If                 node(loc, move(cond), move(stmt), move(elseStmt));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -217,13 +217,31 @@ TEST(ASTTest, CallNodeJSON) {
         R"("name":"b"}})");
 }
 
+TEST(ASTTest, IndexNodeJSON) {
+    std::ostringstream ss;
+    yy::location       loc;
+    auto               expr  = make_unique<Variable>(loc, "a");
+    auto               index = make_unique<Variable>(loc, "b");
+    Index              node(loc, move(expr), move(index));
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        R"({"node":"array index",)"
+        R"("expr":{)"
+        R"("node":"variable",)"
+        R"("name":"a"},)"
+        R"("index":{)"
+        R"("node":"variable",)"
+        R"("name":"b"}})");
+}
+
 TEST(ASTTest, FuncDeclarationNodeJSON) {
-    std::ostringstream                           ss;
-    yy::location                                 loc;
-    string                                       name = "foo";
-    vector<pair<string, TypeChecker::Type::Ptr>> args;
-    args.emplace_back(make_pair("arg", make_shared<TypeChecker::Object>(loc, "S")));
-    auto            ret = make_shared<TypeChecker::Object>(loc, "T");
+    std::ostringstream               ss;
+    yy::location                     loc;
+    string                           name = "foo";
+    vector<TypeChecker::Type::Named> args;
+    args.emplace_back(make_pair("arg", make_unique<TypeChecker::Object>(loc, "S")));
+    auto            ret = make_unique<TypeChecker::Object>(loc, "T");
     FuncDeclaration node(loc, name, move(args), move(ret));
     ss << node;
     EXPECT_EQ(
@@ -241,12 +259,12 @@ TEST(ASTTest, FuncDeclarationNodeJSON) {
 }
 
 TEST(ASTTest, FuncImplNodeJSON) {
-    std::ostringstream                           ss;
-    yy::location                                 loc;
-    string                                       name = "foo";
-    vector<pair<string, TypeChecker::Type::Ptr>> args;
-    args.emplace_back(make_pair("arg", make_shared<TypeChecker::Object>(loc, "S")));
-    auto     ret  = make_shared<TypeChecker::Object>(loc, "T");
+    std::ostringstream               ss;
+    yy::location                     loc;
+    string                           name = "foo";
+    vector<TypeChecker::Type::Named> args;
+    args.emplace_back(make_pair("arg", make_unique<TypeChecker::Object>(loc, "S")));
+    auto     ret  = make_unique<TypeChecker::Object>(loc, "T");
     auto     stmt = make_unique<Variable>(loc, "b");
     FuncImpl node(loc, name, move(args), move(ret), move(stmt));
     ss << node;
@@ -294,19 +312,30 @@ TEST(ASTTest, ClassDeclarationNodeJSON) {
     yy::location              loc;
     vector<string>            supers;
     ClassDeclaration::Members members;
-    members.fields.push_back({"field", make_shared<TypeChecker::Object>(loc, "A")});
-    vector<pair<string, TypeChecker::Type::Ptr>> method_args{
-        {{"arg", make_shared<TypeChecker::Object>(loc, "B")}}};
-    members.methods.push_back(make_unique<FuncDeclaration>(
-        loc,
-        "method",
-        method_args,
-        make_shared<TypeChecker::Object>(loc, "C")));
-    members.operators.push_back(
-        {"+",
-         {"other", make_shared<TypeChecker::Object>(loc, "class_name")},
-         make_shared<TypeChecker::Object>(loc, "class_name")});
-    members.ctors.push_back({{{"arg", make_shared<TypeChecker::Object>(loc, "D")}}});
+
+    { members.fields.push_back({"field", make_unique<TypeChecker::Object>(loc, "A")}); }
+    {
+        vector<TypeChecker::Type::Named> methodArgs;
+        methodArgs.emplace_back("arg", make_unique<TypeChecker::Object>(loc, "B"));
+        members.methods.push_back(make_unique<FuncDeclaration>(
+            loc,
+            "method",
+            move(methodArgs),
+            make_unique<TypeChecker::Object>(loc, "C")));
+    }
+    {
+        members.operators.push_back(
+            {"+",
+             {"other", make_unique<TypeChecker::Object>(loc, "class_name")},
+             make_unique<TypeChecker::Object>(loc, "class_name")});
+    }
+    {
+        vector<TypeChecker::Type::Named> ctorArgs;
+        ctorArgs.emplace_back("arg", make_unique<TypeChecker::Object>(loc, "D"));
+        ClassDeclaration::Constructor ctor{move(ctorArgs)};
+        members.ctors.push_back(move(ctor));
+    }
+
     ClassDeclaration node(loc, "class_name", {"super"}, move(members));
     ss << node;
     EXPECT_EQ(

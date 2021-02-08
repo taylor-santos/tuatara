@@ -1,10 +1,9 @@
 #include "type/array.h"
 #include "json.h"
 
-#include <utility>
-
-using namespace TypeChecker;
 using namespace std;
+
+namespace TypeChecker {
 
 Array::Array(yy::location loc, Type::Ptr type)
     : Type(loc)
@@ -16,3 +15,5 @@ Array::json(ostream &os) const {
     obj.KeyValue("kind", "array");
     obj.KeyValue("type", *type);
 }
+
+} // namespace TypeChecker

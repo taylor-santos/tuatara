@@ -1,10 +1,9 @@
 #include "ast/int.h"
 #include "json.h"
 
-#include <utility>
-
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Int::Int(const yy::location &loc, int64_t value)
     : Expression(loc)
@@ -16,3 +15,5 @@ Int::json(ostream &os) const {
     obj.KeyValue("node", "int");
     obj.KeyValue("value", value);
 }
+
+} // namespace AST

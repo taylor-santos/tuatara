@@ -15,21 +15,17 @@ public: // Aliases
     using Vec = std::vector<Ptr>;
 
 public: // Classes
-    struct Arg {
-        std::string            name;
-        TypeChecker::Type::Ptr type;
-    };
     struct Field {
         std::string            name;
         TypeChecker::Type::Ptr type;
     };
     struct Operator {
         std::string                           operation;
-        Arg                                   arg;
-        std::optional<TypeChecker::Type::Ptr> ret_type;
+        TypeChecker::Type::Named              arg;
+        std::optional<TypeChecker::Type::Ptr> retType;
     };
     struct Constructor {
-        std::vector<Arg> args;
+        std::vector<TypeChecker::Type::Named> args;
     };
     struct Members {
         std::vector<Field>                fields;

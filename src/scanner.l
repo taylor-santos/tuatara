@@ -62,7 +62,7 @@ exp     [eE][+-]?{digit}+
 blank   [ \t]+
 nan     (?i:nan)
 inf     (?i:inf)
-op      [+\-*/\\=%<>&!@#$^~]+
+op      [+\-*/\\=%<>&|!@#$^~]+
 
 %{
 
@@ -137,6 +137,8 @@ op      [+\-*/\\=%<>&!@#$^~]+
 "if"        return_token(IF);
 "while"     return_token(WHILE);
 "else"      return_token(ELSE);
+"then"      return_token(THEN);
+"do"        return_token(DO);
 "true"      return_value_token(BOOL, true);
 "false"     return_value_token(BOOL, false);
 "="         return_token(ASSIGN);
@@ -151,6 +153,8 @@ op      [+\-*/\\=%<>&!@#$^~]+
 "<"         return_token(LANGLE);
 ">"         return_token(RANGLE);
 ","         return_token(COMMA);
+"&"         return_token(AND);
+"|"         return_token(OR);
 {op}        return_value_token(OPERATION, yytext);
 
 {digit}+                    { LEX_INT(); }
@@ -195,7 +199,7 @@ Scanner::Scanner()
 Scanner::~Scanner() {}
 
 void
-Scanner::set_debug(bool b) {
+Scanner::setDebug(bool b) {
     yy_flex_debug = b;
 }
 

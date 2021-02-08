@@ -1,10 +1,9 @@
 #include "ast/float.h"
 #include "json.h"
 
-#include <utility>
-
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Float::Float(const yy::location &loc, double value)
     : Expression(loc)
@@ -16,3 +15,5 @@ Float::json(ostream &os) const {
     obj.KeyValue("node", "float");
     obj.KeyValue("value", value);
 }
+
+} // namespace AST

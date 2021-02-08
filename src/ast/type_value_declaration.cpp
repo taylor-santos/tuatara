@@ -1,6 +1,5 @@
 #include "ast/type_value_declaration.h"
 
-#include <utility>
 #include "json.h"
 
 using namespace AST;

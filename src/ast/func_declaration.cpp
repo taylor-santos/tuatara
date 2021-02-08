@@ -1,6 +1,5 @@
 #include "ast/func_declaration.h"
 
-#include <utility>
 #include "json.h"
 
 using namespace AST;
@@ -8,13 +7,17 @@ using namespace TypeChecker;
 using namespace std;
 
 FuncDeclaration::FuncDeclaration(
-    const yy::location &            loc,
-    string                          variable,
-    vector<pair<string, Type::Ptr>> args,
-    optional<Type::Ptr>             ret_type)
+    const yy::location &loc,
+    string              variable,
+    vector<Type::Named> args,
+    Type::Ptr           retType)
     : Declaration(loc, move(variable))
     , args{move(args)}
-    , ret_type{move(ret_type)} {}
+    , retType{move(retType)} {}
+
+FuncDeclaration::FuncDeclaration(const yy::location &loc, string variable, vector<Type::Named> args)
+    : Declaration(loc, move(variable))
+    , args{move(args)} {}
 
 void
 FuncDeclaration::json(ostream &os) const {
@@ -31,17 +34,20 @@ FuncDeclaration::json(ostream &os) const {
             argObj.KeyValue("type", *arg.second);
         }
     }
-    if (ret_type) {
-        obj.KeyValue("return type", **ret_type);
+    if (retType) {
+        obj.KeyValue("return type", *retType);
     }
 }
 
-const vector<pair<string, TypeChecker::Type::Ptr>> &
+const vector<TypeChecker::Type::Named> &
 FuncDeclaration::getArgs() const {
     return args;
 }
 
-const optional<TypeChecker::Type::Ptr> &
+optional<reference_wrapper<const TypeChecker::Type>>
 FuncDeclaration::getRetType() const {
-    return ret_type;
+    if (retType) {
+        return *retType;
+    }
+    return {};
 }

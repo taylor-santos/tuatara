@@ -94,12 +94,12 @@ TEST(ScannerTest, Float) {
 
 TEST(ScannerTest, NaN) {
     yy::Scanner        scan;
-    int                example_count = 8;
+    int                exampleCount = 8;
     std::istringstream iss(R"(nan Nan nAn NAn naN NaN nAN NAN)");
     std::ostringstream oss;
     scan.switch_streams(iss, oss);
     yy::Driver drv;
-    for (int i = 0; i < example_count; i++) {
+    for (int i = 0; i < exampleCount; i++) {
         auto tok = scan.yylex(drv);
         auto got = tok.value.as<double>();
         EXPECT_TRUE(std::isnan(got));
@@ -111,12 +111,12 @@ TEST(ScannerTest, NaN) {
 
 TEST(ScannerTest, Infinity) {
     yy::Scanner        scan;
-    int                example_count = 8;
+    int                exampleCount = 8;
     std::istringstream iss(R"(inf Inf iNf INf inF InF iNF INF)");
     std::ostringstream oss;
     scan.switch_streams(iss, oss);
     yy::Driver drv;
-    for (int i = 0; i < example_count; i++) {
+    for (int i = 0; i < exampleCount; i++) {
         auto tok = scan.yylex(drv);
         auto got = tok.value.as<double>();
         EXPECT_TRUE(std::isinf(got));

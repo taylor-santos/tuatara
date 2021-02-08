@@ -20,7 +20,7 @@ public:
     ~Driver();
 
     int parse(std::istream &in = std::cin, std::ostream &out = std::cerr);
-    int parse_file(const char *path);
+    int parseFile(const char *path);
 
     AST::Statement::Vec statements;
 

@@ -15,15 +15,15 @@
 
 namespace yy {
 
-class Scanner : public yyFlexLexer {
+class Scanner final : public yyFlexLexer {
 public:
     Scanner();
 
-    virtual ~Scanner();
+    ~Scanner() final;
 
     virtual Parser::symbol_type yylex(Driver &driver);
 
-    void set_debug(bool b);
+    [[maybe_unused]] void setDebug(bool b);
 };
 
 } // namespace yy

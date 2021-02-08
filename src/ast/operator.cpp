@@ -1,8 +1,9 @@
 #include "ast/operator.h"
 #include "json.h"
 
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Operator::Operator(const yy::location &loc, string op, Expression::Ptr lhs, Expression::Ptr rhs)
     : LValue(loc)
@@ -18,3 +19,5 @@ Operator::json(ostream &os) const {
     obj.KeyValue("lhs", *lhs);
     obj.KeyValue("rhs", *rhs);
 }
+
+} // namespace AST

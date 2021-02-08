@@ -10,11 +10,11 @@ e = true;
     g = 123;
 }
 var cond = true;
-while cond {
+while cond do {
     cond = false;
 }
-if true a = 10; else b = 20.;
-if false {
+if true then a = 10; else b = 20.;
+if false then {
     var x = a;
 } else {
     var x = d;
@@ -26,8 +26,14 @@ func caller(fn: int->int, arg:int) -> int {
 class Foo {
     x: int;
     y: double;
-    fn: int -> (int, int);
+    fn: int -> (int & int);
     func someMethod(z: int) -> double;
     operator+(other: Foo) -> Foo;
     new(x: int, y: int);
 }
+
+a + b, c + d;
+
+(a + b) * c;
+
+var a: (Foo | Bar) & Baz;

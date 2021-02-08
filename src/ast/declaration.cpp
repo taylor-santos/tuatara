@@ -1,9 +1,8 @@
 #include "ast/declaration.h"
 
-#include <utility>
-
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Declaration::Declaration(const yy::location &loc, string variable)
     : Statement(loc)
@@ -13,3 +12,5 @@ const string &
 Declaration::getVariable() const {
     return variable;
 }
+
+} // namespace AST

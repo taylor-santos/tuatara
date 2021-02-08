@@ -1,8 +1,9 @@
 #include "ast/call.h"
 #include "json.h"
 
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Call::Call(const yy::location &loc, Expression::Ptr function, optional<Expression::Ptr> arg)
     : LValue(loc)
@@ -18,3 +19,5 @@ Call::json(ostream &os) const {
         obj.KeyValue("arg", **arg);
     }
 }
+
+} // namespace AST

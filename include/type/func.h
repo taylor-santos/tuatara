@@ -9,16 +9,16 @@ namespace TypeChecker {
 
 class Func final : public Type {
 public: // Aliases
-    using Ptr = std::shared_ptr<Func>;
+    using Ptr = std::unique_ptr<Func>;
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    Func(yy::location loc, std::optional<Type::Ptr> arg_type, std::optional<Type::Ptr> ret_type);
+    Func(yy::location loc, std::optional<Type::Ptr> argType, std::optional<Type::Ptr> retType);
     ~Func() override = default;
 
 private: // Fields
-    std::optional<Type::Ptr> arg_type;
-    std::optional<Type::Ptr> ret_type;
+    std::optional<Type::Ptr> argType;
+    std::optional<Type::Ptr> retType;
 
 private: // Methods
     void json(std::ostream &os) const override;

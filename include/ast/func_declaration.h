@@ -5,6 +5,7 @@
 #include "type/type.h"
 
 #include <optional>
+#include <functional>
 
 namespace AST {
 
@@ -15,18 +16,23 @@ public: // Aliases
 
 public: // Methods
     FuncDeclaration(
-        const yy::location &                                        loc,
-        std::string                                                 variable,
-        std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> args,
-        std::optional<TypeChecker::Type::Ptr>                       ret_type);
+        const yy::location &                  loc,
+        std::string                           variable,
+        std::vector<TypeChecker::Type::Named> args,
+        TypeChecker::Type::Ptr                retType);
+
+    FuncDeclaration(
+        const yy::location &                  loc,
+        std::string                           variable,
+        std::vector<TypeChecker::Type::Named> args);
 
 protected: // Methods
-    const std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> &getArgs() const;
-    const std::optional<TypeChecker::Type::Ptr> &                      getRetType() const;
+    [[nodiscard]] const std::vector<TypeChecker::Type::Named> &                  getArgs() const;
+    [[nodiscard]] std::optional<std::reference_wrapper<const TypeChecker::Type>> getRetType() const;
 
 private: // Fields
-    std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> args;
-    std::optional<TypeChecker::Type::Ptr>                       ret_type;
+    std::vector<TypeChecker::Type::Named> args;
+    TypeChecker::Type::Ptr                retType;
 
 private: // Methods
     void json(std::ostream &os) const override;

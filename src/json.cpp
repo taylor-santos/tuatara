@@ -2,14 +2,16 @@
 
 using namespace std;
 
-int  JSON::JSON::JSON::indent   = 0;
-bool JSON::JSON::JSON::minimize = true;
+namespace JSON {
 
-JSON::JSON::JSON(std::ostream &out)
+int  JSON::indent   = 0;
+bool JSON::minimize = true;
+
+JSON::JSON(ostream &out)
     : out{out} {}
 
 void
-JSON::JSON::Key(const std::string &key) {
+JSON::Key(const string &key) {
     if (!first) {
         out << ',';
     }
@@ -25,17 +27,17 @@ JSON::JSON::Key(const std::string &key) {
 }
 
 void
-JSON::JSON::Indent() {
+JSON::Indent() {
     out << string(indent, '\t');
 }
 
-JSON::Object::Object(ostream &out)
+Object::Object(ostream &out)
     : JSON(out) {
     out << "{";
     indent++;
 }
 
-JSON::Object::~Object() {
+Object::~Object() {
     indent--;
     if (!minimize && !first) {
         out << endl;
@@ -45,30 +47,30 @@ JSON::Object::~Object() {
 }
 
 void
-JSON::Object::KeyValue(const std::string &key, const std::string &value) {
+Object::KeyValue(const string &key, const string &value) {
     Key(key);
     out << '"' << value << '"';
 }
 
 void
-JSON::Object::KeyValue(const string &key, const char *value) {
+Object::KeyValue(const string &key, const char *value) {
     Key(key);
     out << '"' << value << '"';
 }
 
 void
-JSON::Object::KeyValue(const string &key, bool value) {
+Object::KeyValue(const string &key, bool value) {
     Key(key);
-    out << std::boolalpha << value;
+    out << boolalpha << value;
 }
 
-JSON::Array::Array(ostream &out)
+Array::Array(ostream &out)
     : JSON(out) {
     out << "[";
     indent++;
 }
 
-JSON::Array::~Array() {
+Array::~Array() {
     indent--;
     if (!minimize && !first) {
         out << endl;
@@ -78,7 +80,7 @@ JSON::Array::~Array() {
 }
 
 void
-JSON::Array::Next() {
+Array::Next() {
     if (!first) {
         out << ',';
     }
@@ -90,7 +92,9 @@ JSON::Array::Next() {
 }
 
 void
-JSON::Array::String(const string &str) {
+Array::String(const string &str) {
     Next();
     out << '"' << str << '"';
 }
+
+} // namespace JSON

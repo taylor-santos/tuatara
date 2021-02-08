@@ -7,7 +7,7 @@ namespace TypeChecker {
 
 class Array final : public Type {
 public: // Aliases
-    using Ptr = std::shared_ptr<Array>;
+    using Ptr = std::unique_ptr<Array>;
     using Vec = std::vector<Ptr>;
 
 public: // Methods

@@ -1,6 +1,5 @@
 #include "ast/func_impl.h"
 
-#include <utility>
 #include "json.h"
 
 using namespace AST;
@@ -8,12 +7,20 @@ using namespace TypeChecker;
 using namespace std;
 
 FuncImpl::FuncImpl(
-    const yy::location &            loc,
-    string                          variable,
-    vector<pair<string, Type::Ptr>> args,
-    optional<Type::Ptr>             ret_type,
-    Statement::Ptr                  body)
-    : FuncDeclaration(loc, move(variable), move(args), move(ret_type))
+    const yy::location &loc,
+    string              variable,
+    vector<Type::Named> args,
+    Type::Ptr           retType,
+    Statement::Ptr      body)
+    : FuncDeclaration(loc, move(variable), move(args), move(retType))
+    , body{move(body)} {}
+
+FuncImpl::FuncImpl(
+    const yy::location &loc,
+    string              variable,
+    vector<Type::Named> args,
+    Statement::Ptr      body)
+    : FuncDeclaration(loc, move(variable), move(args))
     , body{move(body)} {}
 
 void
@@ -33,7 +40,7 @@ FuncImpl::json(ostream &os) const {
     }
     auto retType = getRetType();
     if (retType) {
-        obj.KeyValue("return type", **retType);
+        obj.KeyValue("return type", *retType);
     }
     obj.KeyValue("body", *body);
 }

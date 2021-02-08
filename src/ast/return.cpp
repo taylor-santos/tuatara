@@ -1,10 +1,9 @@
 #include "ast/return.h"
 #include "json.h"
 
-#include <utility>
-
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Return::Return(const yy::location &loc)
     : Statement(loc) {}
@@ -21,3 +20,5 @@ Return::json(ostream &os) const {
         obj.KeyValue("returns", **value);
     }
 }
+
+} // namespace AST

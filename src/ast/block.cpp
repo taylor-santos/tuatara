@@ -1,8 +1,9 @@
 #include "ast/block.h"
 #include "json.h"
 
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Block::Block(const yy::location &loc, Statement::Vec stmts)
     : Expression(loc)
@@ -13,9 +14,7 @@ Block::json(ostream &os) const {
     JSON::Object obj(os);
     obj.KeyValue("node", "block");
     obj.Key("statements");
-    JSON::Array arr(os);
-    for (const auto &stmt : stmts) {
-        arr.Next();
-        os << *stmt;
-    }
+    JSON::Array(os) << stmts;
 }
+
+} // namespace AST

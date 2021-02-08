@@ -1,18 +1,18 @@
-#ifndef TYPE_TUPLE_H
-#define TYPE_TUPLE_H
+#ifndef TYPE_PRODUCT_H
+#define TYPE_PRODUCT_H
 
 #include "type/type.h"
 
 namespace TypeChecker {
 
-class Tuple final : public Type {
+class Product final : public Type {
 public: // Aliases
-    using Ptr = std::shared_ptr<Tuple>;
+    using Ptr = std::unique_ptr<Product>;
     using Vec = std::vector<Ptr>;
 
 public: // Fields
-    Tuple(yy::location loc, std::vector<Type::Ptr> types);
-    ~Tuple() override = default;
+    Product(yy::location loc, std::vector<Type::Ptr> types);
+    ~Product() override = default;
 
 private: // Fields
     std::vector<Type::Ptr> types;
@@ -23,4 +23,4 @@ private: // Methods
 
 } // namespace TypeChecker
 
-#endif // TYPE_TUPLE_H
+#endif // TYPE_PRODUCT_H

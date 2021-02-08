@@ -207,7 +207,7 @@ TEST(ParserTest, Block) {
 }
 
 TEST(ParserTest, IfStatement) {
-    std::istringstream iss(R"(if true 123;)");
+    std::istringstream iss(R"(if true then 123;)");
     std::ostringstream oss;
     yy::Driver         drv;
     EXPECT_EQ(drv.parse(iss, oss), 0);
@@ -230,7 +230,7 @@ TEST(ParserTest, IfStatement) {
 }
 
 TEST(ParserTest, IfStatementElseStatement) {
-    std::istringstream iss(R"(if true 123; else 456;)");
+    std::istringstream iss(R"(if true then 123; else 456;)");
     std::ostringstream oss;
     yy::Driver         drv;
     EXPECT_EQ(drv.parse(iss, oss), 0);
@@ -256,7 +256,7 @@ TEST(ParserTest, IfStatementElseStatement) {
 }
 
 TEST(ParserTest, WhileStatement) {
-    std::istringstream iss(R"(while true 123;)");
+    std::istringstream iss(R"(while true do 123;)");
     std::ostringstream oss;
     yy::Driver         drv;
     EXPECT_EQ(drv.parse(iss, oss), 0);
@@ -381,6 +381,56 @@ TEST(ParserTest, FunctionCallTwoArgs) {
             R"({"node":"int",)"
             R"("value":456}]}})");
     }) << "Expected AST node to be a Function Call";
+}
+
+TEST(ParserTest, ArrayIndexOneArg) {
+    std::istringstream iss(R"(arr[123];)");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::Index &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(
+            ss.str(),
+            R"({"node":"array index",)"
+            R"("expr":{)"
+            R"("node":"variable",)"
+            R"("name":"arr"},)"
+            R"("index":{)"
+            R"("node":"int",)"
+            R"("value":123}})");
+    }) << "Expected AST node to be an Array Index";
+}
+
+TEST(ParserTest, ArrayIndexTwoArgs) {
+    std::istringstream iss(R"(arr[123, 456];)");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::Index &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(
+            ss.str(),
+            R"({"node":"array index",)"
+            R"("expr":{)"
+            R"("node":"variable",)"
+            R"("name":"arr"},)"
+            R"("index":{)"
+            R"("node":"tuple",)"
+            R"("expressions":[{)"
+            R"("node":"int",)"
+            R"("value":123},)"
+            R"({"node":"int",)"
+            R"("value":456}]}})");
+    }) << "Expected AST node to be an Array Index";
 }
 
 TEST(ParserTest, NullaryVoidFuncTypeDeclaration) {
@@ -532,8 +582,8 @@ TEST(ParserTest, MultidimensionalArrays) {
     }) << "Expected AST node to be an Array Type Declaration";
 }
 
-TEST(ParserTest, TupleTypeDeclaration) {
-    std::istringstream iss(R"(var tup: (A, B);)");
+TEST(ParserTest, ProductTypeDeclaration) {
+    std::istringstream iss(R"(var prod: (A & B & C);)");
     std::ostringstream oss;
     yy::Driver         drv;
     EXPECT_EQ(drv.parse(iss, oss), 0);
@@ -546,15 +596,44 @@ TEST(ParserTest, TupleTypeDeclaration) {
         EXPECT_EQ(
             ss.str(),
             R"({"node":"type declaration",)"
-            R"("variable":"tup",)"
+            R"("variable":"prod",)"
             R"("type":{)"
-            R"("kind":"tuple",)"
+            R"("kind":"product",)"
             R"("types":[{)"
             R"("kind":"object",)"
             R"("class":"A"},)"
             R"({"kind":"object",)"
-            R"("class":"B"}]}})");
-    }) << "Expected AST node to be a Tuple Type Declaration";
+            R"("class":"B"},)"
+            R"({"kind":"object",)"
+            R"("class":"C"}]}})");
+    }) << "Expected AST node to be a Product Type Declaration";
+}
+
+TEST(ParserTest, SumTypeDeclaration) {
+    std::istringstream iss(R"(var sum: (A | B | C);)");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
+    EXPECT_NO_THROW({
+        const auto &       node = dynamic_cast<AST::TypeDeclaration &>(*drv.statements[0]);
+        std::ostringstream ss;
+        ss << node;
+        EXPECT_EQ(
+            ss.str(),
+            R"({"node":"type declaration",)"
+            R"("variable":"sum",)"
+            R"("type":{)"
+            R"("kind":"sum",)"
+            R"("types":[{)"
+            R"("kind":"object",)"
+            R"("class":"A"},)"
+            R"({"kind":"object",)"
+            R"("class":"B"},)"
+            R"({"kind":"object",)"
+            R"("class":"C"}]}})");
+    }) << "Expected AST node to be a Product Type Declaration";
 }
 
 TEST(ParserTest, MissingSemicolon) {
@@ -693,7 +772,7 @@ TEST(ParserTest, GreaterThanOperator) {
 
 TEST(ParserTest, ClassDeclaration) {
     std::istringstream iss(R"(
-        class Foo: Bar {
+        class Foo: Bar, Baz {
             x: int;
             fn: int -> int;
             func method(a:int, b:int) -> int;
@@ -715,7 +794,8 @@ TEST(ParserTest, ClassDeclaration) {
             R"({"node":"class declaration",)"
             R"("name":"Foo",)"
             R"("supers":[)"
-            R"("Bar"],)"
+            R"("Bar",)"
+            R"("Baz"],)"
             R"("fields":[{)"
             R"("name":"x",)"
             R"("type":{)"

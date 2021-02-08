@@ -1,10 +1,5 @@
 #include "driver.h"
-#include "parser.tab.hh"
 #include "scanner.h"
-#include "location.hh"
-
-#include <memory>
-#include <iostream>
 
 namespace yy {
 
@@ -17,7 +12,7 @@ Driver::Driver()
     lines.emplace_back("");
 }
 
-Driver::~Driver() {}
+Driver::~Driver() = default;
 
 int
 Driver::parse(std::istream &in, std::ostream &out) {
@@ -27,7 +22,7 @@ Driver::parse(std::istream &in, std::ostream &out) {
 }
 
 int
-Driver::parse_file(const char *path) {
+Driver::parseFile(const char *path) {
     std::ifstream s(path, std::ifstream::in);
     std::string   filename(path);
     location->initialize(&filename);

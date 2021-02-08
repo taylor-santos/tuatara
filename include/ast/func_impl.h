@@ -12,11 +12,17 @@ public: // Aliases
 
 public: // Methods
     FuncImpl(
-        const yy::location &                                        loc,
-        std::string                                                 variable,
-        std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> args,
-        std::optional<TypeChecker::Type::Ptr>                       ret_type,
-        Statement::Ptr                                              body);
+        const yy::location &                  loc,
+        std::string                           variable,
+        std::vector<TypeChecker::Type::Named> args,
+        TypeChecker::Type::Ptr                retType,
+        Statement::Ptr                        body);
+
+    FuncImpl(
+        const yy::location &                  loc,
+        std::string                           variable,
+        std::vector<TypeChecker::Type::Named> args,
+        Statement::Ptr                        body);
 
 private: // Fields
     Statement::Ptr body;

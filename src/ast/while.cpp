@@ -1,8 +1,9 @@
 #include "ast/while.h"
 #include "json.h"
 
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 While::While(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt)
     : Statement(loc)
@@ -18,3 +19,5 @@ While::json(ostream &os) const {
     obj.Key("statement");
     os << *stmt;
 }
+
+} // namespace AST
