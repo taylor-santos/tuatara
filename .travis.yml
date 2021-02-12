@@ -5,6 +5,10 @@ jobs:
   include:
     - os: linux
       compiler: gcc
+      addons:
+        apt:
+          packages:
+            - clang-format-11
       before_install:
         - pip install --user cpp-coveralls
       after_success:
