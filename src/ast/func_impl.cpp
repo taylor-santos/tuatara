@@ -2,45 +2,40 @@
 
 #include "json.h"
 
-using namespace AST;
 using namespace TypeChecker;
 using namespace std;
 
-FuncImpl::FuncImpl(
-    const yy::location &loc,
-    string              variable,
-    vector<Type::Named> args,
-    Type::Ptr           retType,
-    Statement::Ptr      body)
-    : FuncDeclaration(loc, move(variable), move(args), move(retType))
-    , body{move(body)} {}
+namespace AST {
 
 FuncImpl::FuncImpl(
-    const yy::location &loc,
-    string              variable,
-    vector<Type::Named> args,
-    Statement::Ptr      body)
-    : FuncDeclaration(loc, move(variable), move(args))
-    , body{move(body)} {}
+    const yy::location &  loc,
+    string                variable,
+    Pattern::Pattern::Vec args,
+    Block::Ptr            body,
+    optional<Type::Ptr>   retType)
+    : FuncDeclaration(loc, move(variable), move(args), move(retType))
+    , body_{move(body)} {}
 
 void
 FuncImpl::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("node", "function impl");
-    obj.KeyValue("variable", getVariable());
-    {
-        obj.Key("args");
-        JSON::Array arr(os);
-        for (const auto &arg : getArgs()) {
-            arr.Next();
-            JSON::Object argObj(os);
-            argObj.KeyValue("name", arg.first);
-            argObj.KeyValue("type", *arg.second);
-        }
-    }
-    auto retType = getRetType();
-    if (retType) {
-        obj.KeyValue("return type", *retType);
-    }
-    obj.KeyValue("body", *body);
+    obj.printKeyValue("node", "function impl");
+    obj.printKeyValue("variable", getVariable());
+    obj.printKeyValue("args", getArgs());
+    obj.printKeyValue("return type", getRetType());
+    obj.printKeyValue("body", body_);
 }
+
+void
+FuncImpl::walk(const Func &fn) const {
+    FuncDeclaration::walk(fn);
+    body_->walk(fn);
+}
+
+const string &
+FuncImpl::getTypeName() const {
+    const static string name = "Func Impl";
+    return name;
+}
+
+} // namespace AST

@@ -1,35 +1,9 @@
-%{
-    #include "parser.tab.hh"
-    #include "scanner.h"
-
-    #define yylex driver.scanner->yylex
-%}
-
-%code requires {
-    #include <iostream>
-    #include "driver.h"
-    #include "location.hh"
-    #include "common.h"
-}
-
-%code provides {
-    namespace yy {
-
-        inline void
-        yyerror(const char* msg) {
-            std::cerr << msg << std::endl;
-        }
-
-    }
-}
-
-%require "3.3"
+%require "3.6.1"
 %language "C++"
 %locations
 %defines
-%token-table
-%parse-param {Driver &driver}
-%lex-param {Driver &driver}
+%parse-param {class Driver &driver}
+%lex-param {class Driver &driver}
 
 %define api.namespace {yy}
 %define api.parser.class {Parser}
@@ -38,49 +12,122 @@
 %define api.value.automove
 %define parse.assert
 %define parse.trace
-%define parse.error verbose
+%define parse.error custom
+%define parse.lac full
+%define api.token.prefix {TOK_}
 
 %{
-    #include "printer.h"
+// This block is inserted at the top of parser.tab.cc
 
-    using std::make_unique, std::make_pair;
+#ifdef _MSC_VER
+#    pragma warning(push)
+#    pragma warning(disable : 4005)
+#    pragma warning(disable : 4127)
+#    pragma warning(disable : 4244)
+#endif
+
+#include <sstream>
+
+#include "driver.h"
+#include "scanner.h"
+#include "printer.h"
+
+#define yylex driver.scanner->scan
+#define STRINGIFY_(X) #X
+#define STRINGIFY(X) STRINGIFY_(X)
+#define LOC_STR __FILE__ ":" STRINGIFY(__LINE__)
+
+using std::make_unique, std::make_pair;
+
+namespace yy {
+
+void
+Parser::error(const location_type& l, const std::string& m) {
+    Print::error(driver.output, m, l, driver.lines);
+}
+
+void
+Parser::report_syntax_error(yy::Parser::context const &ctx) const {
+    const auto &lookahead = ctx.lookahead();
+    auto location = ctx.location();
+    int num = ctx.expected_tokens(nullptr, 100);
+    std::stringstream ss;
+    ss << "syntax error: unexpected " << lookahead.name();
+    Print::error(driver.output, ss.str(), location, driver.lines);
+    std::unique_ptr<symbol_kind_type[]> expected(new symbol_kind_type[num]);
+    ctx.expected_tokens(expected.get(), num);
+    std::string sep = "expected: ";
+    std::string end = "";
+    for (int i = 0; i < num - 1; i++) {
+        driver.output.get() << sep << "\"" << symbol_name(expected[i]) << "\"";
+        sep = ", ";
+        end = "or ";
+    }
+    driver.output.get() << sep << end << "\"" << symbol_name(expected[num-1]) << "\"" << std::endl;
+}
+
+} // namespace yy
+
 %}
 
-%define api.token.prefix {TOK_}
+%code requires {
+// This block is inserted at the top of parser.tab.hh
+
+#include <iostream>
+
+#include "location.hh"
+#include "common.h"
+
+#ifdef _MSC_VER
+#    pragma warning(push)
+#    pragma warning(disable : 4065)
+#endif
+
+} // %code requires
+
+%code provides {
+// This block is inserted at the bottom of parser.tab.hh
+
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif
+
+} // %code provides
+
 %token
     EOF  0      "end of file"
+    NEWLINE     "line break"
+    INDENT      "indent"
+    OUTDENT     "outdent"
     VAR         "var"
     FUNC        "func"
     ARROW       "->"
-    RETURN      "return"
-    CLASS       "class"
-    IMPL        "impl"
-    NEW         "new"
-    OPERATOR    "operator"
     IF          "if"
-    WHILE       "while"
-    ELSE        "else"
     THEN        "then"
+    ELSE        "else"
+    WHILE       "while"
     DO          "do"
-    ASSIGN      "="
+    MATCH       "match"
     SEMICOLON   ";"
+    ASSIGN      "="
     COLON       ":"
     LPAREN      "("
     RPAREN      ")"
     LSQUARE     "["
     RSQUARE     "]"
-    LCURLY      "{"
-    RCURLY      "}"
+    LBRACE      "{"
+    RBRACE      "}"
     LANGLE      "<"
     RANGLE      ">"
     COMMA       ","
-    AND         "&"
     OR          "|"
+    QUESTION    "?"
+    WILDCARD    "_"
 
 %token<std::string>
     IDENT       "identifier"
     STRING      "string literal"
-    OPERATION   "operation"
+    OPERATION   "operator"
 %token<int64_t>
     INT     "int literal"
 %token<double>
@@ -89,130 +136,133 @@
     BOOL    "bool literal"
 
 %type<AST::Expression::Ptr>
-    literal
     primary_expression
+    expression_line
     expression
     operator_expression
-%type<AST::Expression::Vec>
-    tuple_expression
-%type<std::optional<AST::Expression::Ptr>>
-    opt_expression
-%type<AST::LValue::Ptr>
-    lvalue
-%type<AST::Statement::Ptr>
     declaration
     func_impl
-    class_decl
-    stmt
-    one_line_stmt
-    if_stmt
-    while_stmt
-    return_stmt
-    stmt_block
-%type<AST::Statement::Vec>
-    stmts
-    opt_stmts
+    while_expression
+    if_expression
+    ternary
+    lambda
+    value_pattern
+%type<AST::Expression::Vec>
+    opt_expressions
+    expressions
+    tuple_expression
+    multi_expression
+    multi_semi_expression
+%type<std::optional<AST::Expression::Ptr>>
+    opt_expression
+%type<AST::Literal::Ptr>
+    literal
+%type<AST::Block::Ptr>
+    block_expression
+%type<AST::LValue::Ptr>
+    lvalue
 %type<TypeChecker::Type::Ptr>
     type
     sum_type
-    product_type
-    array_type
+    post_type
     base_type
+    func_type
+    type_pattern
 %type<TypeChecker::Type::Vec>
     sum_type_list
     product_type_list
 %type<OptType>
     opt_type
     opt_sum_type
-%type<NamedTypeVec>
-    opt_types_decl
-    types_decl
-%type<NamedType>
-    type_decl
+    opt_ret_type
+%type<Pattern::Pattern::Ptr>
+    pattern
+%type<Pattern::Pattern::Vec>
+    opt_patterns
+    patterns
+    pattern_list
+%type<Pattern::Constraint::Ptr>
+    constraint_pattern
 %type<std::string>
-    operation
-    super
-%type<std::vector<std::string>>
-    opt_supers
-    supers
-%type<AST::ClassDeclaration::Members>
-    opt_member_decls
-    member_decls
-%type<AST::ClassDeclaration::Field>
-    field_decl
-%type<AST::FuncDeclaration::Ptr>
-    func_decl
-%type<AST::ClassDeclaration::Operator>
-    operator_decl
-%type<AST::ClassDeclaration::Constructor>
-    ctor_decl
+    operator
 
 %start file
 
 %%
 
 file
-    : opt_stmts {
+    : opt_expressions {
         driver.statements = $1;
     }
 
-opt_stmts
+opt_expressions
     : %empty {}
-    | stmts
+    | expressions
 
-stmts
-    : stmt {
+expression_line
+    : expression "line break" {
+        @$ = @1;
+        $$ = $1;
+    }
+    | if_expression
+    | while_expression
+    | match_expression {
+    
+    }
+
+expressions
+    : expression_line {
         $$.push_back($1);
     }
-    | stmts stmt {
+    | expressions expression_line {
         $$ = $1;
         $$.push_back($2);
     }
 
-stmt
-    : one_line_stmt
-    | if_stmt
-    | while_stmt
-    | return_stmt
-
-one_line_stmt
-    : declaration
-    | expression ";" {
-        $$ = $1;
+expression
+    : operator_expression
+    | declaration
+    | lambda
+    | ternary
+    | multi_expression {
+        $$ = make_unique<AST::Block>(@$, $1);
     }
-    | stmt_block
+    | tuple_expression {
+        $$ = make_unique<AST::Tuple>(@$, $1);
+    }
 
-stmt_block
-    : "{" opt_stmts "}" {
-        $$ = make_unique<AST::Block>(@$, $2);
+semicolons
+    : ";"
+    | semicolons ";"
+
+multi_semi_expression
+    : operator_expression semicolons {
+        $$.push_back($1);
+    }
+    | multi_semi_expression operator_expression semicolons {
+        $$ = $1;
+        $$.push_back($2);
+    }
+
+multi_expression
+    : multi_semi_expression
+    | multi_semi_expression operator_expression {
+        $$ = $1;
+        $$.push_back($2);
     }
 
 declaration
-    : "var" "identifier" "=" expression ";" {
+    : "var" "identifier" "=" expression {
         $$ = make_unique<AST::ValueDeclaration>(@$, $2, $4);
     }
-    | "var" "identifier" ":" type ";" {
+    | "var" "identifier" ":" type {
         $$ = make_unique<AST::TypeDeclaration>(@$, $2, $4);
     }
-    | "var" "identifier" ":" type "=" expression ";" {
+    | "var" "identifier" ":" type "=" expression {
         $$ = make_unique<AST::TypeValueDeclaration>(@$, $2, $4, $6);
     }
-    | func_decl ";" {
+    | func_impl {
         $$ = $1;
-    }
-    | func_impl
-    | class_decl
-
-opt_expression
-    : %empty {}
-    | expression {
-        $$ = $1;
-    }
-
-expression
-    : operator_expression
-    | tuple_expression {
-        $$ = make_unique<AST::Tuple>(@$, $1);
     }
 
 tuple_expression
@@ -227,12 +277,18 @@ tuple_expression
 
 operator_expression
     : primary_expression
-    | primary_expression operation primary_expression {
-        $$ = make_unique<AST::Operator>(@$, $2, $1, $3);
+    | primary_expression operator primary_expression {
+        $$ = make_unique<AST::InfixOperator>(@$, $2, $1, $3);
+    }
+    | primary_expression operator {
+        $$ = make_unique<AST::PostfixOperator>(@$, $2, $1);
+    }
+    | operator primary_expression {
+        $$ = make_unique<AST::PrefixOperator>(@$, $1, $2);
     }
 
-operation
-    : "operation"
+operator
+    : "operator"
     | "=" {
         $$ = "=";
     }
@@ -246,34 +302,70 @@ operation
         $$ = "|";
     }
 
-if_stmt
-    : "if" expression "then" one_line_stmt {
-        $$ = make_unique<AST::If>(@$, $2, $4);
-    }
-    | "if" expression "then" one_line_stmt "else" stmt {
-        $$ = make_unique<AST::If>(@$, $2, $4, $6);
+block_expression
+    : "line break" "indent" expressions "outdent" "line break" {
+        @$ = @3;
+        $$ = make_unique<AST::Block>(@$, $3);
     }
 
-while_stmt
-    : "while" expression "do" one_line_stmt {
+if_expression
+    : "if" expression "then" block_expression {
+        $$ = make_unique<AST::If>(@$, $2, $4);
+    }
+    | "if" expression "then" block_expression "else" block_expression {
+        $$ = make_unique<AST::IfElse>(@$, $2, $4, $6);
+    }
+
+ternary
+    : "if" expression "then" operator_expression {
+        AST::Expression::Vec stmts;
+        stmts.emplace_back($4);
+        $$ = make_unique<AST::If>(@$, $2, make_unique<AST::Block>(@4, move(stmts)));
+    }
+    | "if" expression "then" operator_expression "else" operator_expression {
+        AST::Expression::Vec trueStmts, falseStmts;
+        trueStmts.emplace_back($4);
+        falseStmts.emplace_back($6);
+        $$ = make_unique<AST::IfElse>(
+            @$,
+            $2,
+            make_unique<AST::Block>(@4, move(trueStmts)),
+            make_unique<AST::Block>(@6, move(falseStmts))
+        );
+    }
+
+while_expression
+    : "while" expression "do" block_expression {
         $$ = make_unique<AST::While>(@$, $2, $4);
     }
 
-return_stmt
-    : "return" ";" {
-        $$ = make_unique<AST::Return>(@$);
-    }
-    | "return" expression ";" {
-        $$ = make_unique<AST::Return>(@$, $2);
+match_expression
+    : "match" expression "line break" "indent" match_block "outdent" "line break" {
+        //TODO
+        throw Parser::syntax_error(@$, LOC_STR);
     }
 
+match_block
+    : pattern "->" expression "line break" 
+    | pattern "->" block_expression
+    | match_block pattern "->" expression "line break" 
+    | match_block pattern "->" block_expression
+
 primary_expression
-    : literal
+    : literal {
+        $$ = $1;
+    }
     | lvalue {
         $$ = $1;
     }
     | "(" expression ")" {
         $$ = $2;
+    }
+    | "{" "line break" "indent" expressions "outdent" "line break" "}" {
+        $$ = make_unique<AST::Block>(@$, $4);
+    }
+    | "(" ")" {
+        $$ = make_unique<AST::Unit>(@$);
     }
 
 lvalue
@@ -285,6 +377,12 @@ lvalue
     }
     | primary_expression "[" expression "]" {
         $$ = make_unique<AST::Index>(@$, $1, $3);
+    }
+
+opt_expression
+    : %empty {}
+    | expression {
+        $$ = move($1);
     }
 
 literal
@@ -309,7 +407,23 @@ opt_type
 
 type
     : sum_type
-    | opt_sum_type "->" opt_type {
+    | "(" func_type ")" {
+        $$ = $2;
+    }
+
+sum_type
+    : post_type {
+        $$ = $1;
+    }
+    | sum_type_list {
+        $$ = make_unique<TypeChecker::Sum>(@$, $1);
+    }
+
+func_type
+    : opt_sum_type "->" opt_type {
+        $$ = make_unique<TypeChecker::Func>(@$, $1, $3);
+    }
+    | opt_sum_type "->" func_type {
         $$ = make_unique<TypeChecker::Func>(@$, $1, $3);
     }
 
@@ -319,171 +433,137 @@ opt_sum_type
         $$ = $1;
     }
 
-sum_type
-    : product_type {
-        $$ = $1;
-    }
-    | sum_type_list {
-        $$ = make_unique<TypeChecker::Sum>(@$, $1);
-    }
-
 sum_type_list
-    : product_type "|" product_type {
+    : post_type "|" post_type {
         $$.push_back($1);
         $$.push_back($3);
     }
-    | sum_type_list "|" product_type {
+    | sum_type_list "|" post_type {
         $$ = $1;
         $$.push_back($3);
     }
 
-product_type
-    : array_type {
-        $$ = $1;
-    }
-    | product_type_list {
-        $$ = make_unique<TypeChecker::Product>(@$, $1);
-    }
-
-product_type_list
-    : array_type "&" array_type {
-        $$.push_back($1);
-        $$.push_back($3);
-    }
-    | product_type_list "&" array_type {
-        $$ = $1;
-        $$.push_back($3);
-    }
-
-array_type
+post_type
     : base_type
-    | array_type "[" "]" {
+    | post_type "[" "]" {
         $$ = make_unique<TypeChecker::Array>(@$, $1);
+    }
+    | post_type "?" {
+        $$ = make_unique<TypeChecker::Maybe>(@$, $1);
     }
 
 base_type
     : "identifier" {
         $$ = make_unique<TypeChecker::Object>(@$, $1);
     }
+    | "(" product_type_list ")" {
+        $$ = make_unique<TypeChecker::Product>(@$, $2);
+    }
     | "(" type ")" {
         $$ = $2;
     }
-
-func_decl
-    : "func" "identifier" "(" opt_types_decl ")" "->" type {
-        $$ = make_unique<AST::FuncDeclaration>(@$, $2, $4, $7);
+    | "(" ")" {
+        $$ = make_unique<TypeChecker::Unit>(@$);
     }
-    | "func" "identifier" "(" opt_types_decl ")" {
-        $$ = make_unique<AST::FuncDeclaration>(@$, $2, $4);
+
+product_type_list
+    : type "," type {
+        $$.push_back($1);
+        $$.push_back($3);
+    }
+    | product_type_list "," type {
+        $$ = $1;
+        $$.push_back($3);
     }
 
 func_impl
-    : "func" "identifier" "(" opt_types_decl ")" "->" type stmt_block {
-        $$ = make_unique<AST::FuncImpl>(@$, $2, $4, $7, $8);
-    }
-    | "func" "identifier" "(" opt_types_decl ")" stmt_block {
-        $$ = make_unique<AST::FuncImpl>(@$, $2, $4, $6);
+    : "func" "identifier" opt_patterns opt_ret_type "line break" "indent" expressions "outdent" {
+        @$ = yy::location{@1.begin, @7.end};
+        auto block = make_unique<AST::Block>(@7, $7);
+        $$ = make_unique<AST::FuncImpl>(@$, $2, $3, move(block), $4);
     }
 
-opt_types_decl
+lambda
+    : "func" opt_patterns opt_ret_type "->" expression {
+        $$ = make_unique<AST::Lambda>(@$, $2, $3, $5);
+    }
+
+opt_ret_type
     : %empty {}
-    | types_decl {
-        $$ = $1;
-    }
-
-types_decl
-    : type_decl {
-        $$.push_back($1);
-    }
-    | types_decl "," type_decl {
-        $$ = $1;
-        $$.push_back($3);
-    }
-
-type_decl
-    : "identifier" ":" type {
-        $$ = make_pair($1, $3);
-    }
-
-class_decl
-    : "class" "identifier" opt_supers "{" opt_member_decls "}" {
-        $$ = make_unique<AST::ClassDeclaration>(@$, $2, $3, $5);
-    }
-
-opt_supers
-    : %empty {}
-    | ":" supers {
+    | ":" type {
         $$ = $2;
     }
 
-supers
-    : super {
+opt_patterns
+    : %empty {}
+    | "(" ")" {}
+    | "(" patterns ")" {
+        $$ = $2;
+    }
+
+patterns
+    : pattern {
         $$.push_back($1);
     }
-    | supers "," super {
+    | pattern_list {
+        $$ = $1;
+    }
+
+pattern_list
+    : pattern "," pattern {
+        $$.push_back($1);
+        $$.push_back($3);
+    }
+    | pattern_list "," pattern {
         $$ = $1;
         $$.push_back($3);
     }
 
-super
-    : "identifier"
-
-opt_member_decls
-    : %empty {}
-    | member_decls
-
-member_decls
-    : field_decl ";" {
-        $$.fields.push_back($1);
+pattern
+    : "identifier" {
+        $$ = make_unique<Pattern::NamedWildcard>(@$, $1);
     }
-    | func_decl ";" {
-        $$.methods.push_back($1);
+    | literal {
+        $$ = make_unique<Pattern::Literal>(@$, $1);
     }
-    | operator_decl ";" {
-        $$.operators.push_back($1);
+    | "_" {
+        $$ = make_unique<Pattern::Wildcard>(@$);
     }
-    | ctor_decl ";" {
-        $$.ctors.push_back($1);
+    | "(" pattern ")" {
+        $$ = $2;
     }
-    | member_decls field_decl ";" {
+    | "(" pattern_list ")" {
+        $$ = make_unique<Pattern::Tuple>(@$, $2);
+    }
+    | constraint_pattern {
         $$ = $1;
-        $$.fields.push_back($2);
     }
-    | member_decls func_decl ";" {
-        $$ = $1;
-        $$.methods.push_back($2);
-    }
-    | member_decls operator_decl ";" {
-        $$ = $1;
-        $$.operators.push_back($2);
-    }
-    | member_decls ctor_decl ";" {
-        $$ = $1;
-        $$.ctors.push_back($2);
+    | "identifier" constraint_pattern {
+        $$ = make_unique<Pattern::NamedConstraint>(@$, $1, $2);
     }
 
-field_decl
-    : "identifier" ":" type {
-        $$ = AST::ClassDeclaration::Field{$1, $3};
+constraint_pattern
+    : value_pattern {
+        $$ = make_unique<Pattern::ValueConstraint>(@$, $1);
+    }
+    | type_pattern {
+        $$ = make_unique<Pattern::TypeConstraint>(@$, $1);
     }
 
-operator_decl
-    : "operator" operation "(" type_decl ")" "->" opt_type {
-        $$ = AST::ClassDeclaration::Operator{$2, $4, $7};
+type_pattern
+    : ":" type {
+        $$ = $2;
     }
 
-ctor_decl
-    : "new" "(" opt_types_decl ")" {
-        $$ = AST::ClassDeclaration::Constructor{$3};
+value_pattern
+    : "=" operator_expression {
+        $$ = $2;
     }
 
 %%
 
-namespace yy {
+// This block is inserted at the bottom of parser.tab.cc
 
-void
-Parser::error(const location_type& l, const std::string& m) {
-    Print::Error(driver.output, m, l, driver.lines);
-}
-
-}
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif

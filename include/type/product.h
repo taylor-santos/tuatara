@@ -13,9 +13,11 @@ public: // Aliases
 public: // Fields
     Product(yy::location loc, std::vector<Type::Ptr> types);
     ~Product() override = default;
+    void                             walk(const Func &fn) const override;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    std::vector<Type::Ptr> types;
+    std::vector<Type::Ptr> types_;
 
 private: // Methods
     void json(std::ostream &os) const override;

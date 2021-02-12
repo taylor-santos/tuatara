@@ -1,14 +1,21 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
+
+if (POLICY CMP0092)
+    cmake_policy(SET CMP0092 NEW)
+endif ()
+
 project(tuatara)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(BISON 3.2)
-find_package(FLEX)
+find_package(BISON 3.6.1 REQUIRED)
+find_package(FLEX 2.6 REQUIRED)
 
 bison_target(
         PARSER ${CMAKE_SOURCE_DIR}/src/parser.y
         ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.cc
+        VERBOSE grammar.output
+        COMPILE_FLAGS "-Wall"
 )
 flex_target(
         SCANNER ${CMAKE_SOURCE_DIR}/src/scanner.l
@@ -24,6 +31,9 @@ add_executable(${PROJECT_NAME}
         ${BISON_PARSER_OUTPUTS}
         ${FLEX_SCANNER_OUTPUTS}
         ${SRC})
+
+set(CMAKE_CONFIGURATION_TYPES Debug Analysis Release)
+SET(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING "" FORCE)
 
 # Tests
 # Download and unpack googletest at configure time
@@ -69,13 +79,41 @@ target_link_libraries(${TESTING_NAME} gtest_main)
 gtest_discover_tests(${TESTING_NAME})
 
 if (MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /analyze)
+    target_compile_options(${PROJECT_NAME} PRIVATE /Zc:__cplusplus /W4)
+    target_compile_options(${TESTING_NAME} PRIVATE /Zc:__cplusplus /W4)
     target_compile_definitions(${PROJECT_NAME} PRIVATE _CRT_SECURE_NO_WARNINGS)
+    if (CMAKE_BUILD_TYPE MATCHES Analysis)
+        target_compile_options(${PROJECT_NAME} PRIVATE /analyze)
+        target_compile_options(${TESTING_NAME} PRIVATE /analyze)
+    endif ()
 else ()
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -pedantic
-            -Wno-unused-parameter -fprofile-arcs -ftest-coverage)
-    target_compile_options(${TESTING_NAME} PRIVATE -O0 -Wall -Wextra -pedantic
-            -Wno-unused-parameter -fprofile-arcs -ftest-coverage)
-    target_link_libraries(${PROJECT_NAME} -lgcov --coverage)
-    target_link_libraries(${TESTING_NAME} -lgcov --coverage)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wshadow
+            -pedantic -fprofile-arcs -ftest-coverage)
+    target_compile_options(${TESTING_NAME} PRIVATE -O0 -Wall -Wextra -Wshadow
+            -pedantic -fprofile-arcs -ftest-coverage)
+    include(CheckCXXCompilerFlag)
+    check_cxx_compiler_flag(-Wsuggest-override HAVE_WSUGGEST_OVERRIDE)
+    if (HAVE_WSUGGEST_OVERRIDE)
+        target_compile_options(${PROJECT_NAME} PRIVATE -Wsuggest-override)
+        target_compile_options(${TESTING_NAME} PRIVATE -Wsuggest-override)
+    endif ()
+    if (CMAKE_BUILD_TYPE MATCHES Analysis)
+        check_cxx_compiler_flag(-fanalyzer HAVE_FANALYZE)
+        if (HAVE_FANALYZE)
+            target_compile_options(${PROJECT_NAME} PRIVATE -fanalyzer)
+            target_compile_options(${TESTING_NAME} PRIVATE -fanalyzer)
+        endif ()
+        check_cxx_compiler_flag(-analyze HAVE_ANALYZE)
+        if (HAVE_ANALYZE)
+            target_compile_options(${PROJECT_NAME} PRIVATE --analyze)
+            target_compile_options(${TESTING_NAME} PRIVATE --analyze)
+        endif ()
+    endif ()
+    if (APPLE)
+        target_link_libraries(${PROJECT_NAME} --coverage)
+        target_link_libraries(${TESTING_NAME} --coverage)
+    else ()
+        target_link_libraries(${PROJECT_NAME} -lgcov --coverage)
+        target_link_libraries(${TESTING_NAME} -lgcov --coverage)
+    endif ()
 endif ()

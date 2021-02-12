@@ -1,6 +1,29 @@
-#include "gtest/gtest.h"
-#include "driver.h"
+#ifdef _MSC_VER
+#    pragma warning(push)
+#    pragma warning(disable : 6326)
+#    pragma warning(disable : 4389)
+#endif
+
 #include "common.h"
+#include "driver.h"
+#include "gtest/gtest.h"
+
+#define EXPECT_JSON(INPUT, TYPE, JSON)                                                           \
+    do {                                                                                         \
+        std::istringstream iss(INPUT);                                                           \
+        std::ostringstream oss;                                                                  \
+        yy::Driver         drv;                                                                  \
+        EXPECT_EQ(drv.parse(iss, oss), 0);                                                       \
+        EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";                        \
+        ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement"; \
+        EXPECT_NO_THROW({                                                                        \
+            const auto &       node = dynamic_cast<AST::TYPE &>(*drv.statements[0]);             \
+            std::ostringstream ss;                                                               \
+            ss << node;                                                                          \
+            EXPECT_EQ(ss.str(), JSON);                                                           \
+        }) << "Expected AST node to be a "                                                       \
+           << #TYPE;                                                                             \
+    } while (0)
 
 TEST(ParserTest, EmptyFile) {
     std::istringstream iss("");
@@ -12,867 +35,469 @@ TEST(ParserTest, EmptyFile) {
 }
 
 TEST(ParserTest, IntLiteral) {
-    std::istringstream iss("123;");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Int &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(ss.str(), R"({"node":"int","value":123})");
-    }) << "Expected AST node to be an Int";
+    EXPECT_JSON("123", Int, R"({"node":"int","value":123})");
 }
 
 TEST(ParserTest, FloatLiteral) {
-    std::istringstream iss("123.456;");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Float &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(ss.str(), R"({"node":"float","value":123.456})");
-    }) << "Expected AST node to be a Float";
+    EXPECT_JSON("123.456", Float, R"({"node":"float","value":123.456})");
 }
 
 TEST(ParserTest, StringLiteral) {
-    std::istringstream iss(R"("foobar";)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::String &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(ss.str(), R"({"node":"string","value":"foobar"})");
-    }) << "Expected AST node to be a String";
+    EXPECT_JSON(R"("foobar")", String, R"({"node":"string","value":"foobar"})");
 }
 
-TEST(ParserTest, BoolLiteral) {
-    std::istringstream iss("true; false;");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 2) << "Expected statements list to have two statements";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Bool &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(ss.str(), R"({"node":"bool","value":true})");
-    }) << "Expected AST node to be a Bool";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Bool &>(*drv.statements[1]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(ss.str(), R"({"node":"bool","value":false})");
-    }) << "Expected AST node to be a Bool";
+TEST(ParserTest, BoolLiteralTrue) {
+    EXPECT_JSON("true\n", Bool, R"({"node":"bool","value":true})");
+}
+
+TEST(ParserTest, BoolLiteralFalse) {
+    EXPECT_JSON("false\n", Bool, R"({"node":"bool","value":false})");
 }
 
 TEST(ParserTest, Variable) {
-    std::istringstream iss("abc;");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Variable &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(ss.str(), R"({"node":"variable","name":"abc"})");
-    }) << "Expected AST node to be a Variable";
+    EXPECT_JSON("abc", Variable, R"({"node":"variable","name":"abc"})");
 }
 
 TEST(ParserTest, Assignment) {
-    std::istringstream iss("abc = 5;");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Operator &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"operator",)"
-            R"("operation":"=",)"
-            R"("lhs":{)"
-            R"("node":"variable",)"
-            R"("name":"abc"},)"
-            R"("rhs":{)"
-            R"("node":"int",)"
-            R"("value":5}})");
-    }) << "Expected AST node to be an Operator";
+    EXPECT_JSON(
+        "abc = 5",
+        InfixOperator,
+        R"({"node":"infix operator",)"
+        R"("operation":"=",)"
+        R"("lhs":{)"
+        R"("node":"variable",)"
+        R"("name":"abc"},)"
+        R"("rhs":{)"
+        R"("node":"int",)"
+        R"("value":5}})");
 }
 
 TEST(ParserTest, ValueDeclaration) {
-    std::istringstream iss("var abc = 123;");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::ValueDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"value declaration",)"
-            R"("variable":"abc",)"
-            R"("value":{)"
-            R"("node":"int",)"
-            R"("value":123}})");
-    }) << "Expected AST node to be a ValueDeclaration";
+    EXPECT_JSON(
+        "var abc = 123",
+        ValueDeclaration,
+        R"({"node":"value declaration",)"
+        R"("variable":"abc",)"
+        R"("value":{)"
+        R"("node":"int",)"
+        R"("value":123}})");
 }
 
 TEST(ParserTest, TypeDeclaration) {
-    std::istringstream iss("var abc: int;");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypeDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"type declaration",)"
-            R"("variable":"abc",)"
-            R"("type":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}})");
-    }) << "Expected AST node to be a TypeDeclaration";
+    EXPECT_JSON(
+        "var abc: int",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"abc",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}})");
 }
 
 TEST(ParserTest, TypeValueDeclaration) {
-    std::istringstream iss("var abc: int = 123;");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypeValueDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"type value declaration",)"
-            R"("variable":"abc",)"
-            R"("type":{)"
-            R"("kind":"object",)"
-            R"("class":"int"},)"
-            R"("value":{)"
-            R"("node":"int",)"
-            R"("value":123}})");
-    }) << "Expected AST node to be a TypeValueDeclaration";
+    EXPECT_JSON(
+        "var abc: int = 123",
+        TypeValueDeclaration,
+        R"({"node":"type value declaration",)"
+        R"("variable":"abc",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"},)"
+        R"("value":{)"
+        R"("node":"int",)"
+        R"("value":123}})");
 }
 
-TEST(ParserTest, Block) {
-    std::istringstream iss("{\n\t5;\n\t12.34;\n\tfalse;\n}");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Block &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"block",)"
-            R"("statements":[{)"
-            R"("node":"int",)"
-            R"("value":5},)"
-            R"({"node":"float",)"
-            R"("value":12.34},)"
-            R"({"node":"bool",)"
-            R"("value":false}]})");
-    }) << "Expected AST node to be a Block";
+TEST(ParserTest, IfBlock) {
+    EXPECT_JSON(
+        "if true then\n  abc\n  123",
+        If,
+        R"({"node":"if",)"
+        R"("cond":{)"
+        R"("node":"bool",)"
+        R"("value":true},)"
+        R"("if true":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"variable",)"
+        R"("name":"abc"},{)"
+        R"("node":"int",)"
+        R"("value":123}]}})");
 }
 
-TEST(ParserTest, IfStatement) {
-    std::istringstream iss(R"(if true then 123;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::If &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"if",)"
-            R"("cond":{)"
-            R"("node":"bool",)"
-            R"("value":true},)"
-            R"("statement":{)"
-            R"("node":"int",)"
-            R"("value":123}})");
-    }) << "Expected AST node to be an If Statement";
+TEST(ParserTest, IfTernary) {
+    EXPECT_JSON(
+        "if true then 123",
+        If,
+        R"({"node":"if",)"
+        R"("cond":{)"
+        R"("node":"bool",)"
+        R"("value":true},)"
+        R"("if true":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"int",)"
+        R"("value":123}]}})");
 }
 
-TEST(ParserTest, IfStatementElseStatement) {
-    std::istringstream iss(R"(if true then 123; else 456;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::If &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"if",)"
-            R"("cond":{)"
-            R"("node":"bool",)"
-            R"("value":true},)"
-            R"("statement":{)"
-            R"("node":"int",)"
-            R"("value":123},)"
-            R"("else":{)"
-            R"("node":"int",)"
-            R"("value":456}})");
-    }) << "Expected AST node to be an If Statement";
+TEST(ParserTest, IfElseTernary) {
+    EXPECT_JSON(
+        "if true then 123 else 456",
+        IfElse,
+        R"({"node":"if else",)"
+        R"("cond":{)"
+        R"("node":"bool",)"
+        R"("value":true},)"
+        R"("if true":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"int",)"
+        R"("value":123}]},)"
+        R"("if false":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"int",)"
+        R"("value":456}]}})");
 }
 
 TEST(ParserTest, WhileStatement) {
-    std::istringstream iss(R"(while true do 123;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::While &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"while",)"
-            R"("cond":{)"
-            R"("node":"bool",)"
-            R"("value":true},)"
-            R"("statement":{)"
-            R"("node":"int",)"
-            R"("value":123}})");
-    }) << "Expected AST node to be a While Statement";
-}
-
-TEST(ParserTest, ReturnStatement) {
-    std::istringstream iss(R"(return;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Return &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(ss.str(), R"({"node":"return"})");
-    }) << "Expected AST node to be a Return Statement";
-}
-
-TEST(ParserTest, ReturnValueStatement) {
-    std::istringstream iss(R"(return 123;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Return &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"return",)"
-            R"("returns":{)"
-            R"("node":"int",)"
-            R"("value":123}})");
-    }) << "Expected AST node to be a Return Statement";
+    EXPECT_JSON(
+        "while true do\n  123",
+        While,
+        R"({"node":"while",)"
+        R"("cond":{)"
+        R"("node":"bool",)"
+        R"("value":true},)"
+        R"("block":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"int",)"
+        R"("value":123}]}})");
 }
 
 TEST(ParserTest, FunctionCallNoArgs) {
-    std::istringstream iss(R"(foo();)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Call &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"function call",)"
-            R"("function":{)"
-            R"("node":"variable",)"
-            R"("name":"foo"}})");
-    }) << "Expected AST node to be a Function Call";
+    EXPECT_JSON(
+        R"(foo())",
+        Call,
+        R"({"node":"function call",)"
+        R"("function":{)"
+        R"("node":"variable",)"
+        R"("name":"foo"}})");
 }
 
 TEST(ParserTest, FunctionCallOneArg) {
-    std::istringstream iss(R"(foo(123);)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Call &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"function call",)"
-            R"("function":{)"
-            R"("node":"variable",)"
-            R"("name":"foo"},)"
-            R"("arg":{)"
-            R"("node":"int",)"
-            R"("value":123}})");
-    }) << "Expected AST node to be a Function Call";
+    EXPECT_JSON(
+        R"(foo(123))",
+        Call,
+        R"({"node":"function call",)"
+        R"("function":{)"
+        R"("node":"variable",)"
+        R"("name":"foo"},)"
+        R"("arg":{)"
+        R"("node":"int",)"
+        R"("value":123}})");
 }
 
 TEST(ParserTest, FunctionCallTwoArgs) {
-    std::istringstream iss(R"(foo(123, 456);)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Call &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"function call",)"
-            R"("function":{)"
-            R"("node":"variable",)"
-            R"("name":"foo"},)"
-            R"("arg":{)"
-            R"("node":"tuple",)"
-            R"("expressions":[{)"
-            R"("node":"int",)"
-            R"("value":123},)"
-            R"({"node":"int",)"
-            R"("value":456}]}})");
-    }) << "Expected AST node to be a Function Call";
+    EXPECT_JSON(
+        R"(foo(123, 456))",
+        Call,
+        R"({"node":"function call",)"
+        R"("function":{)"
+        R"("node":"variable",)"
+        R"("name":"foo"},)"
+        R"("arg":{)"
+        R"("node":"tuple",)"
+        R"("expressions":[{)"
+        R"("node":"int",)"
+        R"("value":123},)"
+        R"({"node":"int",)"
+        R"("value":456}]}})");
 }
 
 TEST(ParserTest, ArrayIndexOneArg) {
-    std::istringstream iss(R"(arr[123];)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Index &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"array index",)"
-            R"("expr":{)"
-            R"("node":"variable",)"
-            R"("name":"arr"},)"
-            R"("index":{)"
-            R"("node":"int",)"
-            R"("value":123}})");
-    }) << "Expected AST node to be an Array Index";
+    EXPECT_JSON(
+        R"(arr[123])",
+        Index,
+        R"({"node":"array index",)"
+        R"("expr":{)"
+        R"("node":"variable",)"
+        R"("name":"arr"},)"
+        R"("index":{)"
+        R"("node":"int",)"
+        R"("value":123}})");
 }
 
 TEST(ParserTest, ArrayIndexTwoArgs) {
-    std::istringstream iss(R"(arr[123, 456];)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Index &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"array index",)"
-            R"("expr":{)"
-            R"("node":"variable",)"
-            R"("name":"arr"},)"
-            R"("index":{)"
-            R"("node":"tuple",)"
-            R"("expressions":[{)"
-            R"("node":"int",)"
-            R"("value":123},)"
-            R"({"node":"int",)"
-            R"("value":456}]}})");
-    }) << "Expected AST node to be an Array Index";
+    EXPECT_JSON(
+        R"(arr[123, 456])",
+        Index,
+        R"({"node":"array index",)"
+        R"("expr":{)"
+        R"("node":"variable",)"
+        R"("name":"arr"},)"
+        R"("index":{)"
+        R"("node":"tuple",)"
+        R"("expressions":[{)"
+        R"("node":"int",)"
+        R"("value":123},)"
+        R"({"node":"int",)"
+        R"("value":456}]}})");
 }
 
 TEST(ParserTest, NullaryVoidFuncTypeDeclaration) {
-    std::istringstream iss(R"(var fn: ->;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypeDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"type declaration",)"
-            R"("variable":"fn",)"
-            R"("type":{)"
-            R"("kind":"func"}})");
-    }) << "Expected AST node to be a Function Type Declaration";
+    EXPECT_JSON(
+        R"(var fn: (->))",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"fn",)"
+        R"("type":{)"
+        R"("kind":"func"}})");
 }
 
 TEST(ParserTest, VoidFuncTypeDeclaration) {
-    std::istringstream iss(R"(var fn: int->;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypeDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"type declaration",)"
-            R"("variable":"fn",)"
-            R"("type":{)"
-            R"("kind":"func",)"
-            R"("arg":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}}})");
-    }) << "Expected AST node to be a Function Type Declaration";
+    EXPECT_JSON(
+        R"(var fn: (int->))",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"fn",)"
+        R"("type":{)"
+        R"("kind":"func",)"
+        R"("arg":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}})");
 }
 
 TEST(ParserTest, NullaryFuncTypeDeclaration) {
-    std::istringstream iss(R"(var fn: ->int;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypeDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"type declaration",)"
-            R"("variable":"fn",)"
-            R"("type":{)"
-            R"("kind":"func",)"
-            R"("returns":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}}})");
-    }) << "Expected AST node to be a Function Type Declaration";
+    EXPECT_JSON(
+        R"(var fn: (->int))",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"fn",)"
+        R"("type":{)"
+        R"("kind":"func",)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}})");
 }
 
 TEST(ParserTest, FuncTypeDeclaration) {
-    std::istringstream iss(R"(var fn: int->int;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypeDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"type declaration",)"
-            R"("variable":"fn",)"
-            R"("type":{)"
-            R"("kind":"func",)"
-            R"("arg":{)"
-            R"("kind":"object",)"
-            R"("class":"int"},)"
-            R"("returns":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}}})");
-    }) << "Expected AST node to be a Function Type Declaration";
+    EXPECT_JSON(
+        R"(var fn: (int->int))",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"fn",)"
+        R"("type":{)"
+        R"("kind":"func",)"
+        R"("arg":{)"
+        R"("kind":"object",)"
+        R"("class":"int"},)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}})");
 }
 
 TEST(ParserTest, FuncTypeDeclarationPrecedence) {
     /* The type expression a -> b -> c should be equivalent to a -> (b -> c) */
-    std::istringstream iss(R"(var fn: a -> b -> c;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypeDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"type declaration",)"
-            R"("variable":"fn",)"
-            R"("type":{)"
-            R"("kind":"func",)"
-            R"("arg":{)"
-            R"("kind":"object",)"
-            R"("class":"a"},)"
-            R"("returns":{)"
-            R"("kind":"func",)"
-            R"("arg":{)"
-            R"("kind":"object",)"
-            R"("class":"b"},)"
-            R"("returns":{)"
-            R"("kind":"object",)"
-            R"("class":"c"}}}})");
-    }) << "Expected AST node to be a Function Type Declaration";
+    EXPECT_JSON(
+        R"(var fn: (a -> b -> c))",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"fn",)"
+        R"("type":{)"
+        R"("kind":"func",)"
+        R"("arg":{)"
+        R"("kind":"object",)"
+        R"("class":"a"},)"
+        R"("return type":{)"
+        R"("kind":"func",)"
+        R"("arg":{)"
+        R"("kind":"object",)"
+        R"("class":"b"},)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"c"}}}})");
 }
 
 TEST(ParserTest, MultidimensionalArrays) {
-    std::istringstream iss(R"(var arr: int[][];)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypeDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"type declaration",)"
-            R"("variable":"arr",)"
-            R"("type":{)"
-            R"("kind":"array",)"
-            R"("type":{)"
-            R"("kind":"array",)"
-            R"("type":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}}}})");
-    }) << "Expected AST node to be an Array Type Declaration";
+    EXPECT_JSON(
+        R"(var arr: int[][])",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"arr",)"
+        R"("type":{)"
+        R"("kind":"array",)"
+        R"("type":{)"
+        R"("kind":"array",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}}})");
 }
 
 TEST(ParserTest, ProductTypeDeclaration) {
-    std::istringstream iss(R"(var prod: (A & B & C);)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypeDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"type declaration",)"
-            R"("variable":"prod",)"
-            R"("type":{)"
-            R"("kind":"product",)"
-            R"("types":[{)"
-            R"("kind":"object",)"
-            R"("class":"A"},)"
-            R"({"kind":"object",)"
-            R"("class":"B"},)"
-            R"({"kind":"object",)"
-            R"("class":"C"}]}})");
-    }) << "Expected AST node to be a Product Type Declaration";
+    EXPECT_JSON(
+        R"(var prod: (A, B, C))",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"prod",)"
+        R"("type":{)"
+        R"("kind":"product",)"
+        R"("types":[{)"
+        R"("kind":"object",)"
+        R"("class":"A"},)"
+        R"({"kind":"object",)"
+        R"("class":"B"},)"
+        R"({"kind":"object",)"
+        R"("class":"C"}]}})");
 }
 
 TEST(ParserTest, SumTypeDeclaration) {
-    std::istringstream iss(R"(var sum: (A | B | C);)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::TypeDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"type declaration",)"
-            R"("variable":"sum",)"
-            R"("type":{)"
-            R"("kind":"sum",)"
-            R"("types":[{)"
-            R"("kind":"object",)"
-            R"("class":"A"},)"
-            R"({"kind":"object",)"
-            R"("class":"B"},)"
-            R"({"kind":"object",)"
-            R"("class":"C"}]}})");
-    }) << "Expected AST node to be a Product Type Declaration";
-}
-
-TEST(ParserTest, MissingSemicolon) {
-    std::istringstream iss("123");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 1) << "Expected Bison to return an error code";
-    EXPECT_EQ(
-        oss.str(),
-        "1:4: syntax error, unexpected end of file, expecting ;\n"
-        "1 | 123\n"
-        "  |    ^\n");
+    EXPECT_JSON(
+        R"(var sum: (A | B | C))",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"sum",)"
+        R"("type":{)"
+        R"("kind":"sum",)"
+        R"("types":[{)"
+        R"("kind":"object",)"
+        R"("class":"A"},)"
+        R"({"kind":"object",)"
+        R"("class":"B"},)"
+        R"({"kind":"object",)"
+        R"("class":"C"}]}})");
 }
 
 TEST(ParserTest, TupleExpression) {
-    std::istringstream iss(R"(1, 2.5, false, "foo";)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Tuple &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"tuple",)"
-            R"("expressions":[{)"
-            R"("node":"int",)"
-            R"("value":1},)"
-            R"({"node":"float",)"
-            R"("value":2.5},)"
-            R"({"node":"bool",)"
-            R"("value":false},)"
-            R"({"node":"string",)"
-            R"("value":"foo"}]})");
-    }) << "Expected AST node to be a Tuple";
+    EXPECT_JSON(
+        R"(1, 2.5, false, "foo")",
+        Tuple,
+        R"({"node":"tuple",)"
+        R"("expressions":[{)"
+        R"("node":"int",)"
+        R"("value":1},)"
+        R"({"node":"float",)"
+        R"("value":2.5},)"
+        R"({"node":"bool",)"
+        R"("value":false},)"
+        R"({"node":"string",)"
+        R"("value":"foo"}]})");
 }
 
-TEST(ParserTest, Operators) {
-    std::istringstream iss(R"(a #$% b;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Operator &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"operator",)"
-            R"("operation":"#$%",)"
-            R"("lhs":{)"
-            R"("node":"variable",)"
-            R"("name":"a"},)"
-            R"("rhs":{)"
-            R"("node":"variable",)"
-            R"("name":"b"}})");
-    }) << "Expected AST node to be an Operator";
+TEST(ParserTest, InfixOperators) {
+    EXPECT_JSON(
+        R"(a #$% b)",
+        Operator,
+        R"({"node":"infix operator",)"
+        R"("operation":"#$%",)"
+        R"("lhs":{)"
+        R"("node":"variable",)"
+        R"("name":"a"},)"
+        R"("rhs":{)"
+        R"("node":"variable",)"
+        R"("name":"b"}})");
 }
 
 TEST(ParserTest, AssignOperator) {
-    std::istringstream iss(R"(a = b;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Operator &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"operator",)"
-            R"("operation":"=",)"
-            R"("lhs":{)"
-            R"("node":"variable",)"
-            R"("name":"a"},)"
-            R"("rhs":{)"
-            R"("node":"variable",)"
-            R"("name":"b"}})");
-    }) << "Expected AST node to be an Operator";
+    EXPECT_JSON(
+        R"(a = b)",
+        Operator,
+        R"({"node":"infix operator",)"
+        R"("operation":"=",)"
+        R"("lhs":{)"
+        R"("node":"variable",)"
+        R"("name":"a"},)"
+        R"("rhs":{)"
+        R"("node":"variable",)"
+        R"("name":"b"}})");
 }
 
 TEST(ParserTest, LessThanOperator) {
-    std::istringstream iss(R"(a < b;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Operator &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"operator",)"
-            R"("operation":"<",)"
-            R"("lhs":{)"
-            R"("node":"variable",)"
-            R"("name":"a"},)"
-            R"("rhs":{)"
-            R"("node":"variable",)"
-            R"("name":"b"}})");
-    }) << "Expected AST node to be an Operator";
+    EXPECT_JSON(
+        R"(a < b)",
+        Operator,
+        R"({"node":"infix operator",)"
+        R"("operation":"<",)"
+        R"("lhs":{)"
+        R"("node":"variable",)"
+        R"("name":"a"},)"
+        R"("rhs":{)"
+        R"("node":"variable",)"
+        R"("name":"b"}})");
 }
 
 TEST(ParserTest, GreaterThanOperator) {
-    std::istringstream iss(R"(a > b;)");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::Operator &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"operator",)"
-            R"("operation":">",)"
-            R"("lhs":{)"
-            R"("node":"variable",)"
-            R"("name":"a"},)"
-            R"("rhs":{)"
-            R"("node":"variable",)"
-            R"("name":"b"}})");
-    }) << "Expected AST node to be an Operator";
-}
-
-TEST(ParserTest, ClassDeclaration) {
-    std::istringstream iss(R"(
-        class Foo: Bar, Baz {
-            x: int;
-            fn: int -> int;
-            func method(a:int, b:int) -> int;
-            operator + (other: foo) -> Foo;
-            new(x: int);
-        }
-    )");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::ClassDeclaration &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"class declaration",)"
-            R"("name":"Foo",)"
-            R"("supers":[)"
-            R"("Bar",)"
-            R"("Baz"],)"
-            R"("fields":[{)"
-            R"("name":"x",)"
-            R"("type":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}},)"
-            R"({"name":"fn",)"
-            R"("type":{)"
-            R"("kind":"func",)"
-            R"("arg":{)"
-            R"("kind":"object",)"
-            R"("class":"int"},)"
-            R"("returns":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}}}],)"
-            R"("methods":[{)"
-            R"("node":"function declaration",)"
-            R"("variable":"method",)"
-            R"("args":[{)"
-            R"("name":"a",)"
-            R"("type":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}},)"
-            R"({"name":"b",)"
-            R"("type":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}}],)"
-            R"("return type":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}}],)"
-            R"("operators":[{)"
-            R"("operation":"+",)"
-            R"("arg":{)"
-            R"("name":"other",)"
-            R"("type":{)"
-            R"("kind":"object",)"
-            R"("class":"foo"}},)"
-            R"("return type":{)"
-            R"("kind":"object",)"
-            R"("class":"Foo"}}],)"
-            R"("constructors":[{)"
-            R"("args":[{)"
-            R"("name":"x",)"
-            R"("type":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}}]}]})");
-    }) << "Expected AST node to be an Operator";
+    EXPECT_JSON(
+        R"(a > b)",
+        Operator,
+        R"({"node":"infix operator",)"
+        R"("operation":">",)"
+        R"("lhs":{)"
+        R"("node":"variable",)"
+        R"("name":"a"},)"
+        R"("rhs":{)"
+        R"("node":"variable",)"
+        R"("name":"b"}})");
 }
 
 TEST(ParserTest, FuncImpl) {
-    std::istringstream iss(R"(func foo(x: int) -> int { return x; })");
-    std::ostringstream oss;
-    yy::Driver         drv;
-    EXPECT_EQ(drv.parse(iss, oss), 0);
-    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
-    ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";
-    EXPECT_NO_THROW({
-        const auto &       node = dynamic_cast<AST::FuncImpl &>(*drv.statements[0]);
-        std::ostringstream ss;
-        ss << node;
-        EXPECT_EQ(
-            ss.str(),
-            R"({"node":"function impl",)"
-            R"("variable":"foo",)"
-            R"("args":[{)"
-            R"("name":"x",)"
-            R"("type":{)"
-            R"("kind":"object",)"
-            R"("class":"int"}}],)"
-            R"("return type":{)"
-            R"("kind":"object",)"
-            R"("class":"int"},)"
-            R"("body":{)"
-            R"("node":"block",)"
-            R"("statements":[{)"
-            R"("node":"return",)"
-            R"("returns":{)"
-            R"("node":"variable",)"
-            R"("name":"x"}}]}})");
-    }) << "Expected AST node to be a FuncImpl";
+    EXPECT_JSON(
+        "func foo(x: int): int\n  x\n",
+        FuncImpl,
+        R"({"node":"function impl",)"
+        R"("variable":"foo",)"
+        R"("args":[{)"
+        R"("pattern":"named constraint",)"
+        R"("name":"x",)"
+        R"("constraint":{)"
+        R"("pattern":"type constraint",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}}],)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"},)"
+        R"("body":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"variable",)"
+        R"("name":"x"}]}})");
 }
+
+TEST(ParserTest, Lambda) {
+    EXPECT_JSON(
+        "func(x: int, _): T -> 123\n",
+        Lambda,
+        R"({"node":"lambda",)"
+        R"("args":[{)"
+        R"("pattern":"named constraint",)"
+        R"("name":"x",)"
+        R"("constraint":{)"
+        R"("pattern":"type constraint",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}},{)"
+        R"("pattern":"wildcard"}],)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"T"},)"
+        R"("body":{)"
+        R"("node":"int",)"
+        R"("value":123}})");
+}
+
+TEST(ParserTest, Semicolons) {
+    EXPECT_JSON(
+        "foo;bar\n",
+        Block,
+        R"({"node":"block",)"
+        R"("statements":[{)"
+        R"("node":"variable",)"
+        R"("name":"foo"},{)"
+        R"("node":"variable",)"
+        R"("name":"bar"}]})");
+}
+
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif

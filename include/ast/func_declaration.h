@@ -1,11 +1,14 @@
 #ifndef AST_FUNC_DECLARATION_H
 #define AST_FUNC_DECLARATION_H
 
-#include "declaration.h"
-#include "type/type.h"
-
-#include <optional>
 #include <functional>
+#include <optional>
+
+#include "ast/declaration.h"
+
+#include "pattern/pattern.h"
+
+#include "type/type.h"
 
 namespace AST {
 
@@ -18,21 +21,17 @@ public: // Methods
     FuncDeclaration(
         const yy::location &                  loc,
         std::string                           variable,
-        std::vector<TypeChecker::Type::Named> args,
-        TypeChecker::Type::Ptr                retType);
-
-    FuncDeclaration(
-        const yy::location &                  loc,
-        std::string                           variable,
-        std::vector<TypeChecker::Type::Named> args);
+        Pattern::Pattern::Vec                 args,
+        std::optional<TypeChecker::Type::Ptr> retType = {});
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 protected: // Methods
-    [[nodiscard]] const std::vector<TypeChecker::Type::Named> &                  getArgs() const;
-    [[nodiscard]] std::optional<std::reference_wrapper<const TypeChecker::Type>> getRetType() const;
+    [[nodiscard]] const Pattern::Pattern::Vec &                getArgs() const;
+    [[nodiscard]] const std::optional<TypeChecker::Type::Ptr> &getRetType() const;
 
 private: // Fields
-    std::vector<TypeChecker::Type::Named> args;
-    TypeChecker::Type::Ptr                retType;
+    Pattern::Pattern::Vec                 args_;
+    std::optional<TypeChecker::Type::Ptr> retType_;
 
 private: // Methods
     void json(std::ostream &os) const override;

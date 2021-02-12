@@ -13,9 +13,11 @@ public: // Aliases
 public: // Methods
     Array(yy::location loc, Type::Ptr type);
     ~Array() override = default;
+    void                             walk(const Func &fn) const override;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    Type::Ptr type;
+    Type::Ptr type_;
 
 private: // Methods
     void json(std::ostream &os) const override;

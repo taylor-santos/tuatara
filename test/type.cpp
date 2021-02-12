@@ -1,11 +1,17 @@
-#include "gtest/gtest.h"
-#include "type/object.h"
-#include "type/array.h"
-#include "type/product.h"
-#include "type/sum.h"
-#include "type/func.h"
+#ifdef _MSC_VER
+#    pragma warning(push)
+#    pragma warning(disable : 6326)
+#endif
 
 #include <memory>
+
+#include "type/array.h"
+#include "type/func.h"
+#include "type/object.h"
+#include "type/product.h"
+#include "type/sum.h"
+
+#include "gtest/gtest.h"
 
 using namespace std;
 
@@ -75,7 +81,7 @@ TEST(TypeTest, NullaryFuncJSON) {
     TypeChecker::Func                func(loc, move(arg), move(ret));
     std::stringstream                ss;
     ss << func;
-    EXPECT_EQ(ss.str(), R"({"kind":"func","returns":{"kind":"object","class":"T"}})");
+    EXPECT_EQ(ss.str(), R"({"kind":"func","return type":{"kind":"object","class":"T"}})");
 }
 
 TEST(TypeTest, VoidFuncJSON) {
@@ -96,5 +102,15 @@ TEST(TypeTest, FuncJSON) {
     ss << func;
     EXPECT_EQ(
         ss.str(),
-        R"({"kind":"func","arg":{"kind":"object","class":"S"},"returns":{"kind":"object","class":"T"}})");
+        R"({"kind":"func",)"
+        R"("arg":{)"
+        R"("kind":"object",)"
+        R"("class":"S"},)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"T"}})");
 }
+
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif

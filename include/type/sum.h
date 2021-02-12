@@ -13,9 +13,11 @@ public: // Aliases
 public: // Fields
     Sum(yy::location loc, Type::Vec types);
     ~Sum() override = default;
+    void                             walk(const Func &fn) const override;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    Type::Vec types;
+    Type::Vec types_;
 
 private: // Methods
     void json(std::ostream &os) const override;

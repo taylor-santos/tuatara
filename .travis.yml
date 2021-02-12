@@ -1,16 +1,47 @@
 language: cpp
 dist: focal
 
-before_install:
-  - pip install --user cpp-coveralls
+jobs:
+  include:
+    - os: linux
+      compiler: gcc
+      before_install:
+        - pip install --user cpp-coveralls
+      after_success:
+        - coveralls -i src -e src/main.cpp --gcov-options '\-lp'
+    - os: linux
+      compiler: clang
+    - os: linux
+      dist: focal
+      compiler: gcc
+      arch: arm64
+    - os: osx
+      osx_image: xcode12.2
+      compiler: clang
+      before_install:
+        - brew install flex
+        - export PATH="/usr/local/opt/flex/bin:$PATH"
+    - os: windows
+      compiler: "msvc2017"
+      install:
+        - choco install winflexbison3
+      script:
+        - mkdir -p build
+        - cd build
+        - cmake -G "Visual Studio 15 2017" -A x64 ..
+        - cmake --build . --config Debug
+        - ./Debug/all_tests.exe
+
+install:
+  - wget --no-check-certificate http://ftp.gnu.org/gnu/bison/bison-3.6.1.tar.gz
+  - mkdir $HOME/bison
+  - tar -xf bison-3.6.1.tar.gz; cd bison-3.6.1; ./configure --prefix=$HOME/bison; make -j 4 install; cd $PWD/..;
+  - export PATH=$HOME/bison/bin:$PATH
 
 script:
   - mkdir -p build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Debug ..
-  - make
+  - make all_tests
   - cd ..
   - ./build/all_tests
-  
-after_success:
-  - coveralls -i src -e src/main.cpp --gcov-options '\-lp'

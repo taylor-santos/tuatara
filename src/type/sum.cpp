@@ -1,4 +1,5 @@
 #include "type/sum.h"
+
 #include "json.h"
 
 using namespace std;
@@ -7,18 +8,27 @@ namespace TypeChecker {
 
 Sum::Sum(yy::location loc, Type::Vec types)
     : Type(loc)
-    , types{move(types)} {}
+    , types_{move(types)} {}
 
 void
 Sum::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("kind", "sum");
-    obj.Key("types");
-    JSON::Array arr(os);
-    for (const auto &type : types) {
-        arr.Next();
-        os << *type;
+    obj.printKeyValue("kind", "sum");
+    obj.printKeyValue("types", types_);
+}
+
+void
+Sum::walk(const AST::Node::Func &fn) const {
+    Type::walk(fn);
+    for (const auto &type : types_) {
+        type->walk(fn);
     }
+}
+
+const string &
+Sum::getTypeName() const {
+    const static string name = "Sum Type";
+    return name;
 }
 
 } // namespace TypeChecker

@@ -1,11 +1,11 @@
 #ifndef AST_INT_H
 #define AST_INT_H
 
-#include "expression.h"
+#include "ast/literal.h"
 
 namespace AST {
 
-class Int final : public Expression {
+class Int final : public Literal {
 public: // Aliases
     using Ptr = std::unique_ptr<Int>;
     using Vec = std::vector<Ptr>;
@@ -13,9 +13,10 @@ public: // Aliases
 public: // Methods
     Int(const yy::location &loc, int64_t value);
     ~Int() override = default;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    int64_t value;
+    int64_t value_;
 
 private: // Methods
     void json(std::ostream &os) const override;

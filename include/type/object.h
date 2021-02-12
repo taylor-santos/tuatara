@@ -12,10 +12,10 @@ public: // Aliases
 
 public: // Fields
     Object(yy::location loc, std::string className);
-    ~Object() override = default;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    std::string className;
+    std::string className_;
 
 private: // Methods
     void json(std::ostream &os) const override;

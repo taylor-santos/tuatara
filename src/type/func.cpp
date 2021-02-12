@@ -1,4 +1,5 @@
 #include "type/func.h"
+
 #include "json.h"
 
 using namespace std;
@@ -7,19 +8,32 @@ namespace TypeChecker {
 
 Func::Func(yy::location loc, optional<Type::Ptr> argType, optional<Type::Ptr> retType)
     : Type(loc)
-    , argType{move(argType)}
-    , retType{move(retType)} {}
+    , argType_{move(argType)}
+    , retType_{move(retType)} {}
 
 void
 Func::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("kind", "func");
-    if (argType) {
-        obj.KeyValue("arg", **argType);
+    obj.printKeyValue("kind", "func");
+    obj.printKeyValue("arg", argType_);
+    obj.printKeyValue("return type", retType_);
+}
+
+void
+Func::walk(const AST::Node::Func &fn) const {
+    Type::walk(fn);
+    if (argType_) {
+        (*argType_)->walk(fn);
     }
-    if (retType) {
-        obj.KeyValue("returns", **retType);
+    if (retType_) {
+        (*retType_)->walk(fn);
     }
+}
+
+const string &
+Func::getTypeName() const {
+    const static string name = "Func Type";
+    return name;
 }
 
 } // namespace TypeChecker

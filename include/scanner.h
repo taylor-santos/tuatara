@@ -3,14 +3,18 @@
 
 #include "parser.tab.hh"
 
-#ifndef YY_DECL
-#    define YY_DECL yy::Parser::symbol_type yy::Scanner::yylex(yy::Driver &driver)
-#endif
+#undef YY_DECL
+#define YY_DECL yy::Parser::symbol_type yy::Scanner::scan(yy::Driver &driver)
 
 #ifndef __FLEX_LEXER_H
-#    define yyFlexLexer yyFlexLexer
+#    if !defined(__clang__) && (defined(__GNUC__) || defined(__GNUG__))
+#        pragma GCC diagnostic push
+#        pragma GCC diagnostic ignored "-Wsuggest-override"
+#    endif
 #    include <FlexLexer.h>
-#    undef yyFlexLexer
+#    if !defined(__clang__) && (defined(__GNUC__) || defined(__GNUG__))
+#        pragma GCC diagnostic pop
+#    endif
 #endif
 
 namespace yy {
@@ -19,9 +23,9 @@ class Scanner final : public yyFlexLexer {
 public:
     Scanner();
 
-    ~Scanner() final;
+    ~Scanner() override;
 
-    virtual Parser::symbol_type yylex(Driver &driver);
+    virtual Parser::symbol_type scan(Driver &driver);
 
     [[maybe_unused]] void setDebug(bool b);
 };

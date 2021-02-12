@@ -1,6 +1,8 @@
 #include "ast/expression.h"
 
-using namespace AST;
+namespace AST {
 
 Expression::Expression(const yy::location &loc)
-    : Statement(loc) {}
+    : Node(loc) {}
+
+} // namespace AST

@@ -2,52 +2,43 @@
 
 #include "json.h"
 
-using namespace AST;
 using namespace TypeChecker;
 using namespace std;
 
-FuncDeclaration::FuncDeclaration(
-    const yy::location &loc,
-    string              variable,
-    vector<Type::Named> args,
-    Type::Ptr           retType)
-    : Declaration(loc, move(variable))
-    , args{move(args)}
-    , retType{move(retType)} {}
+namespace AST {
 
-FuncDeclaration::FuncDeclaration(const yy::location &loc, string variable, vector<Type::Named> args)
+FuncDeclaration::FuncDeclaration(
+    const yy::location &  loc,
+    string                variable,
+    Pattern::Pattern::Vec args,
+    optional<Type::Ptr>   retType)
     : Declaration(loc, move(variable))
-    , args{move(args)} {}
+    , args_{move(args)}
+    , retType_{move(retType)} {}
 
 void
 FuncDeclaration::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("node", "function declaration");
-    obj.KeyValue("variable", getVariable());
-    {
-        obj.Key("args");
-        JSON::Array arr(os);
-        for (const auto &arg : args) {
-            arr.Next();
-            JSON::Object argObj(os);
-            argObj.KeyValue("name", arg.first);
-            argObj.KeyValue("type", *arg.second);
-        }
-    }
-    if (retType) {
-        obj.KeyValue("return type", *retType);
-    }
+    obj.printKeyValue("node", "function declaration");
+    obj.printKeyValue("variable", getVariable());
+    obj.printKeyValue("args", args_);
+    obj.printKeyValue("return type", retType_);
 }
 
-const vector<TypeChecker::Type::Named> &
+const Pattern::Pattern::Vec &
 FuncDeclaration::getArgs() const {
-    return args;
+    return args_;
 }
 
-optional<reference_wrapper<const TypeChecker::Type>>
+const std::optional<TypeChecker::Type::Ptr> &
 FuncDeclaration::getRetType() const {
-    if (retType) {
-        return *retType;
-    }
-    return {};
+    return retType_;
 }
+
+const string &
+FuncDeclaration::getTypeName() const {
+    const static string name = "Func Decl";
+    return name;
+}
+
+} // namespace AST

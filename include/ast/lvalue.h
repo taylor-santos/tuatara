@@ -1,7 +1,7 @@
 #ifndef AST_LVALUE_H
 #define AST_LVALUE_H
 
-#include "expression.h"
+#include "ast/expression.h"
 
 namespace AST {
 

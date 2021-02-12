@@ -1,8 +1,12 @@
-#include "gtest/gtest.h"
-#include "location.hh"
-#include "common.h"
+#ifdef _MSC_VER
+#    pragma warning(push)
+#    pragma warning(disable : 6326)
+#endif
 
 #include <memory>
+
+#include "common.h"
+#include "gtest/gtest.h"
 
 using namespace AST;
 using namespace std;
@@ -55,16 +59,16 @@ TEST(ASTTest, VariableNodeJSON) {
     EXPECT_EQ(ss.str(), R"({"node":"variable","name":"var"})");
 }
 
-TEST(ASTTest, OperatorNodeJSON) {
+TEST(ASTTest, InfixOperatorNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
     auto               lhs = make_unique<Variable>(loc, "var");
     auto               rhs = make_unique<Int>(loc, 123);
-    Operator           node(loc, "+", move(lhs), move(rhs));
+    InfixOperator      node(loc, "+", move(lhs), move(rhs));
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        R"({"node":"operator",)"
+        R"({"node":"infix operator",)"
         R"("operation":"+",)"
         R"("lhs":{)"
         R"("node":"variable",)"
@@ -126,7 +130,7 @@ TEST(ASTTest, TypeValueDeclarationNodeJSON) {
 TEST(ASTTest, BlockNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
-    Statement::Vec     stmts;
+    Expression::Vec    stmts;
     stmts.emplace_back(make_unique<Int>(loc, 123));
     stmts.emplace_back(make_unique<Float>(loc, 45.6));
     Block node(loc, move(stmts));
@@ -142,11 +146,13 @@ TEST(ASTTest, BlockNodeJSON) {
 }
 
 TEST(ASTTest, IfNodeJSON) {
-    std::ostringstream ss;
-    yy::location       loc;
-    auto               cond = make_unique<Bool>(loc, true);
-    auto               stmt = make_unique<Int>(loc, 123);
-    If                 node(loc, move(cond), move(stmt));
+    std::ostringstream           ss;
+    yy::location                 loc;
+    auto                         cond = make_unique<Bool>(loc, true);
+    vector<AST::Expression::Ptr> stmts;
+    stmts.emplace_back(make_unique<Int>(loc, 123));
+    auto block = make_unique<Block>(loc, move(stmts));
+    If   node(loc, move(cond), move(block));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -154,39 +160,51 @@ TEST(ASTTest, IfNodeJSON) {
         R"("cond":{)"
         R"("node":"bool",)"
         R"("value":true},)"
-        R"("statement":{)"
+        R"("if true":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
         R"("node":"int",)"
-        R"("value":123}})");
+        R"("value":123}]}})");
 }
 
 TEST(ASTTest, IfElseNodeJSON) {
-    std::ostringstream ss;
-    yy::location       loc;
-    auto               cond     = make_unique<Bool>(loc, true);
-    auto               stmt     = make_unique<Int>(loc, 123);
-    auto               elseStmt = make_unique<Float>(loc, 4.56);
-    If                 node(loc, move(cond), move(stmt), move(elseStmt));
+    std::ostringstream           ss;
+    yy::location                 loc;
+    auto                         cond = make_unique<Bool>(loc, true);
+    vector<AST::Expression::Ptr> trueStmts;
+    trueStmts.emplace_back(make_unique<Int>(loc, 123));
+    auto                         trueBlock = make_unique<Block>(loc, move(trueStmts));
+    vector<AST::Expression::Ptr> falseStmts;
+    falseStmts.emplace_back(make_unique<Float>(loc, 4.56));
+    auto   falseBlock = make_unique<Block>(loc, move(falseStmts));
+    IfElse node(loc, move(cond), move(trueBlock), move(falseBlock));
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        R"({"node":"if",)"
+        R"({"node":"if else",)"
         R"("cond":{)"
         R"("node":"bool",)"
         R"("value":true},)"
-        R"("statement":{)"
+        R"("if true":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
         R"("node":"int",)"
-        R"("value":123},)"
-        R"("else":{)"
+        R"("value":123}]},)"
+        R"("if false":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
         R"("node":"float",)"
-        R"("value":4.56}})");
+        R"("value":4.56}]}})");
 }
 
 TEST(ASTTest, WhileNodeJSON) {
     std::ostringstream ss;
     yy::location       loc;
     auto               cond = make_unique<Bool>(loc, true);
-    auto               stmt = make_unique<Int>(loc, 123);
-    While              node(loc, move(cond), move(stmt));
+    Expression::Vec    stmts;
+    stmts.emplace_back(make_unique<Int>(loc, 123));
+    auto  block = make_unique<AST::Block>(loc, move(stmts));
+    While node(loc, move(cond), move(block));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -194,9 +212,11 @@ TEST(ASTTest, WhileNodeJSON) {
         "\"cond\":{"
         "\"node\":\"bool\","
         "\"value\":true},"
-        "\"statement\":{"
+        "\"block\":{"
+        R"("node":"block",)"
+        R"("statements":[{)"
         "\"node\":\"int\","
-        "\"value\":123}}");
+        "\"value\":123}]}}");
 }
 
 TEST(ASTTest, CallNodeJSON) {
@@ -236,11 +256,13 @@ TEST(ASTTest, IndexNodeJSON) {
 }
 
 TEST(ASTTest, FuncDeclarationNodeJSON) {
-    std::ostringstream               ss;
-    yy::location                     loc;
-    string                           name = "foo";
-    vector<TypeChecker::Type::Named> args;
-    args.emplace_back(make_pair("arg", make_unique<TypeChecker::Object>(loc, "S")));
+    std::ostringstream    ss;
+    yy::location          loc;
+    string                name = "foo";
+    Pattern::Pattern::Vec args;
+    auto                  argType        = make_unique<TypeChecker::Object>(loc, "S");
+    auto                  typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
+    args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
     auto            ret = make_unique<TypeChecker::Object>(loc, "T");
     FuncDeclaration node(loc, name, move(args), move(ret));
     ss << node;
@@ -249,130 +271,54 @@ TEST(ASTTest, FuncDeclarationNodeJSON) {
         R"({"node":"function declaration",)"
         R"("variable":"foo",)"
         R"("args":[{)"
+        R"("pattern":"named constraint",)"
         R"("name":"arg",)"
+        R"("constraint":{)"
+        R"("pattern":"type constraint",)"
         R"("type":{)"
         R"("kind":"object",)"
-        R"("class":"S"}}],)"
+        R"("class":"S"}}}],)"
         R"("return type":{)"
         R"("kind":"object",)"
         R"("class":"T"}})");
 }
 
 TEST(ASTTest, FuncImplNodeJSON) {
-    std::ostringstream               ss;
-    yy::location                     loc;
-    string                           name = "foo";
-    vector<TypeChecker::Type::Named> args;
-    args.emplace_back(make_pair("arg", make_unique<TypeChecker::Object>(loc, "S")));
-    auto     ret  = make_unique<TypeChecker::Object>(loc, "T");
-    auto     stmt = make_unique<Variable>(loc, "b");
-    FuncImpl node(loc, name, move(args), move(ret), move(stmt));
+    std::ostringstream    ss;
+    yy::location          loc;
+    string                name = "foo";
+    Pattern::Pattern::Vec args;
+    auto                  argType        = make_unique<TypeChecker::Object>(loc, "S");
+    auto                  typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
+    args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
+    auto            ret = make_unique<TypeChecker::Object>(loc, "T");
+    Expression::Vec stmts;
+    stmts.emplace_back(make_unique<Variable>(loc, "b"));
+    auto     block = make_unique<Block>(loc, move(stmts));
+    FuncImpl node(loc, name, move(args), move(block), move(ret));
     ss << node;
     EXPECT_EQ(
         ss.str(),
         R"({"node":"function impl",)"
         R"("variable":"foo",)"
         R"("args":[{)"
+        R"("pattern":"named constraint",)"
         R"("name":"arg",)"
+        R"("constraint":{)"
+        R"("pattern":"type constraint",)"
         R"("type":{)"
         R"("kind":"object",)"
-        R"("class":"S"}}],)"
+        R"("class":"S"}}}],)"
         R"("return type":{)"
         R"("kind":"object",)"
         R"("class":"T"},)"
         R"("body":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
         R"("node":"variable",)"
-        R"("name":"b"}})");
+        R"("name":"b"}]}})");
 }
 
-TEST(ASTTest, ReturnNodeJSON) {
-    std::ostringstream ss;
-    yy::location       loc;
-    Return             node(loc);
-    ss << node;
-    EXPECT_EQ(ss.str(), R"({"node":"return"})");
-}
-
-TEST(ASTTest, ReturnValueNodeJSON) {
-    std::ostringstream ss;
-    yy::location       loc;
-    auto               val = make_unique<Int>(loc, 5);
-    Return             node(loc, move(val));
-    ss << node;
-    EXPECT_EQ(
-        ss.str(),
-        R"({"node":"return",)"
-        R"("returns":{)"
-        R"("node":"int",)"
-        R"("value":5}})");
-}
-
-TEST(ASTTest, ClassDeclarationNodeJSON) {
-    std::ostringstream        ss;
-    yy::location              loc;
-    vector<string>            supers;
-    ClassDeclaration::Members members;
-
-    { members.fields.push_back({"field", make_unique<TypeChecker::Object>(loc, "A")}); }
-    {
-        vector<TypeChecker::Type::Named> methodArgs;
-        methodArgs.emplace_back("arg", make_unique<TypeChecker::Object>(loc, "B"));
-        members.methods.push_back(make_unique<FuncDeclaration>(
-            loc,
-            "method",
-            move(methodArgs),
-            make_unique<TypeChecker::Object>(loc, "C")));
-    }
-    {
-        members.operators.push_back(
-            {"+",
-             {"other", make_unique<TypeChecker::Object>(loc, "class_name")},
-             make_unique<TypeChecker::Object>(loc, "class_name")});
-    }
-    {
-        vector<TypeChecker::Type::Named> ctorArgs;
-        ctorArgs.emplace_back("arg", make_unique<TypeChecker::Object>(loc, "D"));
-        ClassDeclaration::Constructor ctor{move(ctorArgs)};
-        members.ctors.push_back(move(ctor));
-    }
-
-    ClassDeclaration node(loc, "class_name", {"super"}, move(members));
-    ss << node;
-    EXPECT_EQ(
-        ss.str(),
-        R"({"node":"class declaration",)"
-        R"("name":"class_name",)"
-        R"("supers":["super"],)"
-        R"("fields":[{)"
-        R"("name":"field",)"
-        R"("type":{)"
-        R"("kind":"object",)"
-        R"("class":"A"}}],)"
-        R"("methods":[{)"
-        R"("node":"function declaration",)"
-        R"("variable":"method",)"
-        R"("args":[{)"
-        R"("name":"arg",)"
-        R"("type":{)"
-        R"("kind":"object",)"
-        R"("class":"B"}}],)"
-        R"("return type":{)"
-        R"("kind":"object",)"
-        R"("class":"C"}}],)"
-        R"("operators":[{)"
-        R"("operation":"+",)"
-        R"("arg":{)"
-        R"("name":"other",)"
-        R"("type":{)"
-        R"("kind":"object",)"
-        R"("class":"class_name"}},)"
-        R"("return type":{)"
-        R"("kind":"object",)"
-        R"("class":"class_name"}}],)"
-        R"("constructors":[{)"
-        R"("args":[{)"
-        R"("name":"arg",)"
-        R"("type":{)"
-        R"("kind":"object",)"
-        R"("class":"D"}}]}]})");
-}
+#ifdef _MSC_VER
+#    pragma warning(pop)
+#endif
