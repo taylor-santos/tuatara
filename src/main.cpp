@@ -16,7 +16,7 @@ main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i++) {
         yy::Driver drv;
         if (drv.parseFile(argv[i])) {
-                cerr << argv[i] << ": failed to parse" << endl;
+            cerr << argv[i] << ": failed to parse" << endl;
             break;
         } else {
             for (const auto &stmt : drv.statements) {

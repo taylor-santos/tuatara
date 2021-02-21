@@ -13,8 +13,8 @@
 #include "ast/infix_operator.h"
 #include "ast/int.h"
 #include "ast/lambda.h"
+#include "ast/match.h"
 #include "ast/string.h"
-#include "ast/stub.h"
 #include "ast/tuple.h"
 #include "ast/type_declaration.h"
 #include "ast/type_value_declaration.h"
@@ -37,9 +37,5 @@
 #include "type/product.h"
 #include "type/sum.h"
 #include "type/unit.h"
-
-using OptType      = std::optional<TypeChecker::Type::Ptr>;
-using NamedType    = TypeChecker::Type::Named;
-using NamedTypeVec = std::vector<NamedType>;
 
 #endif // COMMON_H

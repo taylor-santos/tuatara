@@ -63,6 +63,7 @@
     } while (0)
 
 #define YY_USER_ACTION  {                                               \
+        STEP();                                                         \
         COL(yyleng);                                                    \
         driver.lines.back() += yytext;                                  \
     }
@@ -79,7 +80,9 @@
             if (tok.location.begin.filename)                            \
                 std::cerr << *tok.location.begin.filename << ":";       \
             std::cerr << tok.location.begin.line << ":";                \
-            std::cerr << tok.location.begin.column << ")" << std::endl; \
+            std::cerr << tok.location.begin.column << " - ";            \
+            std::cerr << tok.location.end.line << ":";                  \
+            std::cerr << tok.location.end.column << ")" << std::endl;   \
         }                                                               \
     } while(0)
 
@@ -95,7 +98,9 @@
                 if (tok.location.begin.filename)                        \
                     std::cerr << *tok.location.begin.filename << ":";   \
                 std::cerr << tok.location.begin.line << ":";            \
-                std::cerr << tok.location.begin.column << ")";          \
+                std::cerr << tok.location.begin.column << " - ";        \
+                std::cerr << tok.location.end.line << ":";              \
+                std::cerr << tok.location.end.column << ")";            \
                 std::cerr << std::endl;                                 \
             }                                                           \
             return tok;                                                 \
@@ -168,7 +173,6 @@ op      [+\-*/\\=%<>&|!@#$^~]+
 
 %{
     // This block is executed every time yylex() is called.
-    STEP();
     if (driver.tokenQ.size() > 1) {
         // Pop extra tokens if the queue is backed up.
         // Don't pop the last token because it's needed for the <<EOF>> rule.
@@ -206,7 +210,9 @@ op      [+\-*/\\=%<>&|!@#$^~]+
     "*/"[[:blank:]]* {
         yy_pop_state();
     }
-    [\n\r]+                     LINE();
+    [\n\r]+ {
+        LINE();
+    }
     [^\n\r\*\\\/]
     <<EOF>> {
         throw yy::Parser::syntax_error(LOC, "unexpected EOF in block comment");
@@ -277,6 +283,7 @@ op      [+\-*/\\=%<>&|!@#$^~]+
 "while"     PUSH_TOKEN_AND_POP(WHILE);
 "do"        PUSH_TOKEN_AND_POP(DO);
 "match"     PUSH_TOKEN_AND_POP(MATCH);
+"case"      PUSH_TOKEN_AND_POP(CASE);
 "true"      PUSH_VALUE_AND_POP(BOOL, true);
 "false"     PUSH_VALUE_AND_POP(BOOL, false);
 ";"         PUSH_TOKEN_AND_POP(SEMICOLON);
@@ -318,9 +325,7 @@ op      [+\-*/\\=%<>&|!@#$^~]+
     PUSH_TOKEN_AND_POP(RPAREN);
 }
 
-";"[[:blank:]]*/[\n\r;] {
-    // Ignore ';'s that are immediately followed by a line break or another ';'
-}
+";"[[:blank:]]*/[\n\r;]  // Ignore ';'s that are immediately followed by a line break or another ';'
 ";"[[:blank:]]* {
     driver.location->end = driver.location->begin;
     PUSH_TOKEN_AND_POP(SEMICOLON);

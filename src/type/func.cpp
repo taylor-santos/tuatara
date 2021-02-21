@@ -6,7 +6,7 @@ using namespace std;
 
 namespace TypeChecker {
 
-Func::Func(yy::location loc, optional<Type::Ptr> argType, optional<Type::Ptr> retType)
+Func::Func(yy::location loc, Type::Ptr argType, Type::Ptr retType)
     : Type(loc)
     , argType_{move(argType)}
     , retType_{move(retType)} {}
@@ -22,12 +22,8 @@ Func::json(ostream &os) const {
 void
 Func::walk(const AST::Node::Func &fn) const {
     Type::walk(fn);
-    if (argType_) {
-        (*argType_)->walk(fn);
-    }
-    if (retType_) {
-        (*retType_)->walk(fn);
-    }
+    argType_->walk(fn);
+    retType_->walk(fn);
 }
 
 const string &

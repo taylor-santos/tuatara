@@ -13,7 +13,6 @@ public: // Aliases
 public: // Methods
     NamedWildcard(const yy::location &loc, std::string name);
     ~NamedWildcard() override = default;
-    void                             walk(const Func &fn) const override;
     [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields

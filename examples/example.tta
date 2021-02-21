@@ -1,5 +1,5 @@
-var a = 5 \a
-var b: float
+var a = 5
+var b:       float
 b = 1.2
 var c = "Hello, world!"
 var d: int = a
@@ -9,8 +9,6 @@ var cond = true
 while cond do
     cond = false;
     test
-
-"\x1b"
 
 var b: (int -> int)
 
@@ -25,11 +23,11 @@ var block = {
     bar
     baz
 }
-/*
+
 match foo
-    0 -> zero()
-    (_, :int) -> one()
-    x: double ->
+    case 0 -> zero()
+    case (_, :int) -> one()
+    case x: double
+        two()
         x
-    */ 
     

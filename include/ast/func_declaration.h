@@ -23,6 +23,7 @@ public: // Methods
         std::string                           variable,
         Pattern::Pattern::Vec                 args,
         std::optional<TypeChecker::Type::Ptr> retType = {});
+    void                             walk(const Func &fn) const override;
     [[nodiscard]] const std::string &getTypeName() const override;
 
 protected: // Methods

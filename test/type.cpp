@@ -7,99 +7,165 @@
 
 #include "type/array.h"
 #include "type/func.h"
+#include "type/maybe.h"
 #include "type/object.h"
 #include "type/product.h"
 #include "type/sum.h"
+#include "type/unit.h"
 
 #include "gtest/gtest.h"
 
 using namespace std;
 
-TEST(TypeTest, ObjectJSON) {
+TEST(TypeTest, ObjectNode) {
     yy::location        loc;
-    TypeChecker::Object obj(loc, "class_name");
+    TypeChecker::Object node(loc, "class_name");
     std::stringstream   ss;
-    ss << obj;
+    ss << node;
     EXPECT_EQ(ss.str(), R"({"kind":"object","class":"class_name"})");
+
+    std::ostringstream walk;
+    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    EXPECT_EQ(walk.str(), "Object Type\n");
 }
 
-TEST(TypeTest, ArrayJSON) {
+TEST(TypeTest, ArrayNode) {
     yy::location       loc;
     auto               obj = make_unique<TypeChecker::Object>(loc, "T");
-    TypeChecker::Array arr(loc, move(obj));
+    TypeChecker::Array node(loc, move(obj));
     std::stringstream  ss;
-    ss << arr;
+    ss << node;
     EXPECT_EQ(ss.str(), R"({"kind":"array","type":{"kind":"object","class":"T"}})");
+
+    std::ostringstream walk;
+    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    EXPECT_EQ(walk.str(), "Array Type\nObject Type\n");
 }
 
-TEST(TypeTest, ProductJSON) {
+TEST(TypeTest, ProductNode) {
     yy::location           loc;
     TypeChecker::Type::Vec types;
     types.reserve(2);
     types.emplace_back(make_unique<TypeChecker::Object>(loc, "S"));
     types.emplace_back(make_unique<TypeChecker::Object>(loc, "T"));
-    TypeChecker::Product arr(loc, move(types));
+    TypeChecker::Product node(loc, move(types));
     std::stringstream    ss;
-    ss << arr;
+    ss << node;
     EXPECT_EQ(
         ss.str(),
         R"({"kind":"product",)"
         R"("types":[)"
         R"({"kind":"object","class":"S"},)"
         R"({"kind":"object","class":"T"}]})");
+
+    std::ostringstream walk;
+    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    EXPECT_EQ(walk.str(), "Product Type\nObject Type\nObject Type\n");
 }
 
-TEST(TypeTest, SumJSON) {
+TEST(TypeTest, SumNode) {
     yy::location           loc;
     TypeChecker::Type::Vec types;
     types.reserve(2);
     types.emplace_back(make_unique<TypeChecker::Object>(loc, "S"));
     types.emplace_back(make_unique<TypeChecker::Object>(loc, "T"));
-    TypeChecker::Sum  arr(loc, move(types));
+    TypeChecker::Sum  node(loc, move(types));
     std::stringstream ss;
-    ss << arr;
+    ss << node;
     EXPECT_EQ(
         ss.str(),
         R"({"kind":"sum",)"
         R"("types":[)"
         R"({"kind":"object","class":"S"},)"
         R"({"kind":"object","class":"T"}]})");
+
+    std::ostringstream walk;
+    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    EXPECT_EQ(walk.str(), "Sum Type\nObject Type\nObject Type\n");
 }
 
-TEST(TypeTest, NullaryVoidFuncJSON) {
-    yy::location                     loc;
-    optional<TypeChecker::Type::Ptr> arg, ret;
-    TypeChecker::Func                func(loc, move(arg), move(ret));
-    std::stringstream                ss;
-    ss << func;
-    EXPECT_EQ(ss.str(), R"({"kind":"func"})");
+TEST(TypeTest, MaybeNode) {
+    yy::location       loc;
+    auto               obj = make_unique<TypeChecker::Object>(loc, "T");
+    TypeChecker::Maybe node(loc, move(obj));
+    std::stringstream  ss;
+    ss << node;
+    EXPECT_EQ(ss.str(), R"({"kind":"maybe","type":{"kind":"object","class":"T"}})");
+
+    std::ostringstream walk;
+    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    EXPECT_EQ(walk.str(), "Maybe Type\nObject Type\n");
 }
 
-TEST(TypeTest, NullaryFuncJSON) {
-    yy::location                     loc;
-    optional<TypeChecker::Type::Ptr> arg, ret = make_unique<TypeChecker::Object>(loc, "T");
-    TypeChecker::Func                func(loc, move(arg), move(ret));
-    std::stringstream                ss;
-    ss << func;
-    EXPECT_EQ(ss.str(), R"({"kind":"func","return type":{"kind":"object","class":"T"}})");
-}
-
-TEST(TypeTest, VoidFuncJSON) {
-    yy::location                     loc;
-    optional<TypeChecker::Type::Ptr> ret, arg = make_unique<TypeChecker::Object>(loc, "T");
-    TypeChecker::Func                func(loc, move(arg), move(ret));
-    std::stringstream                ss;
-    ss << func;
-    EXPECT_EQ(ss.str(), R"({"kind":"func","arg":{"kind":"object","class":"T"}})");
-}
-
-TEST(TypeTest, FuncJSON) {
-    yy::location                     loc;
-    optional<TypeChecker::Type::Ptr> arg = make_unique<TypeChecker::Object>(loc, "S"),
-                                     ret = make_unique<TypeChecker::Object>(loc, "T");
-    TypeChecker::Func func(loc, move(arg), move(ret));
+TEST(TypeTest, NullaryVoidFuncNode) {
+    yy::location      loc;
+    auto              arg = make_unique<TypeChecker::Unit>(loc);
+    auto              ret = make_unique<TypeChecker::Unit>(loc);
+    TypeChecker::Func node(loc, move(arg), move(ret));
     std::stringstream ss;
-    ss << func;
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        R"({"kind":"func",)"
+        R"("arg":{)"
+        R"("kind":"unit"},)"
+        R"("return type":{)"
+        R"("kind":"unit"}})");
+
+    std::ostringstream walk;
+    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    EXPECT_EQ(walk.str(), "Func Type\nUnit Type\nUnit Type\n");
+}
+
+TEST(TypeTest, NullaryFuncNode) {
+    yy::location      loc;
+    auto              arg = make_unique<TypeChecker::Unit>(loc);
+    auto              ret = make_unique<TypeChecker::Object>(loc, "T");
+    TypeChecker::Func node(loc, move(arg), move(ret));
+    std::stringstream ss;
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        R"({"kind":"func",)"
+        R"("arg":{)"
+        R"("kind":"unit"},)"
+        R"("return type":{)"
+        R"("kind":"object",)"
+        R"("class":"T"}})");
+
+    std::ostringstream walk;
+    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    EXPECT_EQ(walk.str(), "Func Type\nUnit Type\nObject Type\n");
+}
+
+TEST(TypeTest, VoidFuncNode) {
+    yy::location      loc;
+    auto              ret = make_unique<TypeChecker::Unit>(loc);
+    auto              arg = make_unique<TypeChecker::Object>(loc, "T");
+    TypeChecker::Func node(loc, move(arg), move(ret));
+    std::stringstream ss;
+    ss << node;
+    EXPECT_EQ(
+        ss.str(),
+        R"({"kind":"func",)"
+        R"("arg":{)"
+        R"("kind":"object",)"
+        R"("class":"T"},)"
+        R"("return type":{)"
+        R"("kind":"unit"}})");
+
+    std::ostringstream walk;
+    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    EXPECT_EQ(walk.str(), "Func Type\nObject Type\nUnit Type\n");
+}
+
+TEST(TypeTest, FuncNode) {
+    yy::location      loc;
+    auto              arg = make_unique<TypeChecker::Object>(loc, "S");
+    auto              ret = make_unique<TypeChecker::Object>(loc, "T");
+    TypeChecker::Func node(loc, move(arg), move(ret));
+    std::stringstream ss;
+    ss << node;
     EXPECT_EQ(
         ss.str(),
         R"({"kind":"func",)"
@@ -109,6 +175,22 @@ TEST(TypeTest, FuncJSON) {
         R"("return type":{)"
         R"("kind":"object",)"
         R"("class":"T"}})");
+
+    std::ostringstream walk;
+    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    EXPECT_EQ(walk.str(), "Func Type\nObject Type\nObject Type\n");
+}
+
+TEST(TypeTest, UnitNode) {
+    yy::location      loc;
+    TypeChecker::Unit node(loc);
+    std::stringstream ss;
+    ss << node;
+    EXPECT_EQ(ss.str(), R"({"kind":"unit"})");
+
+    std::ostringstream walk;
+    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    EXPECT_EQ(walk.str(), "Unit Type\n");
 }
 
 #ifdef _MSC_VER

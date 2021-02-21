@@ -8,7 +8,7 @@ namespace AST {
 
 InfixOperator::InfixOperator(
     const yy::location & loc,
-    std::string          op,
+    const std::string &  op,
     AST::Expression::Ptr lhs,
     AST::Expression::Ptr rhs)
     : Operator(loc, op)
@@ -23,8 +23,9 @@ InfixOperator::getTypeName() const {
 
 void
 InfixOperator::walk(const Node::Func &fn) const {
-    PrefixOperator::walk(fn);
-    PostfixOperator::walk(fn);
+    Operator::walk(fn);
+    getLhs().walk(fn);
+    getRhs().walk(fn);
 }
 
 void

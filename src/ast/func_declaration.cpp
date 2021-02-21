@@ -41,4 +41,15 @@ FuncDeclaration::getTypeName() const {
     return name;
 }
 
+void
+FuncDeclaration::walk(const Node::Func &fn) const {
+    Declaration::walk(fn);
+    for (const auto &arg : args_) {
+        arg->walk(fn);
+    }
+    if (retType_) {
+        (*retType_)->walk(fn);
+    }
+}
+
 } // namespace AST

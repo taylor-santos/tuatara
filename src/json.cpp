@@ -75,9 +75,9 @@ escapeChar(char c) {
                 std::stringstream ss;
                 ss << "\\x" << std::hex << std::uppercase;
                 if (c < 0) {
-                    ss << static_cast<int>(c + 256);
+                    ss << c + 256;
                 } else {
-                    ss << static_cast<int>(c);
+                    ss << c;
                 }
                 return ss.str();
             }

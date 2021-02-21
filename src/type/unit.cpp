@@ -15,11 +15,6 @@ Unit::json(ostream &os) const {
     obj.printKeyValue("kind", "unit");
 }
 
-void
-Unit::walk(const AST::Node::Func &fn) const {
-    Type::walk(fn);
-}
-
 const string &
 Unit::getTypeName() const {
     const static string name = "Unit Type";

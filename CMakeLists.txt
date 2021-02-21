@@ -32,8 +32,8 @@ add_executable(${PROJECT_NAME}
         ${FLEX_SCANNER_OUTPUTS}
         ${SRC})
 
-set(CMAKE_CONFIGURATION_TYPES Debug Analysis Release)
-SET(CMAKE_CONFIGURATION_TYPES "${CMAKE_CONFIGURATION_TYPES}" CACHE STRING "" FORCE)
+set(CMAKE_CONFIGURATION_TYPES Debug Analysis Release CACHE STRING "" FORCE)
+set(CMAKE_EXE_LINKER_FLAGS_ANALYSIS "" CACHE STRING "" FORCE)
 
 # Tests
 # Download and unpack googletest at configure time

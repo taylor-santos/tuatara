@@ -108,6 +108,7 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     WHILE       "while"
     DO          "do"
     MATCH       "match"
+    CASE        "case"
     SEMICOLON   ";"
     ASSIGN      "="
     COLON       ":"
@@ -144,6 +145,7 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     func_impl
     while_expression
     if_expression
+    match_expression
     ternary
     lambda
     value_pattern
@@ -161,6 +163,10 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     block_expression
 %type<AST::LValue::Ptr>
     lvalue
+%type<AST::Match::Case>
+    case
+%type<std::vector<AST::Match::Case>>
+    cases
 %type<TypeChecker::Type::Ptr>
     type
     sum_type
@@ -168,12 +174,12 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     base_type
     func_type
     type_pattern
+    opt_type
+    opt_sum_type
 %type<TypeChecker::Type::Vec>
     sum_type_list
     product_type_list
-%type<OptType>
-    opt_type
-    opt_sum_type
+%type<std::optional<TypeChecker::Type::Ptr>>
     opt_ret_type
 %type<Pattern::Pattern::Ptr>
     pattern
@@ -206,9 +212,7 @@ expression_line
     }
     | if_expression
     | while_expression
-    | match_expression {
-    
-    }
+    | match_expression
 
 expressions
     : expression_line {
@@ -340,16 +344,26 @@ while_expression
     }
 
 match_expression
-    : "match" expression "line break" "indent" match_block "outdent" "line break" {
-        //TODO
-        throw Parser::syntax_error(@$, LOC_STR);
+    : "match" expression "line break" "indent" cases "outdent" "line break" {
+        $$ = make_unique<AST::Match>(@$, $2, $5);
     }
 
-match_block
-    : pattern "->" expression "line break" 
-    | pattern "->" block_expression
-    | match_block pattern "->" expression "line break" 
-    | match_block pattern "->" block_expression
+cases
+    : case {
+        $$.push_back($1);
+    }
+    | cases case {
+        $$ = $1;
+        $$.push_back($2);
+    }
+
+case
+    : "case" pattern "->" expression "line break" {
+        $$ = make_pair($2, $4);
+    }
+    | "case" pattern block_expression {
+        $$ = make_pair($2, $3);
+    }
 
 primary_expression
     : literal {
@@ -400,7 +414,9 @@ literal
     }
 
 opt_type
-    : %empty {}
+    : %empty {
+        $$ = make_unique<TypeChecker::Unit>(@$);
+    }
     | type {
         $$ = $1;
     }
@@ -428,7 +444,9 @@ func_type
     }
 
 opt_sum_type
-    : %empty {}
+    : %empty {
+        $$ = make_unique<TypeChecker::Unit>(@$);
+    }
     | sum_type {
         $$ = $1;
     }

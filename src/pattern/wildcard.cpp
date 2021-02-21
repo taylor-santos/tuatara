@@ -9,11 +9,6 @@ namespace Pattern {
 Wildcard::Wildcard(const yy::location &loc)
     : Pattern(loc) {}
 
-void
-Wildcard::walk(const AST::Node::Func &fn) const {
-    Pattern::walk(fn);
-}
-
 const std::string &
 Wildcard::getTypeName() const {
     const static string name = "Wildcard Pattern";

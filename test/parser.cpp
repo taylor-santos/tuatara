@@ -34,6 +34,15 @@ TEST(ParserTest, EmptyFile) {
     EXPECT_TRUE(drv.statements.empty()) << "Expected statements list to be empty";
 }
 
+TEST(ParserTest, WhitespaceFile) {
+    std::istringstream iss("    ");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    EXPECT_TRUE(drv.statements.empty()) << "Expected statements list to be empty";
+}
+
 TEST(ParserTest, IntLiteral) {
     EXPECT_JSON("123", Int, R"({"node":"int","value":123})");
 }
@@ -110,7 +119,9 @@ TEST(ParserTest, TypeValueDeclaration) {
 
 TEST(ParserTest, IfBlock) {
     EXPECT_JSON(
-        "if true then\n  abc\n  123",
+        "if true then\n"
+        "  abc\n"
+        "  123",
         If,
         R"({"node":"if",)"
         R"("cond":{)"
@@ -123,6 +134,32 @@ TEST(ParserTest, IfBlock) {
         R"("name":"abc"},{)"
         R"("node":"int",)"
         R"("value":123}]}})");
+}
+
+TEST(ParserTest, IfElseBlock) {
+    EXPECT_JSON(
+        "if true then\n"
+        "  abc\n"
+        "  123\n"
+        "else\n"
+        "  456\n",
+        IfElse,
+        R"({"node":"if else",)"
+        R"("cond":{)"
+        R"("node":"bool",)"
+        R"("value":true},)"
+        R"("if true":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"variable",)"
+        R"("name":"abc"},{)"
+        R"("node":"int",)"
+        R"("value":123}]},)"
+        R"("if false":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"int",)"
+        R"("value":456}]}})");
 }
 
 TEST(ParserTest, IfTernary) {
@@ -162,7 +199,8 @@ TEST(ParserTest, IfElseTernary) {
 
 TEST(ParserTest, WhileStatement) {
     EXPECT_JSON(
-        "while true do\n  123",
+        "while true do\n"
+        "  123",
         While,
         R"({"node":"while",)"
         R"("cond":{)"
@@ -173,6 +211,60 @@ TEST(ParserTest, WhileStatement) {
         R"("statements":[{)"
         R"("node":"int",)"
         R"("value":123}]}})");
+}
+
+TEST(ParserTest, MatchBlock) {
+    EXPECT_JSON(
+        "match foo\n"
+        "  case x: int -> 5\n"
+        "  case y= 0.5 -> 1.2\n"
+        "  case z\n"
+        "    foo = 5\n"
+        "    123",
+        Match,
+        R"({"node":"match",)"
+        R"("value":{)"
+        R"("node":"variable",)"
+        R"("name":"foo"},)"
+        R"("cases":[{)"
+        R"("pattern":{)"
+        R"("pattern":"named constraint",)"
+        R"("name":"x",)"
+        R"("constraint":{)"
+        R"("pattern":"type constraint",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}},)"
+        R"("body":{)"
+        R"("node":"int",)"
+        R"("value":5}},{)"
+        R"("pattern":{)"
+        R"("pattern":"named constraint",)"
+        R"("name":"y",)"
+        R"("constraint":{)"
+        R"("pattern":"value constraint",)"
+        R"("value":{)"
+        R"("node":"float",)"
+        R"("value":0.5}}},)"
+        R"("body":{)"
+        R"("node":"float",)"
+        R"("value":1.2}},{)"
+        R"("pattern":{)"
+        R"("pattern":"named wildcard",)"
+        R"("name":"z"},)"
+        R"("body":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"infix operator",)"
+        R"("operation":"=",)"
+        R"("lhs":{)"
+        R"("node":"variable",)"
+        R"("name":"foo"},)"
+        R"("rhs":{)"
+        R"("node":"int",)"
+        R"("value":5}},{)"
+        R"("node":"int",)"
+        R"("value":123}]}}]})");
 }
 
 TEST(ParserTest, FunctionCallNoArgs) {
@@ -252,7 +344,11 @@ TEST(ParserTest, NullaryVoidFuncTypeDeclaration) {
         R"({"node":"type declaration",)"
         R"("variable":"fn",)"
         R"("type":{)"
-        R"("kind":"func"}})");
+        R"("kind":"func",)"
+        R"("arg":{)"
+        R"("kind":"unit"},)"
+        R"("return type":{)"
+        R"("kind":"unit"}}})");
 }
 
 TEST(ParserTest, VoidFuncTypeDeclaration) {
@@ -265,7 +361,9 @@ TEST(ParserTest, VoidFuncTypeDeclaration) {
         R"("kind":"func",)"
         R"("arg":{)"
         R"("kind":"object",)"
-        R"("class":"int"}}})");
+        R"("class":"int"},)"
+        R"("return type":{)"
+        R"("kind":"unit"}}})");
 }
 
 TEST(ParserTest, NullaryFuncTypeDeclaration) {
@@ -276,6 +374,8 @@ TEST(ParserTest, NullaryFuncTypeDeclaration) {
         R"("variable":"fn",)"
         R"("type":{)"
         R"("kind":"func",)"
+        R"("arg":{)"
+        R"("kind":"unit"},)"
         R"("return type":{)"
         R"("kind":"object",)"
         R"("class":"int"}}})");
@@ -368,6 +468,39 @@ TEST(ParserTest, SumTypeDeclaration) {
         R"("class":"C"}]}})");
 }
 
+TEST(ParserTest, MaybeType) {
+    EXPECT_JSON(
+        "var foo: int?\n",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"foo",)"
+        R"("type":{)"
+        R"("kind":"maybe",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}})");
+}
+
+TEST(ParserTest, UnitType) {
+    EXPECT_JSON(
+        "var foo: ()\n",
+        TypeDeclaration,
+        R"({"node":"type declaration",)"
+        R"("variable":"foo",)"
+        R"("type":{)"
+        R"("kind":"unit"}})");
+}
+
+TEST(ParserTest, UnitNode) {
+    EXPECT_JSON(
+        "var foo = ()\n",
+        ValueDeclaration,
+        R"({"node":"value declaration",)"
+        R"("variable":"foo",)"
+        R"("value":{)"
+        R"("node":"unit"}})");
+}
+
 TEST(ParserTest, TupleExpression) {
     EXPECT_JSON(
         R"(1, 2.5, false, "foo")",
@@ -384,7 +517,7 @@ TEST(ParserTest, TupleExpression) {
         R"("value":"foo"}]})");
 }
 
-TEST(ParserTest, InfixOperators) {
+TEST(ParserTest, InfixOperator) {
     EXPECT_JSON(
         R"(a #$% b)",
         Operator,
@@ -393,6 +526,28 @@ TEST(ParserTest, InfixOperators) {
         R"("lhs":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
+        R"("rhs":{)"
+        R"("node":"variable",)"
+        R"("name":"b"}})");
+}
+
+TEST(ParserTest, PostfixOperator) {
+    EXPECT_JSON(
+        R"(a#$%)",
+        Operator,
+        R"({"node":"postfix operator",)"
+        R"("operation":"#$%",)"
+        R"("lhs":{)"
+        R"("node":"variable",)"
+        R"("name":"a"}})");
+}
+
+TEST(ParserTest, PrefixOperator) {
+    EXPECT_JSON(
+        R"(#$%b)",
+        Operator,
+        R"({"node":"prefix operator",)"
+        R"("operation":"#$%",)"
         R"("rhs":{)"
         R"("node":"variable",)"
         R"("name":"b"}})");
@@ -440,9 +595,24 @@ TEST(ParserTest, GreaterThanOperator) {
         R"("name":"b"}})");
 }
 
+TEST(ParserTest, BitOrOperator) {
+    EXPECT_JSON(
+        R"(a | b)",
+        Operator,
+        R"({"node":"infix operator",)"
+        R"("operation":"|",)"
+        R"("lhs":{)"
+        R"("node":"variable",)"
+        R"("name":"a"},)"
+        R"("rhs":{)"
+        R"("node":"variable",)"
+        R"("name":"b"}})");
+}
+
 TEST(ParserTest, FuncImpl) {
     EXPECT_JSON(
-        "func foo(x: int): int\n  x\n",
+        "func foo(x: int): int\n"
+        "  x\n",
         FuncImpl,
         R"({"node":"function impl",)"
         R"("variable":"foo",)"
@@ -466,7 +636,7 @@ TEST(ParserTest, FuncImpl) {
 
 TEST(ParserTest, Lambda) {
     EXPECT_JSON(
-        "func(x: int, _): T -> 123\n",
+        "func(x: int, _, =10): T -> 123\n",
         Lambda,
         R"({"node":"lambda",)"
         R"("args":[{)"
@@ -477,7 +647,11 @@ TEST(ParserTest, Lambda) {
         R"("type":{)"
         R"("kind":"object",)"
         R"("class":"int"}}},{)"
-        R"("pattern":"wildcard"}],)"
+        R"("pattern":"wildcard"},{)"
+        R"("pattern":"value constraint",)"
+        R"("value":{)"
+        R"("node":"int",)"
+        R"("value":10}}],)"
         R"("return type":{)"
         R"("kind":"object",)"
         R"("class":"T"},)"
@@ -486,7 +660,83 @@ TEST(ParserTest, Lambda) {
         R"("value":123}})");
 }
 
-TEST(ParserTest, Semicolons) {
+TEST(ParserTest, NamedWildcard) {
+    EXPECT_JSON(
+        "func(foo) -> 5\n",
+        Lambda,
+        R"({"node":"lambda",)"
+        R"("args":[{)"
+        R"("pattern":"named wildcard",)"
+        R"("name":"foo"}],)"
+        R"("body":{)"
+        R"("node":"int",)"
+        R"("value":5}})");
+}
+
+TEST(ParserTest, LiteralPattern) {
+    EXPECT_JSON(
+        "func(5) -> 5\n",
+        Lambda,
+        R"({"node":"lambda",)"
+        R"("args":[{)"
+        R"("pattern":"literal",)"
+        R"("literal":{)"
+        R"("node":"int",)"
+        R"("value":5}}],)"
+        R"("body":{)"
+        R"("node":"int",)"
+        R"("value":5}})");
+}
+
+TEST(ParserTest, ParenPattern) {
+    EXPECT_JSON(
+        "func((foo)) -> 5\n",
+        Lambda,
+        R"({"node":"lambda",)"
+        R"("args":[{)"
+        R"("pattern":"named wildcard",)"
+        R"("name":"foo"}],)"
+        R"("body":{)"
+        R"("node":"int",)"
+        R"("value":5}})");
+}
+
+TEST(ParserTest, TuplePattern) {
+    EXPECT_JSON(
+        "func(a: int, (_, b:int, c=2)) -> 5\n",
+        Lambda,
+        R"({"node":"lambda",)"
+        R"("args":[{)"
+        R"("pattern":"named constraint",)"
+        R"("name":"a",)"
+        R"("constraint":{)"
+        R"("pattern":"type constraint",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}},{)"
+        R"("pattern":"tuple",)"
+        R"("patterns":[{)"
+        R"("pattern":"wildcard"},{)"
+        R"("pattern":"named constraint",)"
+        R"("name":"b",)"
+        R"("constraint":{)"
+        R"("pattern":"type constraint",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}},{)"
+        R"("pattern":"named constraint",)"
+        R"("name":"c",)"
+        R"("constraint":{)"
+        R"("pattern":"value constraint",)"
+        R"("value":{)"
+        R"("node":"int",)"
+        R"("value":2}}}]}],)"
+        R"("body":{)"
+        R"("node":"int",)"
+        R"("value":5}})");
+}
+
+TEST(ParserTest, SemicolonBetweenTwoStmts) {
     EXPECT_JSON(
         "foo;bar\n",
         Block,
@@ -496,6 +746,58 @@ TEST(ParserTest, Semicolons) {
         R"("name":"foo"},{)"
         R"("node":"variable",)"
         R"("name":"bar"}]})");
+}
+
+TEST(ParserTest, SemicolonBetweenThreeStmts) {
+    EXPECT_JSON(
+        "foo;bar;baz\n",
+        Block,
+        R"({"node":"block",)"
+        R"("statements":[{)"
+        R"("node":"variable",)"
+        R"("name":"foo"},{)"
+        R"("node":"variable",)"
+        R"("name":"bar"},{)"
+        R"("node":"variable",)"
+        R"("name":"baz"}]})");
+}
+
+TEST(ParserTest, TrailingSemicolon) {
+    EXPECT_JSON("foo;\n", Variable, R"({"node":"variable","name":"foo"})");
+}
+
+TEST(ParserTest, ParenExpression) {
+    EXPECT_JSON("(foo)\n", Variable, R"({"node":"variable","name":"foo"})");
+}
+
+TEST(ParserTest, BlockExpression) {
+    EXPECT_JSON(
+        "{\n"
+        "  foo\n"
+        "  bar\n"
+        "}\n",
+        Block,
+        R"({"node":"block",)"
+        R"("statements":[{)"
+        R"("node":"variable",)"
+        R"("name":"foo"},{)"
+        R"("node":"variable",)"
+        R"("name":"bar"}]})");
+}
+
+TEST(ParserTest, SyntaxError) {
+    std::istringstream iss("foo bar");
+    std::ostringstream oss;
+    yy::Driver         drv;
+    EXPECT_NE(drv.parse(iss, oss), 0) << "Expected Bison to return an error code";
+    EXPECT_EQ(
+        oss.str(),
+        "* 1:5 - 1:8: syntax error: unexpected identifier\n"
+        "1 | foo bar\n"
+        "  |     ^~~\n"
+        R"(expected: "line break", ";", "=", "(", "[", "<", ">", ",", "|", or "operator")"
+        "\n")
+        << "Expected Bison to output a syntax error message";
 }
 
 #ifdef _MSC_VER

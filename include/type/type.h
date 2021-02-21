@@ -11,9 +11,8 @@ namespace TypeChecker {
 
 class Type : public AST::Node {
 public: // Aliases
-    using Ptr   = std::unique_ptr<Type>;
-    using Vec   = std::vector<Ptr>;
-    using Named = std::pair<std::string, Ptr>;
+    using Ptr = std::unique_ptr<Type>;
+    using Vec = std::vector<Ptr>;
 
 public:
     explicit Type(yy::location loc);

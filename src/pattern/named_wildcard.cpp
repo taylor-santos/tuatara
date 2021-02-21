@@ -8,12 +8,7 @@ namespace Pattern {
 
 NamedWildcard::NamedWildcard(const yy::location &loc, std::string name)
     : Wildcard(loc)
-    , name_{name} {}
-
-void
-NamedWildcard::walk(const AST::Node::Func &fn) const {
-    Wildcard::walk(fn);
-}
+    , name_{std::move(name)} {}
 
 const std::string &
 NamedWildcard::getTypeName() const {

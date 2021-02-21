@@ -1,7 +1,5 @@
 #include "ast/literal.h"
 
-#include "json.h"
-
 namespace AST {
 
 Literal::Literal(const yy::location &loc)

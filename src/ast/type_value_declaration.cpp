@@ -33,8 +33,9 @@ TypeValueDeclaration::getTypeName() const {
 
 void
 TypeValueDeclaration::walk(const Func &fn) const {
-    TypeDeclaration::walk(fn);
-    ValueDeclaration::walk(fn);
+    Declaration::walk(fn);
+    getType().walk(fn);
+    getValue().walk(fn);
 }
 
 } // namespace AST

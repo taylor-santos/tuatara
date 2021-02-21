@@ -15,7 +15,6 @@ public: // Aliases
 public: // Methods
     Operator(const yy::location &loc, std::string op);
     ~Operator() override = default;
-    void walk(const Func &fn) const override;
 
 protected: // Methods
     [[nodiscard]] const std::string &getOp() const;

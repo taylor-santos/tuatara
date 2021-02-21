@@ -13,7 +13,6 @@ public: // Aliases
 public: // Methods
     explicit Unit(yy::location loc);
     ~Unit() override = default;
-    void                             walk(const Func &fn) const override;
     [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Methods

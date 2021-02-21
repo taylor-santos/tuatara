@@ -18,7 +18,7 @@ public: // Aliases
 public: // Methods
     InfixOperator(
         const yy::location & loc,
-        std::string          op,
+        const std::string &  op,
         AST::Expression::Ptr lhs,
         AST::Expression::Ptr rhs);
     ~InfixOperator() override = default;

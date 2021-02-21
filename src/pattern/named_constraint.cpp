@@ -17,11 +17,12 @@ NamedConstraint::NamedConstraint(
 void
 NamedConstraint::walk(const AST::Node::Func &fn) const {
     Pattern::walk(fn);
+    constraint_->walk(fn);
 }
 
 const std::string &
 NamedConstraint::getTypeName() const {
-    const static string name = "NamedConstraint Pattern";
+    const static string name = "Named Constraint Pattern";
     return name;
 }
 void
