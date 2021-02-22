@@ -1,11 +1,11 @@
 #include "ast/type_value_declaration.h"
 
-#include <utility>
 #include "json.h"
 
-using namespace AST;
 using namespace TypeChecker;
 using namespace std;
+
+namespace AST {
 
 TypeValueDeclaration::TypeValueDeclaration(
     const yy::location &loc,
@@ -19,10 +19,23 @@ TypeValueDeclaration::TypeValueDeclaration(
 void
 TypeValueDeclaration::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("node", "type value declaration");
-    obj.KeyValue("variable", getVariable());
-    obj.Key("type");
-    os << *getType();
-    obj.Key("value");
-    os << *getValue();
+    obj.printKeyValue("node", "type value declaration");
+    obj.printKeyValue("variable", getVariable());
+    obj.printKeyValue("type", getType());
+    obj.printKeyValue("value", getValue());
 }
+
+const string &
+TypeValueDeclaration::getTypeName() const {
+    const static string name = "Type Value Decl";
+    return name;
+}
+
+void
+TypeValueDeclaration::walk(const Func &fn) const {
+    Declaration::walk(fn);
+    getType().walk(fn);
+    getValue().walk(fn);
+}
+
+} // namespace AST

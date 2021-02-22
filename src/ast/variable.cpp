@@ -1,18 +1,26 @@
 #include "ast/variable.h"
+
 #include "json.h"
 
-#include <utility>
-
-using namespace AST;
 using namespace std;
+
+namespace AST {
 
 Variable::Variable(const yy::location &loc, string name)
     : LValue(loc)
-    , name{move(name)} {}
+    , name_{move(name)} {}
 
 void
 Variable::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("node", "variable");
-    obj.KeyValue("name", name);
+    obj.printKeyValue("node", "variable");
+    obj.printKeyValue("name", name_);
 }
+
+const string &
+Variable::getTypeName() const {
+    const static string name = "Variable";
+    return name;
+}
+
+} // namespace AST

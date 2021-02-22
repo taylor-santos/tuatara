@@ -1,29 +1,29 @@
 #ifndef AST_IF_H
 #define AST_IF_H
 
-#include "statement.h"
-#include "expression.h"
-
 #include <optional>
+
+#include "ast/block.h"
 
 namespace AST {
 
-class If final : public Statement {
+class If : public Expression {
 public: // Aliases
     using Ptr = std::unique_ptr<If>;
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    If(const yy::location &loc, Expression::Ptr cond, Statement::Ptr stmt);
-    If(const yy::location &loc,
-       Expression::Ptr     cond,
-       Statement::Ptr      stmt,
-       Statement::Ptr      else_stmt);
+    If(const yy::location &loc, Expression::Ptr cond, Block::Ptr block);
+    void                             walk(const Func &fn) const override;
+    [[nodiscard]] const std::string &getTypeName() const override;
+
+protected: // Methods
+    [[nodiscard]] const Expression &getCond() const;
+    [[nodiscard]] const Expression &getBlock() const;
 
 private: // Fields
-    Expression::Ptr               cond;
-    Statement::Ptr                stmt;
-    std::optional<Statement::Ptr> else_stmt;
+    Expression::Ptr cond_;
+    Block::Ptr      block_;
 
 private: // Methods
     void json(std::ostream &os) const override;

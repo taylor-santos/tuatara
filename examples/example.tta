@@ -1,33 +1,33 @@
-var a = 5;
-var b: float;
-b = 1.2;
-var c = "Hello, world!";
-var d: int = a;
-d = 10;
-e = true;
-{
-    f = e;
-    g = 123;
-}
-var cond = true;
-while cond {
+var a = 5
+var b:       float
+b = 1.2
+var c = "Hello, world!"
+var d: int = a
+d = 10
+e = true
+var cond = true
+while cond do
     cond = false;
-}
-if true a = 10; else b = 20.;
-if false {
-    var x = a;
-} else {
-    var x = d;
-}
-func caller(fn: int->int, arg:int) -> int {
-    return fn(arg);
+    test
+
+var b: (int -> int)
+
+func foo: (-> -> int)
+    func: (-> int) -> 5
+var foo = func: (-> -> int) -> func -> func -> 5
+
+var a = if b then (if c then "foo" else "bar") else "baz"
+
+var block = {
+    foo
+    bar
+    baz
 }
 
-class Foo {
-    x: int;
-    y: double;
-    fn: int -> (int, int);
-    func someMethod(z: int) -> double;
-    operator+(other: Foo) -> Foo;
-    new(x: int, y: int);
-}
+match foo
+    case 0 -> zero()
+    case (_, :int) -> one()
+    case x: double
+        two()
+        x
+    

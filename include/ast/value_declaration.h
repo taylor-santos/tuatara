@@ -1,8 +1,8 @@
 #ifndef AST_VALUE_DECLARATION_H
 #define AST_VALUE_DECLARATION_H
 
-#include "declaration.h"
-#include "expression.h"
+#include "ast/declaration.h"
+#include "ast/expression.h"
 
 namespace AST {
 
@@ -15,13 +15,15 @@ public: // Aliases
 
 public: // Methods
     ValueDeclaration(const yy::location &loc, std::string variable, Expression::Ptr value);
+    void                             walk(const Func &fn) const override;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 protected: // Methods
-    void                   json(std::ostream &os) const override;
-    const Expression::Ptr &getValue() const;
+    void                            json(std::ostream &os) const override;
+    [[nodiscard]] const Expression &getValue() const;
 
 private: // Fields
-    Expression::Ptr value;
+    Expression::Ptr value_;
 };
 
 } // namespace AST

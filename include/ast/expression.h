@@ -1,11 +1,11 @@
 #ifndef AST_EXPRESSION_H
 #define AST_EXPRESSION_H
 
-#include "statement.h"
+#include "ast.h"
 
 namespace AST {
 
-class Expression : public Statement {
+class Expression : public Node {
 public: // Aliases
     using Ptr = std::unique_ptr<Expression>;
     using Vec = std::vector<Ptr>;

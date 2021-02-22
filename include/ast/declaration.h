@@ -1,21 +1,22 @@
 #ifndef AST_DECLARATION_H
 #define AST_DECLARATION_H
 
-#include "statement.h"
+#include "ast/expression.h"
 
 namespace AST {
 
-class Declaration : public Statement {
+class Declaration : public Expression {
 public: // Aliases
     using Ptr = std::unique_ptr<Declaration>;
     using Vec = std::vector<Ptr>;
 
 protected: // Methods
     Declaration(const yy::location &loc, std::string variable);
-    const std::string &getVariable() const;
+
+    [[nodiscard]] const std::string &getVariable() const;
 
 private: // Fields
-    std::string variable;
+    std::string variable_;
 };
 
 } // namespace AST

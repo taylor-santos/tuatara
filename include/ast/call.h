@@ -1,9 +1,9 @@
 #ifndef AST_CALL_H
 #define AST_CALL_H
 
-#include "lvalue.h"
-
 #include <optional>
+
+#include "ast/lvalue.h"
 
 namespace AST {
 
@@ -13,12 +13,14 @@ public: // Aliases
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    Call(const yy::location &loc, Expression::Ptr function, std::optional<Expression::Ptr> arg);
+    Call(const yy::location &loc, Expression::Ptr func, std::optional<Expression::Ptr> arg);
     ~Call() override = default;
+    void                             walk(const Func &fn) const override;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    Expression::Ptr                function;
-    std::optional<Expression::Ptr> arg;
+    Expression::Ptr                func_;
+    std::optional<Expression::Ptr> arg_;
 
 private: // Methods
     void json(std::ostream &os) const override;

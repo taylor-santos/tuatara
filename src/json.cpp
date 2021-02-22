@@ -1,96 +1,153 @@
 #include "json.h"
 
+#include <cctype>
+#include <sstream>
+
 using namespace std;
 
-int  JSON::JSON::JSON::indent   = 0;
-bool JSON::JSON::JSON::minimize = true;
+namespace JSON {
 
-JSON::JSON::JSON(std::ostream &out)
-    : out{out} {}
+int  JSON::indent_   = 0;
+bool JSON::minimize_ = true;
+
+JSON::JSON(ostream &out)
+    : out_{out} {}
 
 void
-JSON::JSON::Key(const std::string &key) {
-    if (!first) {
-        out << ',';
+JSON::printKey(const string &key) {
+    if (!first_) {
+        out_ << ',';
     }
-    if (!minimize) {
-        out << endl;
-        Indent();
+    if (!minimize_) {
+        out_ << endl;
+        indent();
     }
-    first = false;
-    out << '"' << key << '"' << ':';
-    if (!minimize) {
-        out << " ";
+    first_ = false;
+    out_ << '"' << key << '"' << ':';
+    if (!minimize_) {
+        out_ << " ";
     }
 }
 
 void
-JSON::JSON::Indent() {
-    out << string(indent, '\t');
+JSON::indent() {
+    out_ << string(indent_, '\t');
 }
 
-JSON::Object::Object(ostream &out)
+void
+JSON::setMinimize(bool minimize) {
+    minimize_ = minimize;
+}
+
+Object::Object(ostream &out)
     : JSON(out) {
     out << "{";
-    indent++;
+    indent_++;
 }
 
-JSON::Object::~Object() {
-    indent--;
-    if (!minimize && !first) {
-        out << endl;
-        Indent();
+Object::~Object() {
+    indent_--;
+    if (!minimize_ && !first_) {
+        out_ << endl;
+        indent();
     }
-    out << "}";
+    out_ << "}";
+}
+
+static string
+escapeChar(char c) {
+    switch (c) {
+        case '\a': return "\\a";
+        case '\b': return "\\b";
+        case '\f': return "\\f";
+        case '\n': return "\\n";
+        case '\r': return "\\r";
+        case '\t': return "\\t";
+        case '\v': return "\\v";
+        case '\\': return "\\\\";
+        case '\'': return "\\\'";
+        case '\"': return "\\\"";
+        case '\?': return "\\?";
+        default:
+            if (std::isprint(static_cast<unsigned char>(c))) {
+                return {c};
+            } else {
+                std::stringstream ss;
+                ss << "\\x" << std::hex << std::uppercase;
+                if (c < 0) {
+                    ss << c + 256;
+                } else {
+                    ss << c;
+                }
+                return ss.str();
+            }
+    }
+}
+
+static string
+escape(const string &str) {
+    string s;
+    for (const auto &c : str) {
+        s += escapeChar(c);
+    }
+    return s;
 }
 
 void
-JSON::Object::KeyValue(const std::string &key, const std::string &value) {
-    Key(key);
-    out << '"' << value << '"';
+Object::printKeyValue(const string &key, const string &value) {
+    printKey(key);
+    out_ << '"' << escape(value) << '"';
 }
 
 void
-JSON::Object::KeyValue(const string &key, const char *value) {
-    Key(key);
-    out << '"' << value << '"';
+Object::printKeyValue(const string &key, const char *value) {
+    printKey(key);
+    out_ << '"' << escape(value) << '"';
 }
 
 void
-JSON::Object::KeyValue(const string &key, bool value) {
-    Key(key);
-    out << std::boolalpha << value;
+Object::printKeyValue(const string &key, bool value) {
+    printKey(key);
+    out_ << boolalpha << value;
 }
 
-JSON::Array::Array(ostream &out)
+Array::Array(ostream &out)
     : JSON(out) {
     out << "[";
-    indent++;
+    indent_++;
 }
 
-JSON::Array::~Array() {
-    indent--;
-    if (!minimize && !first) {
-        out << endl;
-        Indent();
+Array::~Array() {
+    indent_--;
+    if (!minimize_ && !first_) {
+        out_ << endl;
+        indent();
     }
-    out << "]";
-}
-
-void
-JSON::Array::Next() {
-    if (!first) {
-        out << ',';
-    }
-    if (!minimize) {
-        out << endl;
-        Indent();
-    }
-    first = false;
+    out_ << "]";
 }
 
 void
-JSON::Array::String(const string &str) {
-    Next();
-    out << '"' << str << '"';
+Array::next() {
+    if (!first_) {
+        out_ << ',';
+    }
+    if (!minimize_) {
+        out_ << endl;
+        indent();
+    }
+    first_ = false;
 }
+
+void
+Array::printValue(const std::string &str) {
+    next();
+    out_ << '"' << str << '"';
+}
+
+void
+Array::printValue(const char *str) {
+    next();
+    out_ << '"' << str << '"';
+}
+
+} // namespace JSON

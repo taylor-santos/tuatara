@@ -1,7 +1,8 @@
 #ifndef AST_FUNC_IMPL_H
 #define AST_FUNC_IMPL_H
 
-#include "func_declaration.h"
+#include "ast/block.h"
+#include "ast/func_declaration.h"
 
 namespace AST {
 
@@ -12,14 +13,16 @@ public: // Aliases
 
 public: // Methods
     FuncImpl(
-        const yy::location &                                        loc,
-        std::string                                                 variable,
-        std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> args,
-        std::optional<TypeChecker::Type::Ptr>                       ret_type,
-        Statement::Ptr                                              body);
+        const yy::location &                  loc,
+        std::string                           variable,
+        Pattern::Pattern::Vec                 args,
+        Block::Ptr                            body,
+        std::optional<TypeChecker::Type::Ptr> retType = {});
+    void                             walk(const Func &fn) const override;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    Statement::Ptr body;
+    Block::Ptr body_;
 
 private: // Methods
     void json(std::ostream &os) const override;

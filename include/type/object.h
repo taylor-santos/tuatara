@@ -7,15 +7,15 @@ namespace TypeChecker {
 
 class Object final : public Type {
 public: // Aliases
-    using Ptr = std::shared_ptr<Object>;
+    using Ptr = std::unique_ptr<Object>;
     using Vec = std::vector<Ptr>;
 
 public: // Fields
-    Object(yy::location loc, std::string class_name);
-    ~Object() override = default;
+    Object(yy::location loc, std::string className);
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    std::string class_name;
+    std::string className_;
 
 private: // Methods
     void json(std::ostream &os) const override;

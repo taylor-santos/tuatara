@@ -1,11 +1,11 @@
 #ifndef AST_STRING_H
 #define AST_STRING_H
 
-#include "expression.h"
+#include "ast/literal.h"
 
 namespace AST {
 
-class String final : public Expression {
+class String final : public Literal {
 public: // Aliases
     using Ptr = std::unique_ptr<String>;
     using Vec = std::vector<Ptr>;
@@ -13,9 +13,10 @@ public: // Aliases
 public: // Methods
     String(const yy::location &loc, std::string value);
     ~String() override = default;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    std::string value;
+    std::string value_;
 
 private: // Methods
     void json(std::ostream &os) const override;

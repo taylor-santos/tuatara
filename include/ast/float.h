@@ -1,11 +1,11 @@
 #ifndef AST_FLOAT_H
 #define AST_FLOAT_H
 
-#include "expression.h"
+#include "ast/literal.h"
 
 namespace AST {
 
-class Float final : public Expression {
+class Float final : public Literal {
 public: // Aliases
     using Ptr = std::unique_ptr<Float>;
     using Vec = std::vector<Ptr>;
@@ -13,9 +13,10 @@ public: // Aliases
 public: // Methods
     Float(const yy::location &loc, double value);
     ~Float() override = default;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    double value;
+    double value_;
 
 private: // Methods
     void json(std::ostream &os) const override;

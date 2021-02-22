@@ -1,8 +1,8 @@
 #ifndef AST_BLOCK_H
 #define AST_BLOCK_H
 
-#include "expression.h"
-#include "lvalue.h"
+#include "ast/expression.h"
+#include "ast/lvalue.h"
 
 namespace AST {
 
@@ -12,10 +12,12 @@ public: // Aliases
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    Block(const yy::location &loc, Statement::Vec stmts);
+    Block(const yy::location &loc, Expression::Vec stmts);
+    void                             walk(const Func &fn) const override;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    Statement::Vec stmts;
+    Expression::Vec stmts_;
 
 private: // Methods
     void json(std::ostream &os) const override;

@@ -1,44 +1,60 @@
 #include "driver.h"
-#include "parser.tab.hh"
-#include "scanner.h"
-#include "location.hh"
 
-#include <memory>
-#include <iostream>
+#include "scanner.h"
+
+using namespace std;
 
 namespace yy {
 
 Driver::Driver()
-    : scanner{std::make_unique<Scanner>()}
-    , parser{std::make_unique<Parser>(*this)}
-    , location{std::make_unique<yy::location>()}
-    , output(std::cerr) {
+    : lines{1}
+    , scanner{make_unique<Scanner>()}
+    , parser{make_unique<Parser>(*this)}
+    , location{make_unique<yy::location>()}
+    , output{cerr}
+    , indentStack{{0}} {
     parser->set_debug_level(0);
-    lines.emplace_back("");
+    scanner->setDebug(false);
 }
 
-Driver::~Driver() {}
+Driver::~Driver() = default;
 
 int
-Driver::parse(std::istream &in, std::ostream &out) {
+Driver::parse(istream &in, ostream &out) {
     scanner->switch_streams(&in, &out);
     output = out;
     return parser->parse();
 }
 
 int
-Driver::parse_file(const char *path) {
-    std::ifstream s(path, std::ifstream::in);
-    std::string   filename(path);
+Driver::parseFile(const char *path) {
+    ifstream s(path, ifstream::in);
+    filename = path;
     location->initialize(&filename);
-    scanner->switch_streams(&s, &std::cerr);
-    output = std::cerr;
-
+    scanner->switch_streams(&s, &cerr);
+    output     = cerr;
     int result = parser->parse();
 
     s.close();
 
     return result;
+}
+
+bool
+Driver::applyIndent(int indent) {
+    int topIndent = indentStack.top();
+    if (topIndent < indent) {
+        tokenQ.emplace(yy::Parser::make_INDENT(*location));
+        indentStack.push(indent);
+        return false;
+    }
+    while (!indentStack.empty() && topIndent > indent) {
+        indentStack.pop();
+        tokenQ.emplace(yy::Parser::make_OUTDENT(*location));
+        tokenQ.emplace(yy::Parser::make_NEWLINE(*location));
+        topIndent = indentStack.top();
+    }
+    return topIndent < indent;
 }
 
 } // namespace yy

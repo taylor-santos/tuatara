@@ -1,47 +1,55 @@
 #include "ast/func_declaration.h"
 
-#include <utility>
 #include "json.h"
 
-using namespace AST;
 using namespace TypeChecker;
 using namespace std;
 
+namespace AST {
+
 FuncDeclaration::FuncDeclaration(
-    const yy::location &            loc,
-    string                          variable,
-    vector<pair<string, Type::Ptr>> args,
-    optional<Type::Ptr>             ret_type)
+    const yy::location &  loc,
+    string                variable,
+    Pattern::Pattern::Vec args,
+    optional<Type::Ptr>   retType)
     : Declaration(loc, move(variable))
-    , args{move(args)}
-    , ret_type{move(ret_type)} {}
+    , args_{move(args)}
+    , retType_{move(retType)} {}
 
 void
 FuncDeclaration::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("node", "function declaration");
-    obj.KeyValue("variable", getVariable());
-    {
-        obj.Key("args");
-        JSON::Array arr(os);
-        for (const auto &arg : args) {
-            arr.Next();
-            JSON::Object argObj(os);
-            argObj.KeyValue("name", arg.first);
-            argObj.KeyValue("type", *arg.second);
-        }
-    }
-    if (ret_type) {
-        obj.KeyValue("return type", **ret_type);
-    }
+    obj.printKeyValue("node", "function declaration");
+    obj.printKeyValue("variable", getVariable());
+    obj.printKeyValue("args", args_);
+    obj.printKeyValue("return type", retType_);
 }
 
-const vector<pair<string, TypeChecker::Type::Ptr>> &
+const Pattern::Pattern::Vec &
 FuncDeclaration::getArgs() const {
-    return args;
+    return args_;
 }
 
-const optional<TypeChecker::Type::Ptr> &
+const std::optional<TypeChecker::Type::Ptr> &
 FuncDeclaration::getRetType() const {
-    return ret_type;
+    return retType_;
 }
+
+const string &
+FuncDeclaration::getTypeName() const {
+    const static string name = "Func Decl";
+    return name;
+}
+
+void
+FuncDeclaration::walk(const Node::Func &fn) const {
+    Declaration::walk(fn);
+    for (const auto &arg : args_) {
+        arg->walk(fn);
+    }
+    if (retType_) {
+        (*retType_)->walk(fn);
+    }
+}
+
+} // namespace AST

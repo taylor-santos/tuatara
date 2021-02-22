@@ -1,8 +1,8 @@
 #ifndef AST_TYPE_VALUE_DECLARATION_H
 #define AST_TYPE_VALUE_DECLARATION_H
 
-#include "value_declaration.h"
-#include "type_declaration.h"
+#include "ast/type_declaration.h"
+#include "ast/value_declaration.h"
 
 namespace AST {
 
@@ -19,6 +19,8 @@ public: // Methods
         const std::string &    variable,
         TypeChecker::Type::Ptr type,
         Expression::Ptr        value);
+    [[nodiscard]] const std::string &getTypeName() const override;
+    void                             walk(const Func &fn) const override;
 
 private: // Methods
     void json(std::ostream &os) const override;

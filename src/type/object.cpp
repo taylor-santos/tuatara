@@ -1,18 +1,22 @@
 #include "type/object.h"
-#include "json.h"
 
-#include <utility>
+#include "json.h"
 
 using namespace TypeChecker;
 using namespace std;
 
-Object::Object(yy::location loc, string class_name)
+Object::Object(yy::location loc, string className)
     : Type(loc)
-    , class_name{move(class_name)} {}
+    , className_{move(className)} {}
 
 void
 Object::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("kind", "object");
-    obj.KeyValue("class", class_name);
+    obj.printKeyValue("kind", "object");
+    obj.printKeyValue("class", className_);
+}
+const string &
+Object::getTypeName() const {
+    const static string name = "Object Type";
+    return name;
 }

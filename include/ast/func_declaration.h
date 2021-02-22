@@ -1,10 +1,14 @@
 #ifndef AST_FUNC_DECLARATION_H
 #define AST_FUNC_DECLARATION_H
 
-#include "declaration.h"
-#include "type/type.h"
-
+#include <functional>
 #include <optional>
+
+#include "ast/declaration.h"
+
+#include "pattern/pattern.h"
+
+#include "type/type.h"
 
 namespace AST {
 
@@ -15,18 +19,20 @@ public: // Aliases
 
 public: // Methods
     FuncDeclaration(
-        const yy::location &                                        loc,
-        std::string                                                 variable,
-        std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> args,
-        std::optional<TypeChecker::Type::Ptr>                       ret_type);
+        const yy::location &                  loc,
+        std::string                           variable,
+        Pattern::Pattern::Vec                 args,
+        std::optional<TypeChecker::Type::Ptr> retType = {});
+    void                             walk(const Func &fn) const override;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 protected: // Methods
-    const std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> &getArgs() const;
-    const std::optional<TypeChecker::Type::Ptr> &                      getRetType() const;
+    [[nodiscard]] const Pattern::Pattern::Vec &                getArgs() const;
+    [[nodiscard]] const std::optional<TypeChecker::Type::Ptr> &getRetType() const;
 
 private: // Fields
-    std::vector<std::pair<std::string, TypeChecker::Type::Ptr>> args;
-    std::optional<TypeChecker::Type::Ptr>                       ret_type;
+    Pattern::Pattern::Vec                 args_;
+    std::optional<TypeChecker::Type::Ptr> retType_;
 
 private: // Methods
     void json(std::ostream &os) const override;

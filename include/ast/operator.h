@@ -1,28 +1,26 @@
 #ifndef AST_OPERATOR_H
 #define AST_OPERATOR_H
 
-#include "lvalue.h"
-
 #include <optional>
+
+#include "ast/lvalue.h"
 
 namespace AST {
 
-class Operator final : public LValue {
+class Operator : public LValue {
 public: // Aliases
     using Ptr = std::unique_ptr<Operator>;
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    Operator(const yy::location &loc, std::string op, Expression::Ptr lhs, Expression::Ptr rhs);
+    Operator(const yy::location &loc, std::string op);
     ~Operator() override = default;
 
-private: // Fields
-    std::string     op;
-    Expression::Ptr lhs;
-    Expression::Ptr rhs;
+protected: // Methods
+    [[nodiscard]] const std::string &getOp() const;
 
-private: // Methods
-    void json(std::ostream &os) const override;
+private: // Fields
+    std::string op_;
 };
 
 } // namespace AST

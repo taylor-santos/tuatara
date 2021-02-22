@@ -1,9 +1,9 @@
 #ifndef AST_TUPLE_H
 #define AST_TUPLE_H
 
-#include "lvalue.h"
-
 #include <optional>
+
+#include "ast/lvalue.h"
 
 namespace AST {
 
@@ -15,9 +15,11 @@ public: // Aliases
 public: // Methods
     Tuple(const yy::location &loc, Expression::Vec exprs);
     ~Tuple() override = default;
+    void                             walk(const Func &fn) const override;
+    [[nodiscard]] const std::string &getTypeName() const override;
 
 private: // Fields
-    Expression::Vec exprs;
+    Expression::Vec exprs_;
 
 private: // Methods
     void json(std::ostream &os) const override;

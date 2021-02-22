@@ -1,21 +1,34 @@
 #include "ast/block.h"
+
 #include "json.h"
 
-using namespace AST;
 using namespace std;
 
-Block::Block(const yy::location &loc, Statement::Vec stmts)
+namespace AST {
+
+Block::Block(const yy::location &loc, Expression::Vec stmts)
     : Expression(loc)
-    , stmts{move(stmts)} {}
+    , stmts_{move(stmts)} {}
 
 void
 Block::json(ostream &os) const {
     JSON::Object obj(os);
-    obj.KeyValue("node", "block");
-    obj.Key("statements");
-    JSON::Array arr(os);
-    for (const auto &stmt : stmts) {
-        arr.Next();
-        os << *stmt;
+    obj.printKeyValue("node", "block");
+    obj.printKeyValue("statements", stmts_);
+}
+
+void
+Block::walk(const Func &fn) const {
+    Expression::walk(fn);
+    for (const auto &stmt : stmts_) {
+        stmt->walk(fn);
     }
 }
+
+const string &
+Block::getTypeName() const {
+    const static string name = "Block";
+    return name;
+}
+
+} // namespace AST

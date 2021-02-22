@@ -1,20 +1,16 @@
 #include "ast/operator.h"
-#include "json.h"
 
-using namespace AST;
 using namespace std;
 
-Operator::Operator(const yy::location &loc, string op, Expression::Ptr lhs, Expression::Ptr rhs)
-    : LValue(loc)
-    , op{move(op)}
-    , lhs{move(lhs)}
-    , rhs{move(rhs)} {}
+namespace AST {
 
-void
-Operator::json(ostream &os) const {
-    JSON::Object obj(os);
-    obj.KeyValue("node", "operator");
-    obj.KeyValue("operation", op);
-    obj.KeyValue("lhs", *lhs);
-    obj.KeyValue("rhs", *rhs);
+Operator::Operator(const yy::location &loc, string op)
+    : LValue(loc)
+    , op_{move(op)} {}
+
+const string &
+Operator::getOp() const {
+    return op_;
 }
+
+} // namespace AST
