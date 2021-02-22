@@ -8,9 +8,9 @@
 Compiler for the Tuatara programming language
 
 ## Dependencies
-* CMake >= 3.15
-* Bison >= 3.6.1 
-* Flex >= 2.6
+*   CMake >= 3.15
+*   Bison >= 3.6.1 
+*   Flex >= 2.6
 
 ## Installation
 ```
