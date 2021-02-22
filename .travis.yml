@@ -1,11 +1,22 @@
-env:
-  global:
-    - secure: iDfFrr4x7hEdUbWcD2aXiZPCUyeBE4/Iw5xNjvh+yMLW+EvNFRM2ZQqZ/yG6/yClHwZsKTGUbNtj4hBHhPobecTroA43LZZ8bGP6JDUhnF3wHfcawybvP6LSEk7myFQI1d9z2ymV+4UrHzToWPLQEvZvFaja9XN0Fim7cRAth2tAGGnc0xwrhiheHlp5rHswl/ekb5M8xX7E8zAdrsEB76pn4UUXGT3RdipvxdVQvx1WQfB4K222TBW0KEDsyT4oYbdnb7609L/XsUmvrpyyjE3yg/jYV0m9+YLhSNIsn0X7m0JLIH0tFQf3QGM7WBFwNNr36F2G4+pzrSVYPNNnrIyI5zcStmgb/WT7acba7Lfdp5B08KsOAKs/Z/dhJcJ8xxGomSUVtvhM22oxP51Futi+njQ6isn1aR1q4boB7bN/zniFh7LMjkkZfJmWuggzpKJ2D7t6y0M5nsoyf4hnIqjQ/yzo21ylH2jzYnbGL3nfv3LvubPcxyjRXC5lxYpfyBJX3bc9oTR6yHPd53+ZXFgcYwtPL1sCtVJmV5Y5q4mgEYF5NheHkgzrdG1vx0w80qCLUD9soMcBVtiW3d3bsE0y+8jxDvGcFMQoPv4GqyRno0JxXHZcrBSs0d7mMm7GHWYeoNjNXbNUkyjGTOJ66Z7N6XQE6bhvptv3Wxp7xrw=
+language: c++
+os: linux
+dist: focal
+
+branches:
+  only:
+    - coverity_scan
+
+encrypt:
+  - secure: "t0B4aPR8s7wrK0wDArt3kZ+MaYhruAHS3FGih3JveLblWL8M5NyAKfPJ4D0WA9PhAuvV7Tsy0pJ+z0dIErXNwWqY696T0IgWfzgaHZfh6j+XKxUqN89r9pGLxhBBg2ZmNOFEpkuragYMXTDe15litucZDxFot7T/YaBJIsRMErwhp+Rv26KoIJnZc3oYzbF1RJadNqJIRf43d4XG3MDOGRM2z6dqgDb70cNqXNgZQgLnfWqJX5MEdK2amK+JBFzFu4o1gZKNyrp2B5az1MKYnxcrOHdANBCFNZlg/Y2kyNNXtMi/Gi4/SKAeHUDApWHWVGeK/4fDN5hDF4tT6WC8U5Z/VeJq/YDifytufWyBiUJ3WFhy7McHE43T5iqVNn6AwYu2uGT7ZH3Fy+EUPrc5fmqIZrDerIVqGI3bzWMjoj/j+24Y9WHelwH3zlM5wlSZ84Uitc5J5Rj96AfYS+A0UAS/358UAYE880rlJXiC+vvmmgqu1EAAdCORHQmXwHa8u/+MDA1Jn3M5X+F4GyxmUGw5CbYnJOP6JSJa2XJr+fYArIcSSTwwrFZIo4kAgZonuP6b7x85AZDN/EMn/j0mrN0ONOyak+f57GZ2ChMJw58vFSUXJWm09nv7gYmPLNtYhs20K92G8ZKB7OrJW3tYwW4z9OyEOPxtdos7GYr3oFk="
 
 before_install:
-  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
-  - export PROJECT_NAME=taylor-santos/tuatara
-  - export COVERITY_SCAN_TOKEN=iDfFrr4x7hEdUbWcD2aXiZPCUyeBE4/Iw5xNjvh+yMLW+EvNFRM2ZQqZ/yG6/yClHwZsKTGUbNtj4hBHhPobecTroA43LZZ8bGP6JDUhnF3wHfcawybvP6LSEk7myFQI1d9z2ymV+4UrHzToWPLQEvZvFaja9XN0Fim7cRAth2tAGGnc0xwrhiheHlp5rHswl/ekb5M8xX7E8zAdrsEB76pn4UUXGT3RdipvxdVQvx1WQfB4K222TBW0KEDsyT4oYbdnb7609L/XsUmvrpyyjE3yg/jYV0m9+YLhSNIsn0X7m0JLIH0tFQf3QGM7WBFwNNr36F2G4+pzrSVYPNNnrIyI5zcStmgb/WT7acba7Lfdp5B08KsOAKs/Z/dhJcJ8xxGomSUVtvhM22oxP51Futi+njQ6isn1aR1q4boB7bN/zniFh7LMjkkZfJmWuggzpKJ2D7t6y0M5nsoyf4hnIqjQ/yzo21ylH2jzYnbGL3nfv3LvubPcxyjRXC5lxYpfyBJX3bc9oTR6yHPd53+ZXFgcYwtPL1sCtVJmV5Y5q4mgEYF5NheHkgzrdG1vx0w80qCLUD9soMcBVtiW3d3bsE0y+8jxDvGcFMQoPv4GqyRno0JxXHZcrBSs0d7mMm7GHWYeoNjNXbNUkyjGTOJ66Z7N6XQE6bhvptv3Wxp7xrw=
+  - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+install:
+  - wget --no-check-certificate http://ftp.gnu.org/gnu/bison/bison-3.6.1.tar.gz
+  - mkdir $HOME/bison
+  - tar -xf bison-3.6.1.tar.gz; cd bison-3.6.1; ./configure --prefix=$HOME/bison; make -j 4 install; cd $PWD/..;
+  - export PATH=$HOME/bison/bin:$PATH
 
 addons:
   coverity_scan:
