@@ -1,42 +1,18 @@
-language: cpp
-dist: focal
-
 env:
   global:
-    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-    #   via the "travis encrypt" command using the project repo's public key
-    - secure: "YA+AUVc9IIfTvYq69tad3EUfo0fCC5yYtl0mNf7uUoTt9ReHQv3Ps/zSLP1vl6vV3P6OUIIO3FfNR5RKcZAMiTN/sHOpm6EaomQp1QtuT7uHDuaggEMqFMETGsmdXpc6CQezOls5jdC2W1FvfGJ3SZS2uxrL4JUKqpsZ+6YChSkKsVC3ywjz5GHcRf0Zls1kVMNnq+IWriUFDmUbPiVWKQJty5DGe0kmE/QHSBijLG7pbv4wPNxK0yUiDM3XOGn6j4CJV5z++WKwY8v7AgK8yDhwCzDeOHNkbeVy+PS+m/7gIZbeT+Mrw3CuKKrcZOlqVbiIVTVu7Cq7jcR+1qEjHvH2c/v9QU3oYV9sBO7n50WSxRqjKTZTrqqSI0pNDXWKr9TRuRw9O0+CJf7ltWZxV+aHOUbnMWl1iHWMkmS4amc+i/CBNoUQwvJgVpUSFhck1oVnAl26IBi+YmDSGlbfJri2FO8zglVkkMA0kyXrhK4SY7plPnPTsKeJ+kc6xF++/TP86DRK7Ob3SbTmu/RG6tH8HQdFPP7jEmMksNDYTWeLlMteBh3Ci7GoidNGiUvR04VAKcw4m91s3QmM3oOC8+cdngc4dRUi3OEyQGUo4MIi149oOA9bc2l1tmonXu8swrakKn37QdWhJWFvtpbjnIfHXWDIXJwFXs2MdUhzWn0="
+    - secure: iDfFrr4x7hEdUbWcD2aXiZPCUyeBE4/Iw5xNjvh+yMLW+EvNFRM2ZQqZ/yG6/yClHwZsKTGUbNtj4hBHhPobecTroA43LZZ8bGP6JDUhnF3wHfcawybvP6LSEk7myFQI1d9z2ymV+4UrHzToWPLQEvZvFaja9XN0Fim7cRAth2tAGGnc0xwrhiheHlp5rHswl/ekb5M8xX7E8zAdrsEB76pn4UUXGT3RdipvxdVQvx1WQfB4K222TBW0KEDsyT4oYbdnb7609L/XsUmvrpyyjE3yg/jYV0m9+YLhSNIsn0X7m0JLIH0tFQf3QGM7WBFwNNr36F2G4+pzrSVYPNNnrIyI5zcStmgb/WT7acba7Lfdp5B08KsOAKs/Z/dhJcJ8xxGomSUVtvhM22oxP51Futi+njQ6isn1aR1q4boB7bN/zniFh7LMjkkZfJmWuggzpKJ2D7t6y0M5nsoyf4hnIqjQ/yzo21ylH2jzYnbGL3nfv3LvubPcxyjRXC5lxYpfyBJX3bc9oTR6yHPd53+ZXFgcYwtPL1sCtVJmV5Y5q4mgEYF5NheHkgzrdG1vx0w80qCLUD9soMcBVtiW3d3bsE0y+8jxDvGcFMQoPv4GqyRno0JxXHZcrBSs0d7mMm7GHWYeoNjNXbNUkyjGTOJ66Z7N6XQE6bhvptv3Wxp7xrw=
 
 before_install:
   - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+  - export PROJECT_NAME=taylor-santos/tuatara
+  - export COVERITY_SCAN_TOKEN=iDfFrr4x7hEdUbWcD2aXiZPCUyeBE4/Iw5xNjvh+yMLW+EvNFRM2ZQqZ/yG6/yClHwZsKTGUbNtj4hBHhPobecTroA43LZZ8bGP6JDUhnF3wHfcawybvP6LSEk7myFQI1d9z2ymV+4UrHzToWPLQEvZvFaja9XN0Fim7cRAth2tAGGnc0xwrhiheHlp5rHswl/ekb5M8xX7E8zAdrsEB76pn4UUXGT3RdipvxdVQvx1WQfB4K222TBW0KEDsyT4oYbdnb7609L/XsUmvrpyyjE3yg/jYV0m9+YLhSNIsn0X7m0JLIH0tFQf3QGM7WBFwNNr36F2G4+pzrSVYPNNnrIyI5zcStmgb/WT7acba7Lfdp5B08KsOAKs/Z/dhJcJ8xxGomSUVtvhM22oxP51Futi+njQ6isn1aR1q4boB7bN/zniFh7LMjkkZfJmWuggzpKJ2D7t6y0M5nsoyf4hnIqjQ/yzo21ylH2jzYnbGL3nfv3LvubPcxyjRXC5lxYpfyBJX3bc9oTR6yHPd53+ZXFgcYwtPL1sCtVJmV5Y5q4mgEYF5NheHkgzrdG1vx0w80qCLUD9soMcBVtiW3d3bsE0y+8jxDvGcFMQoPv4GqyRno0JxXHZcrBSs0d7mMm7GHWYeoNjNXbNUkyjGTOJ66Z7N6XQE6bhvptv3Wxp7xrw=
 
 addons:
   coverity_scan:
     project:
-      name: "taylor-santos/tuatara"
-      description: "Compiler for the Tuatara programming language"
+      name: taylor-santos/tuatara
+      description: Compiler for the Tuatara programming language
     notification_email: taylor.p.santos@gmail.com
-    build_command_prepend: "mkdir build; cd build; cmake -DCMAKE_BUILD_TYPE=Debug .."
-    build_command: "make"
+    build_command_prepend: mkdir build; cd build; cmake -DCMAKE_BUILD_TYPE=Debug ..
+    build_command: make
     branch_pattern: coverity_scan
-
-jobs:
-  include:
-    - os: linux
-      compiler: gcc
-
-install:
-  - wget --no-check-certificate http://ftp.gnu.org/gnu/bison/bison-3.6.1.tar.gz
-  - mkdir $HOME/bison
-  - tar -xf bison-3.6.1.tar.gz; cd bison-3.6.1; ./configure --prefix=$HOME/bison; make -j 4 install; cd $PWD/..;
-  - export PATH=$HOME/bison/bin:$PATH
-  - echo $PROJECT_NAME
-  - echo $COVERITY_SCAN_TOKEN
-
-script:
-  - mkdir -p build
-  - cd build
-  - cmake -DCMAKE_BUILD_TYPE=Debug ..
-  - make all_tests
-  - cd ..
-  - ./build/all_tests
