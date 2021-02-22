@@ -1,46 +1,37 @@
 language: cpp
 dist: focal
 
+env:
+  global:
+    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+    #   via the "travis encrypt" command using the project repo's public key
+    - secure: "YA+AUVc9IIfTvYq69tad3EUfo0fCC5yYtl0mNf7uUoTt9ReHQv3Ps/zSLP1vl6vV3P6OUIIO3FfNR5RKcZAMiTN/sHOpm6EaomQp1QtuT7uHDuaggEMqFMETGsmdXpc6CQezOls5jdC2W1FvfGJ3SZS2uxrL4JUKqpsZ+6YChSkKsVC3ywjz5GHcRf0Zls1kVMNnq+IWriUFDmUbPiVWKQJty5DGe0kmE/QHSBijLG7pbv4wPNxK0yUiDM3XOGn6j4CJV5z++WKwY8v7AgK8yDhwCzDeOHNkbeVy+PS+m/7gIZbeT+Mrw3CuKKrcZOlqVbiIVTVu7Cq7jcR+1qEjHvH2c/v9QU3oYV9sBO7n50WSxRqjKTZTrqqSI0pNDXWKr9TRuRw9O0+CJf7ltWZxV+aHOUbnMWl1iHWMkmS4amc+i/CBNoUQwvJgVpUSFhck1oVnAl26IBi+YmDSGlbfJri2FO8zglVkkMA0kyXrhK4SY7plPnPTsKeJ+kc6xF++/TP86DRK7Ob3SbTmu/RG6tH8HQdFPP7jEmMksNDYTWeLlMteBh3Ci7GoidNGiUvR04VAKcw4m91s3QmM3oOC8+cdngc4dRUi3OEyQGUo4MIi149oOA9bc2l1tmonXu8swrakKn37QdWhJWFvtpbjnIfHXWDIXJwFXs2MdUhzWn0="
+
+before_install:
+  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+addons:
+  coverity_scan:
+    project:
+      name: "taylor-santos/tuatara"
+      description: "Compiler for the Tuatara programming language"
+    notification_email: taylor.p.santos@gmail.com
+    build_command_prepend: "mkdir build; cd build; cmake -DCMAKE_BUILD_TYPE=Debug .."
+    build_command: "make"
+    branch_pattern: coverity_scan
+
 jobs:
   include:
     - os: linux
       compiler: gcc
-      addons:
-        apt:
-          packages:
-            - clang-format-11
-      before_install:
-        - pip install --user cpp-coveralls
-      after_success:
-        - coveralls -i src -e src/main.cpp --gcov-options '\-lp'
-    - os: linux
-      compiler: clang
-    - os: linux
-      dist: focal
-      compiler: gcc
-      arch: arm64
-    - os: osx
-      osx_image: xcode12.2
-      compiler: clang
-      before_install:
-        - brew install flex
-        - export PATH="/usr/local/opt/flex/bin:$PATH"
-    - os: windows
-      compiler: "msvc2017"
-      install:
-        - choco install winflexbison3
-      script:
-        - mkdir -p build
-        - cd build
-        - cmake -G "Visual Studio 15 2017" -A x64 ..
-        - cmake --build . --config Debug
-        - ./Debug/all_tests.exe
 
 install:
   - wget --no-check-certificate http://ftp.gnu.org/gnu/bison/bison-3.6.1.tar.gz
   - mkdir $HOME/bison
   - tar -xf bison-3.6.1.tar.gz; cd bison-3.6.1; ./configure --prefix=$HOME/bison; make -j 4 install; cd $PWD/..;
   - export PATH=$HOME/bison/bin:$PATH
+  - echo $PROJECT_NAME
+  - echo $COVERITY_SCAN_TOKEN
 
 script:
   - mkdir -p build
