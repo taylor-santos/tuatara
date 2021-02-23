@@ -19,7 +19,7 @@ TEST(ASTTest, IntNode) {
     EXPECT_EQ(ss.str(), R"({"node":"int","value":123})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Int\n");
 }
 
@@ -31,7 +31,7 @@ TEST(ASTTest, FloatNode) {
     EXPECT_EQ(ss.str(), R"({"node":"float","value":123.456})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Float\n");
 }
 
@@ -43,7 +43,7 @@ TEST(ASTTest, StringNode) {
     EXPECT_EQ(ss.str(), R"({"node":"string","value":"StringNode"})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "String\n");
 }
 
@@ -55,7 +55,7 @@ TEST(ASTTest, TrueBoolNode) {
     EXPECT_EQ(ss.str(), R"({"node":"bool","value":true})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Bool\n");
 }
 
@@ -67,7 +67,7 @@ TEST(ASTTest, FalseBoolNode) {
     EXPECT_EQ(ss.str(), R"({"node":"bool","value":false})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Bool\n");
 }
 
@@ -79,7 +79,7 @@ TEST(ASTTest, VariableNode) {
     EXPECT_EQ(ss.str(), R"({"node":"variable","name":"var"})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Variable\n");
 }
 
@@ -102,7 +102,7 @@ TEST(ASTTest, InfixOperatorNode) {
         R"("value":123}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Infix Operator\nVariable\nInt\n");
 }
 
@@ -121,7 +121,7 @@ TEST(ASTTest, PrefixOperatorNode) {
         R"("value":123}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Prefix Operator\nInt\n");
 }
 
@@ -140,7 +140,7 @@ TEST(ASTTest, PostfixOperatorNode) {
         R"("name":"var"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Postfix Operator\nVariable\n");
 }
 
@@ -159,7 +159,7 @@ TEST(ASTTest, ValueDeclarationNode) {
         R"("value":123}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Value Decl\nInt\n");
 }
 
@@ -178,7 +178,7 @@ TEST(ASTTest, TypeDeclarationNode) {
         R"("class":"class_name"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Type Decl\nObject Type\n");
 }
 
@@ -201,7 +201,7 @@ TEST(ASTTest, TypeValueDeclarationNode) {
         R"("value":123}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Type Value Decl\nObject Type\nInt\n");
 }
 
@@ -223,7 +223,7 @@ TEST(ASTTest, BlockNode) {
         R"("value":45.6}]})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Block\nInt\nFloat\n");
 }
 
@@ -249,7 +249,7 @@ TEST(ASTTest, IfNode) {
         R"("value":123}]}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "If\nBool\nBlock\nInt\n");
 }
 
@@ -283,7 +283,7 @@ TEST(ASTTest, IfElseNode) {
         R"("value":4.56}]}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "If Else\nBool\nBlock\nInt\nBlock\nFloat\n");
 }
 
@@ -309,7 +309,7 @@ TEST(ASTTest, WhileNode) {
         "\"value\":123}]}}");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "While\nBool\nBlock\nInt\n");
 }
 
@@ -331,7 +331,7 @@ TEST(ASTTest, CallNode) {
         R"("name":"b"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Call\nVariable\nVariable\n");
 }
 
@@ -353,7 +353,7 @@ TEST(ASTTest, IndexNode) {
         R"("value":5}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Index\nVariable\nInt\n");
 }
 
@@ -385,7 +385,7 @@ TEST(ASTTest, FuncDeclarationNode) {
         R"("class":"T"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(
         walk.str(),
         "Func Decl\nNamed Constraint Pattern\nType Constraint Pattern\nObject Type\nObject Type\n");
@@ -427,7 +427,7 @@ TEST(ASTTest, FuncImplNode) {
         R"("name":"b"}]}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(
         walk.str(),
         "Func Impl\nNamed Constraint Pattern\nType Constraint Pattern\nObject Type\nObject Type\n"
@@ -468,7 +468,7 @@ TEST(ASTTest, LambdaNode) {
         R"("name":"b"}]}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(
         walk.str(),
         "Lambda\nNamed Constraint Pattern\nType Constraint Pattern\nObject Type\n"
@@ -493,7 +493,7 @@ TEST(ASTTest, TupleNode) {
         R"("value":123}]})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Tuple\nVariable\nInt\n");
 }
 
@@ -505,7 +505,7 @@ TEST(ASTTest, UnitNode) {
     EXPECT_EQ(ss.str(), R"({"node":"unit"})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Unit\n");
 }
 
@@ -536,7 +536,7 @@ TEST(ASTTest, MatchNode) {
         R"("name":"bar"}}]})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Match\nVariable\nLiteral Pattern\nInt\nVariable\n");
 }
 

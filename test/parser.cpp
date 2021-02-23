@@ -795,7 +795,7 @@ TEST(ParserTest, SyntaxError) {
         "* 1:5 - 1:8: syntax error: unexpected identifier\n"
         "1 | foo bar\n"
         "  |     ^~~\n"
-        R"(expected: "line break", ";", "=", "(", "[", "<", ">", ",", "|", or "operator")"
+        R"(expected: "line break", ";", "=", "(", "[", "<", ">", ",", "|", "?", or "operator")"
         "\n")
         << "Expected Bison to output a syntax error message";
 }

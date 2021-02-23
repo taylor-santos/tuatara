@@ -3,6 +3,8 @@
 
 #include "ast/lvalue.h"
 
+#include "type/unit.h"
+
 namespace AST {
 
 class Unit final : public LValue {
@@ -13,10 +15,12 @@ public: // Aliases
 public: // Methods
     explicit Unit(const yy::location &loc);
     ~Unit() override = default;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void               json(std::ostream &os) const override;
+    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
+    TypeChecker::Unit  myType_;
 };
 
 } // namespace AST

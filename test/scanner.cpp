@@ -81,7 +81,7 @@ TEST(ScannerTest, Int) {
     std::ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    for (auto expect : expected) {
+    for (const auto &expect : expected) {
         EXPECT_VALUE_TOK(scanner, drv, int64_t, INT, expect);
     }
     EXPECT_EOF(scanner, drv);
@@ -124,7 +124,7 @@ TEST(ScannerTest, Float) {
     std::ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    for (auto expect : expected) {
+    for (const auto &expect : expected) {
         EXPECT_VALUE_TOK(scanner, drv, double, FLOAT, expect);
     }
     EXPECT_EOF(scanner, drv);

@@ -13,10 +13,16 @@ public: // Aliases
 public: // Methods
     explicit Unit(yy::location loc);
     ~Unit() override = default;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
+    void                             pretty(std::ostream &out, bool mod) const override;
+    bool                             operator<=(const Type &other) const override;
+
+protected: // Methods
+    bool operator>=(const Type &other) const override;
 
 private: // Methods
     void json(std::ostream &os) const override;
+    void verifyImpl(Context &ctx) override;
 };
 
 } // namespace TypeChecker

@@ -1,5 +1,7 @@
 #include "ast/value_declaration.h"
 
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -24,15 +26,22 @@ ValueDeclaration::getValue() const {
 }
 
 void
-ValueDeclaration::walk(const Func &fn) const {
+ValueDeclaration::walk(const function<void(const Node &)> &fn) const {
     Declaration::walk(fn);
     value_->walk(fn);
 }
 
 const string &
-ValueDeclaration::getTypeName() const {
+ValueDeclaration::getNodeName() const {
     const static string name = "Value Decl";
     return name;
+}
+
+TypeChecker::Type &
+ValueDeclaration::getTypeImpl(TypeChecker::Context &ctx) {
+    auto &type = value_->getType(ctx);
+    assignType(ctx, type, true);
+    return type;
 }
 
 } // namespace AST

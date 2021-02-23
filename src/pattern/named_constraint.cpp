@@ -15,22 +15,23 @@ NamedConstraint::NamedConstraint(
     , constraint_{move(constraint)} {}
 
 void
-NamedConstraint::walk(const AST::Node::Func &fn) const {
-    Pattern::walk(fn);
-    constraint_->walk(fn);
-}
-
-const std::string &
-NamedConstraint::getTypeName() const {
-    const static string name = "Named Constraint Pattern";
-    return name;
-}
-void
 NamedConstraint::json(std::ostream &os) const {
     JSON::Object obj(os);
     obj.printKeyValue("pattern", "named constraint");
     obj.printKeyValue("name", name_);
     obj.printKeyValue("constraint", constraint_);
+}
+
+void
+NamedConstraint::walk(const std::function<void(const Node &)> &fn) const {
+    Pattern::walk(fn);
+    constraint_->walk(fn);
+}
+
+const std::string &
+NamedConstraint::getNodeName() const {
+    const static string name = "Named Constraint Pattern";
+    return name;
 }
 
 } // namespace Pattern

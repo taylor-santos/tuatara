@@ -15,15 +15,18 @@ public: // Aliases
 
 public: // Methods
     ValueDeclaration(const yy::location &loc, std::string variable, Expression::Ptr value);
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 protected: // Methods
-    void                            json(std::ostream &os) const override;
     [[nodiscard]] const Expression &getValue() const;
+    TypeChecker::Type &             getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
     Expression::Ptr value_;
+
+private: // Methods
+    void json(std::ostream &os) const override;
 };
 
 } // namespace AST

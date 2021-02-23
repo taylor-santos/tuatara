@@ -15,16 +15,19 @@ public: // Aliases
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    TypeDeclaration(const yy::location &loc, std::string variable, TypeChecker::Type::Ptr type);
-    [[nodiscard]] const std::string &getTypeName() const override;
-    void                             walk(const Func &fn) const override;
+    TypeDeclaration(const yy::location &loc, std::string variable, TypeChecker::Type::Ptr declType);
+    [[nodiscard]] const std::string &getNodeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
 
 protected: // Methods
-    [[nodiscard]] const TypeChecker::Type &getType() const;
-    void                                   json(std::ostream &os) const override;
+    [[nodiscard]] const TypeChecker::Type &getDeclType() const;
+    TypeChecker::Type &                    getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
-    TypeChecker::Type::Ptr type_;
+    TypeChecker::Type::Ptr declType_;
+
+private: // Methods
+    void json(std::ostream &os) const override;
 };
 
 } // namespace AST

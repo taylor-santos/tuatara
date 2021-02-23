@@ -1,5 +1,9 @@
 #include "ast/tuple.h"
 
+#include <algorithm>
+
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -18,17 +22,22 @@ Tuple::json(ostream &os) const {
 }
 
 void
-Tuple::walk(const Func &fn) const {
+Tuple::walk(const function<void(const Node &)> &fn) const {
     LValue::walk(fn);
-    for (const auto &expr : exprs_) {
-        expr->walk(fn);
-    }
+    for_each(exprs_.begin(), exprs_.end(), [&](const auto &e) { e->walk(fn); });
 }
 
 const string &
-Tuple::getTypeName() const {
+Tuple::getNodeName() const {
     const static string name = "Tuple";
     return name;
+}
+
+TypeChecker::Type &
+Tuple::getTypeImpl(TypeChecker::Context &) {
+    throw TypeChecker::TypeException(
+        "type error: " + getNodeName() + " type checking not implemented",
+        getLoc());
 }
 
 } // namespace AST

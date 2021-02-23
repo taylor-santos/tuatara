@@ -1,5 +1,6 @@
 #include "json.h"
 
+#include <algorithm>
 #include <cctype>
 #include <sstream>
 
@@ -87,9 +88,7 @@ escapeChar(char c) {
 static string
 escape(const string &str) {
     string s;
-    for (const auto &c : str) {
-        s += escapeChar(c);
-    }
+    for_each(str.begin(), str.end(), [&](const auto &c) { s += escapeChar(c); });
     return s;
 }
 

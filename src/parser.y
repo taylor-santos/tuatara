@@ -305,6 +305,9 @@ operator
     | "|" {
         $$ = "|";
     }
+    | "?" {
+        $$ = "?";
+    }
 
 block_expression
     : "line break" "indent" expressions "outdent" "line break" {
@@ -423,9 +426,6 @@ opt_type
 
 type
     : sum_type
-    | "(" func_type ")" {
-        $$ = $2;
-    }
 
 sum_type
     : post_type {
@@ -476,6 +476,9 @@ base_type
     }
     | "(" product_type_list ")" {
         $$ = make_unique<TypeChecker::Product>(@$, $2);
+    }
+    | "(" func_type ")" {
+        $$ = $2;
     }
     | "(" type ")" {
         $$ = $2;

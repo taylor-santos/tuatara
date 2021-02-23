@@ -167,7 +167,9 @@ str     \"([^\\\"\n]|\\.)*\"
 exp     [eE][+-]?[[:digit:]]+
 nan     (?i:nan)
 inf     (?i:inf)
-op      [+\-*/\\=%<>&|!@#$^~]+
+
+reserved    [=|?<>]
+op          [+\-*/\\%&!@#$^~]+
 
 %%
 
@@ -287,19 +289,23 @@ op      [+\-*/\\=%<>&|!@#$^~]+
 "true"      PUSH_VALUE_AND_POP(BOOL, true);
 "false"     PUSH_VALUE_AND_POP(BOOL, false);
 ";"         PUSH_TOKEN_AND_POP(SEMICOLON);
-"="         PUSH_TOKEN_AND_POP(ASSIGN);
 ":"         PUSH_TOKEN_AND_POP(COLON);
 "["         PUSH_TOKEN_AND_POP(LSQUARE);
 "]"         PUSH_TOKEN_AND_POP(RSQUARE);
-"<"         PUSH_TOKEN_AND_POP(LANGLE);
-">"         PUSH_TOKEN_AND_POP(RANGLE);
 "{"         PUSH_TOKEN_AND_POP(LBRACE);
 "}"         PUSH_TOKEN_AND_POP(RBRACE);
 ","         PUSH_TOKEN_AND_POP(COMMA);
+"_"         PUSH_TOKEN_AND_POP(WILDCARD);
+
+%{ /* Reserved operator symbols */ %}
+"="         PUSH_TOKEN_AND_POP(ASSIGN);
 "|"         PUSH_TOKEN_AND_POP(OR);
 "?"         PUSH_TOKEN_AND_POP(QUESTION);
-"_"         PUSH_TOKEN_AND_POP(WILDCARD);
-{op}        PUSH_VALUE_AND_POP(OPERATION, yytext);
+"<"         PUSH_TOKEN_AND_POP(LANGLE);
+">"         PUSH_TOKEN_AND_POP(RANGLE);
+
+{op}({op}|{reserved})*       PUSH_VALUE_AND_POP(OPERATION, yytext);
+{reserved}({op}|{reserved})+ PUSH_VALUE_AND_POP(OPERATION, yytext);
 
 [[:digit:]]+                        LEX_INT();
 [[:digit:]]+{exp}                   LEX_FLOAT();

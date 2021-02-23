@@ -13,13 +13,14 @@ public: // Aliases
 public: // Methods
     Bool(const yy::location &loc, bool value);
     ~Bool() override = default;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
     bool value_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void               json(std::ostream &os) const override;
+    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

@@ -13,8 +13,8 @@ public: // Aliases
 public: // Methods
     Tuple(const yy::location &loc, Pattern::Vec patterns);
     ~Tuple() override = default;
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
     Pattern::Vec patterns_;

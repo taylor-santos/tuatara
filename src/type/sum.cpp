@@ -1,5 +1,9 @@
 #include "type/sum.h"
 
+#include <algorithm>
+
+#include "type/type_context.h"
+
 #include "json.h"
 
 using namespace std;
@@ -18,17 +22,48 @@ Sum::json(ostream &os) const {
 }
 
 void
-Sum::walk(const AST::Node::Func &fn) const {
+Sum::walk(const std::function<void(const Node &)> &fn) const {
     Type::walk(fn);
-    for (const auto &type : types_) {
-        type->walk(fn);
-    }
+    for_each(types_.begin(), types_.end(), [&](const auto &t) { t->walk(fn); });
 }
 
 const string &
-Sum::getTypeName() const {
+Sum::getNodeName() const {
     const static string name = "Sum Type";
     return name;
+}
+
+void
+Sum::verifyImpl(Context &ctx) {
+    for_each(types_.begin(), types_.end(), [&](const auto &t) { t->verify(ctx); });
+}
+
+void
+Sum::pretty(ostream &out, bool mod) const {
+    if (mod) {
+        out << "(";
+    }
+    string sep;
+    for_each(types_.begin(), types_.end(), [&](const auto &t) {
+        out << sep;
+        t->pretty(out, false);
+        sep = ",";
+    });
+    if (mod) {
+        out << ")";
+    }
+}
+
+bool
+Sum::operator<=(const Type &other) const {
+    return other >= (*this);
+}
+
+bool
+Sum::operator>=(const Type &other) const {
+    return std::any_of(types_.begin(), types_.end(), [&](const auto &type) {
+        return other <= (*type);
+    });
 }
 
 } // namespace TypeChecker

@@ -13,8 +13,8 @@ public: // Aliases
 public: // Methods
     explicit NamedConstraint(const yy::location &loc, std::string name, Constraint::Ptr constraint);
     ~NamedConstraint() override = default;
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
     std::string     name_;

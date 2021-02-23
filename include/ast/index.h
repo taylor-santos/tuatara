@@ -13,15 +13,16 @@ public: // Aliases
 public: // Methods
     Index(const yy::location &loc, Expression::Ptr expr, Expression::Ptr index);
     ~Index() override = default;
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
     Expression::Ptr expr_;
     Expression::Ptr index_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void               json(std::ostream &os) const override;
+    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

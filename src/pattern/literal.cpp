@@ -11,21 +11,22 @@ Literal::Literal(const yy::location &loc, AST::Literal::Ptr literal)
     , literal_{move(literal)} {}
 
 void
-Literal::walk(const AST::Node::Func &fn) const {
+Literal::json(std::ostream &os) const {
+    JSON::Object obj(os);
+    obj.printKeyValue("pattern", "literal");
+    obj.printKeyValue("literal", literal_);
+}
+
+void
+Literal::walk(const std::function<void(const Node &)> &fn) const {
     Pattern::walk(fn);
     literal_->walk(fn);
 }
 
 const std::string &
-Literal::getTypeName() const {
+Literal::getNodeName() const {
     const static string name = "Literal Pattern";
     return name;
-}
-void
-Literal::json(std::ostream &os) const {
-    JSON::Object obj(os);
-    obj.printKeyValue("pattern", "literal");
-    obj.printKeyValue("literal", literal_);
 }
 
 } // namespace Pattern

@@ -1,5 +1,7 @@
 #include "ast/prefix_operator.h"
 
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -16,13 +18,20 @@ AST::PrefixOperator::getRhs() const {
 }
 
 const std::string &
-PrefixOperator::getTypeName() const {
+PrefixOperator::getNodeName() const {
     const static string name = "Prefix Operator";
     return name;
 }
 
+TypeChecker::Type &
+PrefixOperator::getTypeImpl(TypeChecker::Context &) {
+    throw TypeChecker::TypeException(
+        "type error: " + getNodeName() + " type checking not implemented",
+        getLoc());
+}
+
 void
-PrefixOperator::walk(const Node::Func &fn) const {
+PrefixOperator::walk(const std::function<void(const Node &)> &fn) const {
     Operator::walk(fn);
     rhs_->walk(fn);
 }

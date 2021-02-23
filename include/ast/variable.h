@@ -13,13 +13,14 @@ public: // Aliases
 public: // Methods
     Variable(const yy::location &loc, std::string name);
     ~Variable() override = default;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
     std::string name_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void               json(std::ostream &os) const override;
+    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

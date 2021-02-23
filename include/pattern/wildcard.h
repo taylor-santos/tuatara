@@ -13,7 +13,7 @@ public: // Aliases
 public: // Methods
     explicit Wildcard(const yy::location &loc);
     ~Wildcard() override = default;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Methods
     void json(std::ostream &os) const override;

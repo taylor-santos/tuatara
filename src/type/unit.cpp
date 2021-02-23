@@ -16,9 +16,27 @@ Unit::json(ostream &os) const {
 }
 
 const string &
-Unit::getTypeName() const {
+Unit::getNodeName() const {
     const static string name = "Unit Type";
     return name;
+}
+
+void
+Unit::verifyImpl(Context &) {}
+
+void
+Unit::pretty(ostream &out, bool) const {
+    out << "()";
+}
+
+bool
+Unit::operator<=(const Type &other) const {
+    return other >= (*this);
+}
+
+bool
+Unit::operator>=(const Type &) const {
+    return true;
 }
 
 } // namespace TypeChecker

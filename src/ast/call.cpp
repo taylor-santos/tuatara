@@ -1,5 +1,7 @@
 #include "ast/call.h"
 
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -20,7 +22,7 @@ Call::json(ostream &os) const {
 }
 
 void
-Call::walk(const Func &fn) const {
+Call::walk(const function<void(const Node &)> &fn) const {
     LValue::walk(fn);
     func_->walk(fn);
     if (arg_) {
@@ -29,9 +31,14 @@ Call::walk(const Func &fn) const {
 }
 
 const string &
-Call::getTypeName() const {
+Call::getNodeName() const {
     const static string name = "Call";
     return name;
+}
+
+TypeChecker::Type &
+Call::getTypeImpl(TypeChecker::Context &) {
+    throw TypeChecker::TypeException("type error: call type checking not implemented", getLoc());
 }
 
 } // namespace AST

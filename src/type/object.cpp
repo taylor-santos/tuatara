@@ -1,9 +1,16 @@
 #include "type/object.h"
 
+#include <sstream>
+
+#include "type/class.h"
+#include "type/type_context.h"
+#include "type/type_exception.h"
+
 #include "json.h"
 
-using namespace TypeChecker;
 using namespace std;
+
+namespace TypeChecker {
 
 Object::Object(yy::location loc, string className)
     : Type(loc)
@@ -16,7 +23,44 @@ Object::json(ostream &os) const {
     obj.printKeyValue("class", className_);
 }
 const string &
-Object::getTypeName() const {
+Object::getNodeName() const {
     const static string name = "Object Type";
     return name;
 }
+
+void
+Object::verifyImpl(Context &ctx) {
+    auto symbol = ctx.getSymbol(className_);
+    if (!symbol) {
+        throw TypeException({"error: unknown class name \"" + className_ + "\"", getLoc()});
+    }
+    try {
+        auto &cl = dynamic_cast<TypeChecker::Class &>(symbol->type);
+        ofClass_ = cl;
+    } catch (std::bad_cast &) {
+        stringstream ss;
+        ss << "note: \"" << className_ << "\" previously defined as \"";
+        symbol->type.pretty(ss);
+        ss << "\" here:";
+        throw TypeException(
+            {{"error: type name \"" + className_ + "\" does not name a class.", getLoc()},
+             {ss.str(), symbol->type.getLoc()}});
+    }
+}
+
+void
+Object::pretty(ostream &out, bool) const {
+    out << className_;
+}
+
+bool
+Object::operator<=(const Type &other) const {
+    return other >= (*this);
+}
+
+bool
+Object::operator>=(const Object &other) const {
+    return (other.ofClass_->get()) <= (ofClass_->get());
+}
+
+} // namespace TypeChecker

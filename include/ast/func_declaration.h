@@ -23,8 +23,8 @@ public: // Methods
         std::string                           variable,
         Pattern::Pattern::Vec                 args,
         std::optional<TypeChecker::Type::Ptr> retType = {});
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 protected: // Methods
     [[nodiscard]] const Pattern::Pattern::Vec &                getArgs() const;
@@ -35,7 +35,8 @@ private: // Fields
     std::optional<TypeChecker::Type::Ptr> retType_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void               json(std::ostream &os) const override;
+    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

@@ -1,5 +1,7 @@
 #include "ast/if.h"
 
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -20,16 +22,23 @@ If::json(ostream &os) const {
 }
 
 void
-If::walk(const Func &fn) const {
+If::walk(const function<void(const Node &)> &fn) const {
     Expression::walk(fn);
     cond_->walk(fn);
     block_->walk(fn);
 }
 
 const string &
-If::getTypeName() const {
+If::getNodeName() const {
     const static string name = "If";
     return name;
+}
+
+TypeChecker::Type &
+If::getTypeImpl(TypeChecker::Context &) {
+    throw TypeChecker::TypeException(
+        "type error: " + getNodeName() + " type checking not implemented",
+        getLoc());
 }
 
 const Expression &

@@ -18,15 +18,41 @@ Maybe::json(ostream &os) const {
 }
 
 void
-Maybe::walk(const AST::Node::Func &fn) const {
+Maybe::walk(const std::function<void(const Node &)> &fn) const {
     Type::walk(fn);
     type_->walk(fn);
 }
 
 const string &
-Maybe::getTypeName() const {
+Maybe::getNodeName() const {
     const static string name = "Maybe Type";
     return name;
+}
+
+void
+Maybe::verifyImpl(Context &ctx) {
+    type_->verify(ctx);
+}
+
+void
+Maybe::pretty(ostream &out, bool) const {
+    type_->pretty(out, true);
+    out << "?";
+}
+
+bool
+Maybe::operator<=(const Type &other) const {
+    return other >= (*this);
+}
+
+bool
+Maybe::operator>=(const Type &other) const {
+    return other <= (*type_);
+}
+
+bool
+Maybe::operator>=(const Maybe &other) const {
+    return (*other.type_) <= (*type_);
 }
 
 } // namespace TypeChecker

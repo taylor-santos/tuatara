@@ -46,10 +46,7 @@ std::string
 pretty(string str) {
     std::replace(str.begin(), str.end(), '\t', ' ');
     str.erase(
-        std::remove_if(
-            str.begin(),
-            str.end(),
-            [](char c) { return !std::isprint(static_cast<unsigned char>(c)); }),
+        std::remove_if(str.begin(), str.end(), [](unsigned char c) { return !std::isprint(c); }),
         str.end());
     return str;
 }

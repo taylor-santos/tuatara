@@ -1,5 +1,9 @@
 #include "ast/lambda.h"
 
+#include <algorithm>
+
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -26,11 +30,9 @@ Lambda::json(ostream &os) const {
 }
 
 void
-Lambda::walk(const Func &fn) const {
+Lambda::walk(const function<void(const Node &)> &fn) const {
     Expression::walk(fn);
-    for (const auto &arg : args_) {
-        arg->walk(fn);
-    }
+    for_each(args_.begin(), args_.end(), [&](const auto &a) { a->walk(fn); });
     if (retType_) {
         (*retType_)->walk(fn);
     }
@@ -38,9 +40,16 @@ Lambda::walk(const Func &fn) const {
 }
 
 const string &
-Lambda::getTypeName() const {
+Lambda::getNodeName() const {
     const static string name = "Lambda";
     return name;
+}
+
+TypeChecker::Type &
+Lambda::getTypeImpl(TypeChecker::Context &) {
+    throw TypeChecker::TypeException(
+        "type error: " + getNodeName() + " type checking not implemented",
+        getLoc());
 }
 
 } // namespace AST

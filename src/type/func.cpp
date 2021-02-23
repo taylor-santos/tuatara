@@ -20,16 +20,46 @@ Func::json(ostream &os) const {
 }
 
 void
-Func::walk(const AST::Node::Func &fn) const {
+Func::walk(const std::function<void(const Node &)> &fn) const {
     Type::walk(fn);
     argType_->walk(fn);
     retType_->walk(fn);
 }
 
 const string &
-Func::getTypeName() const {
+Func::getNodeName() const {
     const static string name = "Func Type";
     return name;
+}
+
+void
+Func::verifyImpl(Context &ctx) {
+    argType_->verify(ctx);
+    retType_->verify(ctx);
+}
+
+void
+Func::pretty(ostream &out, bool mod) const {
+    if (mod) {
+        out << "(";
+    }
+    out << "func(";
+    argType_->pretty(out, false);
+    out << "):";
+    retType_->pretty(out, false);
+    if (mod) {
+        out << ")";
+    }
+}
+
+bool
+Func::operator<=(const Type &other) const {
+    return other >= (*this);
+}
+
+bool
+Func::operator>=(const Func &other) const {
+    return (*argType_) <= (*other.argType_) && (*other.retType_) <= (*retType_);
 }
 
 } // namespace TypeChecker

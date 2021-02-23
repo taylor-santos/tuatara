@@ -29,7 +29,7 @@ TEST(PatternTest, WildcardNode) {
     EXPECT_EQ(ss.str(), R"({"pattern":"wildcard"})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Wildcard Pattern\n");
 }
 
@@ -44,7 +44,7 @@ TEST(PatternTest, NamedWildcardNode) {
         R"("name":"foo"})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Named Wildcard Pattern\n");
 }
 
@@ -62,7 +62,7 @@ TEST(PatternTest, TypeConstraintNode) {
         R"("class":"T"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Type Constraint Pattern\nObject Type\n");
 }
 
@@ -80,7 +80,7 @@ TEST(PatternTest, ValueConstraintNode) {
         R"("value":123}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Value Constraint Pattern\nInt\n");
 }
 
@@ -98,7 +98,7 @@ TEST(PatternTest, LiteralNode) {
         R"("value":123}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Literal Pattern\nInt\n");
 }
 
@@ -122,7 +122,7 @@ TEST(PatternTest, TupleNode) {
         R"("pattern":"wildcard"}]})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Tuple Pattern\nValue Constraint Pattern\nInt\nWildcard Pattern\n");
 }
 

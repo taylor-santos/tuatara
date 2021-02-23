@@ -3,6 +3,8 @@
 
 #include "ast/expression.h"
 
+#include "type/object.h"
+
 namespace AST {
 
 class Literal : public Expression {
@@ -11,8 +13,14 @@ public: // Aliases
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    explicit Literal(const yy::location &loc);
+    explicit Literal(const yy::location &loc, std::string className);
     ~Literal() override = default;
+
+protected: // Methods
+    [[nodiscard]] TypeChecker::Object &getMyType();
+
+private: // Fields
+    TypeChecker::Object myType_;
 };
 
 } // namespace AST

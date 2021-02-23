@@ -14,13 +14,18 @@ operator<<(ostream &os, const Node &ast) {
 }
 
 void
-Node::walk(const Func &fn) const {
+Node::walk(const std::function<void(const Node &)> &fn) const {
     fn(*this);
 }
 
 const yy::location &
 Node::getLoc() const {
     return loc_;
+}
+
+void
+Node::setLoc(const yy::location &loc) {
+    loc_ = loc;
 }
 
 } // namespace AST

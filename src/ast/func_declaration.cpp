@@ -1,5 +1,9 @@
 #include "ast/func_declaration.h"
 
+#include <algorithm>
+
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace TypeChecker;
@@ -36,17 +40,22 @@ FuncDeclaration::getRetType() const {
 }
 
 const string &
-FuncDeclaration::getTypeName() const {
+FuncDeclaration::getNodeName() const {
     const static string name = "Func Decl";
     return name;
 }
 
+Type &
+FuncDeclaration::getTypeImpl(TypeChecker::Context &) {
+    throw TypeChecker::TypeException(
+        "type error: " + getNodeName() + " type checking not implemented",
+        getLoc());
+}
+
 void
-FuncDeclaration::walk(const Node::Func &fn) const {
+FuncDeclaration::walk(const std::function<void(const Node &)> &fn) const {
     Declaration::walk(fn);
-    for (const auto &arg : args_) {
-        arg->walk(fn);
-    }
+    for_each(args_.begin(), args_.end(), [&](const auto &a) { a->walk(fn); });
     if (retType_) {
         (*retType_)->walk(fn);
     }

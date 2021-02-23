@@ -12,14 +12,15 @@ public: // Aliases
 
 public: // Methods
     IfElse(const yy::location &loc, Expression::Ptr cond, Block::Ptr block, Block::Ptr elseBlock);
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
     Block::Ptr elseBlock_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void               json(std::ostream &os) const override;
+    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

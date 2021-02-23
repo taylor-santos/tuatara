@@ -14,8 +14,8 @@ public: // Aliases
 
 public: // Methods
     If(const yy::location &loc, Expression::Ptr cond, Block::Ptr block);
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 protected: // Methods
     [[nodiscard]] const Expression &getCond() const;
@@ -26,7 +26,8 @@ private: // Fields
     Block::Ptr      block_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void               json(std::ostream &os) const override;
+    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

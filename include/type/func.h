@@ -14,9 +14,13 @@ public: // Aliases
 
 public: // Methods
     Func(yy::location loc, Type::Ptr argType, Type::Ptr retType);
-    ~Func() override = default;
-    void                             walk(const Node::Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
+    void                             pretty(std::ostream &out, bool mod) const override;
+    bool                             operator<=(const Type &other) const override;
+
+protected: // Methods
+    bool operator>=(const Func &other) const override;
 
 private: // Fields
     Type::Ptr argType_;
@@ -24,6 +28,7 @@ private: // Fields
 
 private: // Methods
     void json(std::ostream &os) const override;
+    void verifyImpl(Context &ctx) override;
 };
 
 } // namespace TypeChecker

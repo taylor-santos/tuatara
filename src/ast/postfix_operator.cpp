@@ -1,5 +1,7 @@
 #include "ast/postfix_operator.h"
 
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -16,13 +18,20 @@ AST::PostfixOperator::getLhs() const {
 }
 
 const std::string &
-PostfixOperator::getTypeName() const {
+PostfixOperator::getNodeName() const {
     const static string name = "Postfix Operator";
     return name;
 }
 
+TypeChecker::Type &
+PostfixOperator::getTypeImpl(TypeChecker::Context &) {
+    throw TypeChecker::TypeException(
+        "type error: " + getNodeName() + " type checking not implemented",
+        getLoc());
+}
+
 void
-PostfixOperator::walk(const Node::Func &fn) const {
+PostfixOperator::walk(const std::function<void(const Node &)> &fn) const {
     Operator::walk(fn);
     lhs_->walk(fn);
 }

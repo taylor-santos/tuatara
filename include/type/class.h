@@ -1,28 +1,26 @@
-#ifndef TYPE_SUM_H
-#define TYPE_SUM_H
+#ifndef TYPE_CLASS_H
+#define TYPE_CLASS_H
 
 #include "type/type.h"
 
 namespace TypeChecker {
 
-class Sum final : public Type {
+class Class final : public Type {
 public: // Aliases
-    using Ptr = std::unique_ptr<Sum>;
+    using Ptr = std::unique_ptr<Class>;
     using Vec = std::vector<Ptr>;
 
-public: // Fields
-    Sum(yy::location loc, Type::Vec types);
-    ~Sum() override = default;
-    void walk(const std::function<void(const Node &)> &fn) const override;
+public: // Methods
+    Class(yy::location loc, std::string name);
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
     bool                             operator<=(const Type &other) const override;
 
-protected:
-    bool operator>=(const Type &other) const override;
+protected: // Methods
+    bool operator>=(const Class &other) const override;
 
 private: // Fields
-    Type::Vec types_;
+    std::string name_;
 
 private: // Methods
     void json(std::ostream &os) const override;
@@ -31,4 +29,4 @@ private: // Methods
 
 } // namespace TypeChecker
 
-#endif // TYPE_SUM_H
+#endif // TYPE_CLASS_H

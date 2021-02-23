@@ -1,5 +1,8 @@
 #include "ast/string.h"
 
+#include "type/object.h"
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -7,7 +10,7 @@ using namespace std;
 namespace AST {
 
 String::String(const yy::location &loc, string value)
-    : Literal(loc)
+    : Literal(loc, "string")
     , value_{move(value)} {}
 
 void
@@ -18,9 +21,16 @@ String::json(ostream &os) const {
 }
 
 const string &
-String::getTypeName() const {
+String::getNodeName() const {
     const static string name = "String";
     return name;
+}
+
+TypeChecker::Type &
+String::getTypeImpl(TypeChecker::Context &ctx) {
+    auto &type = getMyType();
+    type.verify(ctx);
+    return type;
 }
 
 } // namespace AST

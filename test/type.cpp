@@ -25,7 +25,7 @@ TEST(TypeTest, ObjectNode) {
     EXPECT_EQ(ss.str(), R"({"kind":"object","class":"class_name"})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Object Type\n");
 }
 
@@ -38,7 +38,7 @@ TEST(TypeTest, ArrayNode) {
     EXPECT_EQ(ss.str(), R"({"kind":"array","type":{"kind":"object","class":"T"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Array Type\nObject Type\n");
 }
 
@@ -59,7 +59,7 @@ TEST(TypeTest, ProductNode) {
         R"({"kind":"object","class":"T"}]})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Product Type\nObject Type\nObject Type\n");
 }
 
@@ -80,7 +80,7 @@ TEST(TypeTest, SumNode) {
         R"({"kind":"object","class":"T"}]})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Sum Type\nObject Type\nObject Type\n");
 }
 
@@ -93,7 +93,7 @@ TEST(TypeTest, MaybeNode) {
     EXPECT_EQ(ss.str(), R"({"kind":"maybe","type":{"kind":"object","class":"T"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Maybe Type\nObject Type\n");
 }
 
@@ -113,7 +113,7 @@ TEST(TypeTest, NullaryVoidFuncNode) {
         R"("kind":"unit"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Func Type\nUnit Type\nUnit Type\n");
 }
 
@@ -134,7 +134,7 @@ TEST(TypeTest, NullaryFuncNode) {
         R"("class":"T"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Func Type\nUnit Type\nObject Type\n");
 }
 
@@ -155,7 +155,7 @@ TEST(TypeTest, VoidFuncNode) {
         R"("kind":"unit"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Func Type\nObject Type\nUnit Type\n");
 }
 
@@ -177,7 +177,7 @@ TEST(TypeTest, FuncNode) {
         R"("class":"T"}})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Func Type\nObject Type\nObject Type\n");
 }
 
@@ -189,7 +189,7 @@ TEST(TypeTest, UnitNode) {
     EXPECT_EQ(ss.str(), R"({"kind":"unit"})");
 
     std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getTypeName() << std::endl; });
+    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
     EXPECT_EQ(walk.str(), "Unit Type\n");
 }
 

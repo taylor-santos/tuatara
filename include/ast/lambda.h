@@ -22,8 +22,8 @@ public: // Methods
         Pattern::Pattern::Vec                 args,
         std::optional<TypeChecker::Type::Ptr> retType,
         Expression::Ptr                       body);
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
     Pattern::Pattern::Vec                 args_;
@@ -31,7 +31,8 @@ private: // Fields
     Expression::Ptr                       body_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void               json(std::ostream &os) const override;
+    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

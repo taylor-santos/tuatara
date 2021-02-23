@@ -15,8 +15,8 @@ public: // Aliases
 public: // Methods
     ValueConstraint(const yy::location &loc, AST::Expression::Ptr value);
     ~ValueConstraint() override = default;
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
     AST::Expression::Ptr value_;

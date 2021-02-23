@@ -12,16 +12,16 @@ namespace AST {
 
 class Node {
 public: // Aliases
-    using Ptr  = std::unique_ptr<Node>;
-    using Vec  = std::vector<Ptr>;
-    using Func = std::function<void(const Node &)>;
+    using Ptr = std::unique_ptr<Node>;
+    using Vec = std::vector<Ptr>;
 
 public: // Methods
     virtual ~Node() = default;
-    virtual void                             walk(const Func &fn) const;
-    friend std::ostream &                    operator<<(std::ostream &os, const Node &ast);
-    [[nodiscard]] const yy::location &       getLoc() const;
-    [[nodiscard]] virtual const std::string &getTypeName() const = 0;
+    virtual void                      walk(const std::function<void(const Node &)> &fn) const;
+    friend std::ostream &             operator<<(std::ostream &os, const Node &ast);
+    [[nodiscard]] const yy::location &getLoc() const;
+    void                              setLoc(const yy::location &loc);
+    [[nodiscard]] virtual const std::string &getNodeName() const = 0;
 
 protected: // Methods
     explicit Node(const yy::location &loc);

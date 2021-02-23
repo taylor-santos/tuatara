@@ -1,5 +1,7 @@
 #include "ast/variable.h"
 
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -18,9 +20,20 @@ Variable::json(ostream &os) const {
 }
 
 const string &
-Variable::getTypeName() const {
+Variable::getNodeName() const {
     const static string name = "Variable";
     return name;
+}
+
+TypeChecker::Type &
+Variable::getTypeImpl(TypeChecker::Context &ctx) {
+    auto symbol = ctx.getSymbol(name_);
+    if (symbol && symbol->initialized) {
+        return symbol->type;
+    }
+    throw TypeChecker::TypeException(
+        "error: variable \"" + name_ + "\" used before initialization",
+        getLoc());
 }
 
 } // namespace AST

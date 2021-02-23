@@ -1,5 +1,10 @@
 #include "ast/match.h"
 
+#include <algorithm>
+#include <array>
+
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -27,19 +32,26 @@ Match::json(ostream &os) const {
 }
 
 void
-Match::walk(const Func &fn) const {
+Match::walk(const function<void(const Node &)> &fn) const {
     Expression::walk(fn);
     value_->walk(fn);
-    for (const auto &[pattern, body] : cases_) {
-        pattern->walk(fn);
-        body->walk(fn);
-    }
+    for_each(cases_.begin(), cases_.end(), [&](const auto &patternAndBody) {
+        patternAndBody.first->walk(fn);
+        patternAndBody.second->walk(fn);
+    });
 }
 
 const string &
-Match::getTypeName() const {
+Match::getNodeName() const {
     const static string name = "Match";
     return name;
+}
+
+TypeChecker::Type &
+Match::getTypeImpl(TypeChecker::Context &) {
+    throw TypeChecker::TypeException(
+        "type error: " + getNodeName() + " type checking not implemented",
+        getLoc());
 }
 
 } // namespace AST

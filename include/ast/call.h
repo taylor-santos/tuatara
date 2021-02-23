@@ -15,15 +15,16 @@ public: // Aliases
 public: // Methods
     Call(const yy::location &loc, Expression::Ptr func, std::optional<Expression::Ptr> arg);
     ~Call() override = default;
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
     Expression::Ptr                func_;
     std::optional<Expression::Ptr> arg_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void               json(std::ostream &os) const override;
+    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

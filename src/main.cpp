@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "type/type_exception.h"
+
 #include "driver.h"
 #include "json.h"
 #include "printer.h"
@@ -19,14 +21,22 @@ main(int argc, char *argv[]) {
             cerr << argv[i] << ": failed to parse" << endl;
             break;
         } else {
-            for (const auto &stmt : drv.statements) {
-                stmt->walk([&](const AST::Node &node) -> void {
-                    Print::error(cout, node.getTypeName(), node.getLoc(), drv.lines);
-                });
+            TypeChecker::Context ctx;
+            try {
+                for (const auto &stmt : drv.statements) {
+                    stmt->getType(ctx);
+                    // stmt->walk([&](const AST::Node &node) -> void {
+                    //    Print::error(cout, node.getTypeName(), node.getLoc(), drv.lines);
+                    //});
+                }
+            } catch (TypeChecker::TypeException &e) {
+                for (const auto &[msg, loc] : e.getMsgs()) {
+                    Print::error(cerr, msg, loc, drv.lines);
+                }
             }
-            JSON::Object json(cout);
-            json.printKeyValue("statements", drv.statements);
-            cout << endl;
+            // JSON::Object json(cout);
+            // json.printKeyValue("statements", drv.statements);
+            // cout << endl;
         }
     }
 }

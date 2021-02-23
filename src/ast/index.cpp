@@ -1,5 +1,7 @@
 #include "ast/index.h"
 
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -20,16 +22,23 @@ Index::json(ostream &os) const {
 }
 
 void
-Index::walk(const Func &fn) const {
+Index::walk(const function<void(const Node &)> &fn) const {
     LValue::walk(fn);
     expr_->walk(fn);
     index_->walk(fn);
 }
 
 const string &
-Index::getTypeName() const {
+Index::getNodeName() const {
     const static string name = "Index";
     return name;
+}
+
+TypeChecker::Type &
+Index::getTypeImpl(TypeChecker::Context &) {
+    throw TypeChecker::TypeException(
+        "type error: " + getNodeName() + " type checking not implemented",
+        getLoc());
 }
 
 } // namespace AST

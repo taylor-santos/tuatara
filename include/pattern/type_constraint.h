@@ -15,8 +15,8 @@ public: // Aliases
 public: // Methods
     TypeConstraint(const yy::location &loc, TypeChecker::Type::Ptr type);
     ~TypeConstraint() override = default;
-    void                             walk(const Func &fn) const override;
-    [[nodiscard]] const std::string &getTypeName() const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
     TypeChecker::Type::Ptr type_;

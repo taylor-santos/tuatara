@@ -1,5 +1,7 @@
 #include "ast/type_declaration.h"
 
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace TypeChecker;
@@ -7,33 +9,40 @@ using namespace std;
 
 namespace AST {
 
-TypeDeclaration::TypeDeclaration(const yy::location &loc, string variable, Type::Ptr type)
+TypeDeclaration::TypeDeclaration(const yy::location &loc, string variable, Type::Ptr declType)
     : Declaration(loc, move(variable))
-    , type_{move(type)} {}
+    , declType_{move(declType)} {}
 
 void
 TypeDeclaration::json(ostream &os) const {
     JSON::Object obj(os);
     obj.printKeyValue("node", "type declaration");
     obj.printKeyValue("variable", getVariable());
-    obj.printKeyValue("type", type_);
+    obj.printKeyValue("type", declType_);
 }
 
 const TypeChecker::Type &
-TypeDeclaration::getType() const {
-    return *type_;
+TypeDeclaration::getDeclType() const {
+    return *declType_;
 }
 
 const string &
-TypeDeclaration::getTypeName() const {
+TypeDeclaration::getNodeName() const {
     const static string name = "Type Decl";
     return name;
 }
 
+Type &
+TypeDeclaration::getTypeImpl(TypeChecker::Context &ctx) {
+    declType_->verify(ctx);
+    assignType(ctx, *declType_, false);
+    return *declType_;
+}
+
 void
-TypeDeclaration::walk(const Func &fn) const {
+TypeDeclaration::walk(const function<void(const Node &)> &fn) const {
     Declaration::walk(fn);
-    type_->walk(fn);
+    declType_->walk(fn);
 }
 
 } // namespace AST

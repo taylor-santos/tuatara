@@ -1,5 +1,7 @@
 #include "ast/func_impl.h"
 
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace TypeChecker;
@@ -27,15 +29,22 @@ FuncImpl::json(ostream &os) const {
 }
 
 void
-FuncImpl::walk(const Func &fn) const {
+FuncImpl::walk(const function<void(const Node &)> &fn) const {
     FuncDeclaration::walk(fn);
     body_->walk(fn);
 }
 
 const string &
-FuncImpl::getTypeName() const {
+FuncImpl::getNodeName() const {
     const static string name = "Func Impl";
     return name;
+}
+
+Type &
+FuncImpl::getTypeImpl(TypeChecker::Context &) {
+    throw TypeChecker::TypeException(
+        "type error: " + getNodeName() + " type checking not implemented",
+        getLoc());
 }
 
 } // namespace AST
