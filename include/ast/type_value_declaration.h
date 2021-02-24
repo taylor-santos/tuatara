@@ -15,11 +15,11 @@ public: // Aliases
 
 public: // Methods
     TypeValueDeclaration(
-        const yy::location &   loc,
-        const yy::location &   varLoc,
-        const std::string &    variable,
-        TypeChecker::Type::Ptr type,
-        Expression::Ptr        value);
+        const yy::location &               loc,
+        const yy::location &               varLoc,
+        const std::string &                variable,
+        std::unique_ptr<TypeChecker::Type> type,
+        Expression::Ptr                    value);
     [[nodiscard]] const std::string &getNodeName() const override;
     void walk(const std::function<void(const Node &)> &fn) const override;
 

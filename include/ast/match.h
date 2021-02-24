@@ -1,11 +1,11 @@
 #ifndef AST_MATCH_H
 #define AST_MATCH_H
 
-#include <optional>
-
 #include "ast/expression.h"
 
-#include "pattern/pattern.h"
+namespace Pattern {
+class Pattern;
+}
 
 namespace AST {
 
@@ -13,7 +13,7 @@ class Match final : public Expression {
 public: // Aliases
     using Ptr  = std::unique_ptr<Match>;
     using Vec  = std::vector<Ptr>;
-    using Case = std::pair<Pattern::Pattern::Ptr, AST::Expression::Ptr>;
+    using Case = std::pair<std::unique_ptr<Pattern::Pattern>, AST::Expression::Ptr>;
 
 public: // Methods
     Match(const yy::location &loc, Expression::Ptr value, std::vector<Case> cases);

@@ -1,8 +1,6 @@
 #ifndef AST_TUPLE_H
 #define AST_TUPLE_H
 
-#include <optional>
-
 #include "ast/lvalue.h"
 
 namespace AST {

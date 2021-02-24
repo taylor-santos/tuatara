@@ -1,7 +1,8 @@
 #include "ast/match.h"
 
 #include <algorithm>
-#include <array>
+
+#include "pattern/pattern.h"
 
 #include "type/type_exception.h"
 

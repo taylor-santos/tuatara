@@ -1,11 +1,13 @@
 #ifndef TYPE_TYPE_H
 #define TYPE_TYPE_H
 
-#include <memory>
 #include <vector>
 
 #include "ast.h"
-#include "location.hh"
+
+namespace yy {
+class location;
+}
 
 // Forward declaration
 namespace AST {

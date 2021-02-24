@@ -2,17 +2,19 @@
 
 #include <utility>
 
+#include "location.hh"
+
 using namespace std;
 
 namespace TypeChecker {
 
-TypeException::TypeException(const std::string &msg, const yy::location &loc)
+TypeException::TypeException(const string &msg, const yy::location &loc)
     : msgs_{make_pair(msg, loc)} {}
 
-TypeException::TypeException(std::vector<std::pair<std::string, yy::location>> msgs)
-    : msgs_{std::move(msgs)} {}
+TypeException::TypeException(vector<pair<string, yy::location>> msgs)
+    : msgs_{move(msgs)} {}
 
-const vector<std::pair<std::string, yy::location>> &
+const vector<pair<string, yy::location>> &
 TypeException::getMsgs() const {
     return msgs_;
 }

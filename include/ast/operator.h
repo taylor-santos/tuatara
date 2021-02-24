@@ -1,8 +1,6 @@
 #ifndef AST_OPERATOR_H
 #define AST_OPERATOR_H
 
-#include <optional>
-
 #include "ast/lvalue.h"
 
 namespace AST {

@@ -3,7 +3,9 @@
 
 #include "ast/declaration.h"
 
-#include "type/type.h"
+namespace TypeChecker {
+class Type;
+}
 
 namespace AST {
 
@@ -16,10 +18,10 @@ public: // Aliases
 
 public: // Methods
     TypeDeclaration(
-        const yy::location &   loc,
-        const yy::location &   varLoc,
-        std::string            variable,
-        TypeChecker::Type::Ptr declType);
+        const yy::location &               loc,
+        const yy::location &               varLoc,
+        std::string                        variable,
+        std::unique_ptr<TypeChecker::Type> declType);
     [[nodiscard]] const std::string &getNodeName() const override;
     void walk(const std::function<void(const Node &)> &fn) const override;
 
@@ -28,7 +30,7 @@ protected: // Methods
     TypeChecker::Type &                    getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
-    TypeChecker::Type::Ptr declType_;
+    std::unique_ptr<TypeChecker::Type> declType_;
 
 private: // Methods
     void json(std::ostream &os) const override;

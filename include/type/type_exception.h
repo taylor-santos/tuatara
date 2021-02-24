@@ -2,9 +2,12 @@
 #define TYPE_EXCEPTION_H
 
 #include <exception>
+#include <string>
 #include <vector>
 
-#include "location.hh"
+namespace yy {
+class location;
+}
 
 namespace TypeChecker {
 

@@ -1,5 +1,7 @@
 #include "pattern/literal.h"
 
+#include "ast/literal.h"
+
 #include "json.h"
 
 using namespace std;

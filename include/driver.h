@@ -23,8 +23,8 @@ public:
     int parse(std::istream &in = std::cin, std::ostream &out = std::cerr);
     int parseFile(const char *path);
 
-    AST::Expression::Vec     statements;
-    std::vector<std::string> lines;
+    std::vector<std::unique_ptr<AST::Expression>> statements;
+    std::vector<std::string>                      lines;
 
 private:
     std::unique_ptr<Scanner>             scanner;

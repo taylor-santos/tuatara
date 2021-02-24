@@ -1,9 +1,11 @@
 #ifndef PATTERN_VALUE_CONSTRAINT_H
 #define PATTERN_VALUE_CONSTRAINT_H
 
-#include "ast/expression.h"
-
 #include "pattern/constraint.h"
+
+namespace AST {
+class Expression;
+}
 
 namespace Pattern {
 
@@ -13,13 +15,13 @@ public: // Aliases
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    ValueConstraint(const yy::location &loc, AST::Expression::Ptr value);
+    ValueConstraint(const yy::location &loc, std::unique_ptr<AST::Expression> value);
     ~ValueConstraint() override = default;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
-    AST::Expression::Ptr value_;
+    std::unique_ptr<AST::Expression> value_;
 
 private: // Methods
     void json(std::ostream &os) const override;

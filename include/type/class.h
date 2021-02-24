@@ -1,7 +1,6 @@
 #ifndef TYPE_CLASS_H
 #define TYPE_CLASS_H
 
-#include <optional>
 #include <unordered_map>
 
 #include "type/type.h"

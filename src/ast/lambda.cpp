@@ -2,6 +2,9 @@
 
 #include <algorithm>
 
+#include "pattern/pattern.h"
+
+#include "type/type.h"
 #include "type/type_exception.h"
 
 #include "json.h"

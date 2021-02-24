@@ -1,8 +1,6 @@
 #ifndef AST_FIELD_H
 #define AST_FIELD_H
 
-#include <optional>
-
 #include "ast/lvalue.h"
 
 namespace AST {

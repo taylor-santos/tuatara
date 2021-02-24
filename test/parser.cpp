@@ -216,9 +216,9 @@ TEST(ParserTest, WhileStatement) {
 TEST(ParserTest, MatchBlock) {
     EXPECT_JSON(
         "match foo\n"
-        "  case x: int -> 5\n"
-        "  case y= 0.5 -> 1.2\n"
-        "  case z\n"
+        "  case var x: int -> 5\n"
+        "  case var y= 0.5 -> 1.2\n"
+        "  case var z\n"
         "    foo = 5\n"
         "    123",
         Match,

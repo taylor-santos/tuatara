@@ -8,8 +8,8 @@ using namespace std;
 
 namespace TypeChecker {
 
-unique_ptr<Class>
-makeClass(const std::string &name) {
+static Class::Ptr
+makeClass(const string &name) {
     yy::location loc{nullptr, 0, 0};
     auto         cl = make_unique<Class>(loc, name);
     for (const auto &op : {"+"}) {
@@ -20,18 +20,28 @@ makeClass(const std::string &name) {
     return cl;
 }
 
-Context::Context() {
+static unordered_map<string, Class::Ptr>
+generateBuiltins() noexcept {
+    unordered_map<string, Class::Ptr> builtins;
     for (const auto &name : {"int", "float", "string", "bool"}) {
-        const auto &[it, _] = builtins_.emplace(name, makeClass(name));
-        symbols_.emplace(name, Symbol{name, *it->second, true});
+        builtins.emplace(name, makeClass(name));
+    }
+    return builtins;
+}
+
+static unordered_map<string, Class::Ptr> BUILTINS = generateBuiltins();
+
+Context::Context() {
+    for (const auto &[name, type] : BUILTINS) {
+        symbols_.emplace(name, Symbol{name, *type, true});
     }
 }
 
 optional<Context::Symbol>
-Context::getSymbol(const std::string &name) const {
+Context::getSymbol(const string &name) const {
     auto it = symbols_.find(name);
     if (it == symbols_.end()) {
-        return std::nullopt;
+        return nullopt;
     }
     return it->second;
 }

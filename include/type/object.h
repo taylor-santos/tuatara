@@ -3,7 +3,6 @@
 
 #include <optional>
 
-#include "type/class.h"
 #include "type/type.h"
 
 namespace TypeChecker {
@@ -18,7 +17,7 @@ public: // Methods
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
     bool                             operator<=(const Type &other) const override;
-    const Class &                    getClass() const;
+    [[nodiscard]] const Class &      getClass() const;
 
 protected: // Methods
     bool operator>=(const Object &other) const override;

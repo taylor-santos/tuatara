@@ -1,13 +1,15 @@
 #ifndef TYPE_CONTEXT_H
 #define TYPE_CONTEXT_H
 
+#include <memory>
 #include <optional>
+#include <string>
 #include <unordered_map>
 
-#include "type/class.h"
-#include "type/type.h"
-
 namespace TypeChecker {
+
+class Type;
+class Class;
 
 class Context {
 public: // Classes
@@ -23,8 +25,7 @@ public: // Methods
     void                                setSymbol(const Symbol &symbol);
 
 private: // Fields
-    std::unordered_map<std::string, Symbol>                  symbols_;
-    std::unordered_map<std::string, TypeChecker::Class::Ptr> builtins_;
+    std::unordered_map<std::string, Symbol> symbols_;
 };
 
 } // namespace TypeChecker

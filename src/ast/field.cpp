@@ -2,6 +2,7 @@
 
 #include <sstream>
 
+#include "type/class.h"
 #include "type/func.h"
 #include "type/object.h"
 #include "type/type_exception.h"

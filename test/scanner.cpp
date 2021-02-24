@@ -633,7 +633,9 @@ TEST(ScannerTest, InvalidEscapeCharacters) {
                 try {
                     scanner.scan(drv);
                 } catch (const yy::Parser::syntax_error &e) {
-                    std::string msg = "invalid character: '\\"s + c + "'";
+                    std::string msg = "invalid character: '\\";
+                    msg += c;
+                    msg += "'";
                     EXPECT_EQ(e.what(), msg);
                     throw; // Re-throw exception
                 }

@@ -148,7 +148,7 @@ TEST(ASTTest, ValueDeclarationNode) {
     std::ostringstream ss;
     yy::location       loc;
     auto               val = make_unique<Int>(loc, 123);
-    ValueDeclaration   node(loc, "var", move(val));
+    ValueDeclaration   node(loc, loc, "var", move(val));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -167,7 +167,7 @@ TEST(ASTTest, TypeDeclarationNode) {
     std::ostringstream ss;
     yy::location       loc;
     auto               type = make_unique<TypeChecker::Object>(loc, "class_name");
-    TypeDeclaration    node(loc, "var", move(type));
+    TypeDeclaration    node(loc, loc, "var", move(type));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -187,7 +187,7 @@ TEST(ASTTest, TypeValueDeclarationNode) {
     yy::location         loc;
     auto                 type = make_unique<TypeChecker::Object>(loc, "class_name");
     auto                 val  = make_unique<Int>(loc, 123);
-    TypeValueDeclaration node(loc, "var", move(type), move(val));
+    TypeValueDeclaration node(loc, loc, "var", move(type), move(val));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -366,7 +366,7 @@ TEST(ASTTest, FuncDeclarationNode) {
     auto                  typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
     args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
     auto            ret = make_unique<TypeChecker::Object>(loc, "T");
-    FuncDeclaration node(loc, name, move(args), move(ret));
+    FuncDeclaration node(loc, loc, name, move(args), move(ret));
     ss << node;
     EXPECT_EQ(
         ss.str(),
@@ -403,7 +403,7 @@ TEST(ASTTest, FuncImplNode) {
     Expression::Vec stmts;
     stmts.emplace_back(make_unique<Variable>(loc, "b"));
     auto     block = make_unique<Block>(loc, move(stmts));
-    FuncImpl node(loc, name, move(args), move(block), move(ret));
+    FuncImpl node(loc, loc, name, move(args), move(block), move(ret));
     ss << node;
     EXPECT_EQ(
         ss.str(),

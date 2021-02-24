@@ -3,11 +3,15 @@
 
 #include <optional>
 
-#include "ast/block.h"
+#include "ast/expression.h"
 
-#include "pattern/pattern.h"
+namespace Pattern {
+class Pattern;
+}
 
-#include "type/type.h"
+namespace TypeChecker {
+class Type;
+}
 
 namespace AST {
 
@@ -18,17 +22,17 @@ public: // Aliases
 
 public: // Methods
     Lambda(
-        const yy::location &                  loc,
-        Pattern::Pattern::Vec                 args,
-        std::optional<TypeChecker::Type::Ptr> retType,
-        Expression::Ptr                       body);
+        const yy::location &                              loc,
+        std::vector<std::unique_ptr<Pattern::Pattern>>    args,
+        std::optional<std::unique_ptr<TypeChecker::Type>> retType,
+        Expression::Ptr                                   body);
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
-    Pattern::Pattern::Vec                 args_;
-    std::optional<TypeChecker::Type::Ptr> retType_;
-    Expression::Ptr                       body_;
+    std::vector<std::unique_ptr<Pattern::Pattern>>    args_;
+    std::optional<std::unique_ptr<TypeChecker::Type>> retType_;
+    Expression::Ptr                                   body_;
 
 private: // Methods
     void               json(std::ostream &os) const override;

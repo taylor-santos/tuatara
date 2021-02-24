@@ -1,8 +1,6 @@
 #ifndef AST_IF_H
 #define AST_IF_H
 
-#include <optional>
-
 #include "ast/block.h"
 
 namespace AST {

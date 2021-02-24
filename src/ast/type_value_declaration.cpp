@@ -1,5 +1,6 @@
 #include "ast/type_value_declaration.h"
 
+#include "type/type.h"
 #include "type/type_exception.h"
 
 #include "json.h"

@@ -26,11 +26,14 @@
 #    pragma warning(disable : 4244)
 #endif
 
+#include <iostream>
 #include <sstream>
 
+#include "common.h"
 #include "driver.h"
-#include "scanner.h"
+#include "location.hh"
 #include "printer.h"
+#include "scanner.h"
 
 #define yylex driver.scanner->scan
 #define STRINGIFY_(X) #X
@@ -73,15 +76,20 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
 %code requires {
 // This block is inserted at the top of parser.tab.hh
 
-#include <iostream>
-
-#include "location.hh"
-#include "common.h"
-
 #ifdef _MSC_VER
 #    pragma warning(push)
 #    pragma warning(disable : 4065)
 #endif
+
+#include <memory>
+#include <optional>
+
+#include "ast/block.h"
+#include "ast/expression.h"
+#include "ast/literal.h"
+
+#include "pattern/constraint.h"
+#include "pattern/pattern.h"
 
 } // %code requires
 
@@ -137,7 +145,7 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
 %token<bool>
     BOOL    "bool literal"
 
-%type<AST::Expression::Ptr>
+%type<std::unique_ptr<AST::Expression>>
     primary_expression
     expression_line
     expression
@@ -151,22 +159,22 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     ternary
     lambda
     value_pattern
-%type<AST::Expression::Vec>
+%type<std::vector<std::unique_ptr<AST::Expression>>>
     opt_expressions
     file_expressions
     expressions
     tuple_expression
     multi_expression
     multi_semi_expression
-%type<AST::Literal::Ptr>
+%type<std::unique_ptr<AST::Literal>>
     literal
-%type<AST::Block::Ptr>
+%type<std::unique_ptr<AST::Block>>
     block_expression
-%type<AST::Match::Case>
+%type<std::pair<std::unique_ptr<Pattern::Pattern>,std::unique_ptr<AST::Expression>>>
     case
-%type<std::vector<AST::Match::Case>>
+%type<std::vector<std::pair<std::unique_ptr<Pattern::Pattern>,std::unique_ptr<AST::Expression>>>>
     cases
-%type<TypeChecker::Type::Ptr>
+%type<std::unique_ptr<TypeChecker::Type>>
     type
     sum_type
     post_type
@@ -175,18 +183,18 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     type_pattern
     opt_type
     opt_sum_type
-%type<TypeChecker::Type::Vec>
+%type<std::vector<std::unique_ptr<TypeChecker::Type>>>
     sum_type_list
     product_type_list
-%type<std::optional<TypeChecker::Type::Ptr>>
+%type<std::optional<std::unique_ptr<TypeChecker::Type>>>
     opt_ret_type
-%type<Pattern::Pattern::Ptr>
+%type<std::unique_ptr<Pattern::Pattern>>
     pattern
-%type<Pattern::Pattern::Vec>
+%type<std::vector<std::unique_ptr<Pattern::Pattern>>>
     opt_patterns
     patterns
     pattern_list
-%type<Pattern::Constraint::Ptr>
+%type<std::unique_ptr<Pattern::Constraint>>
     constraint_pattern
 %type<std::string>
     ident
@@ -539,8 +547,8 @@ pattern_list
     }
 
 pattern
-    : ident {
-        $$ = make_unique<Pattern::NamedWildcard>(@$, $1);
+    : "var" ident {
+        $$ = make_unique<Pattern::NamedWildcard>(@$, $2);
     }
     | literal {
         $$ = make_unique<Pattern::Literal>(@$, $1);

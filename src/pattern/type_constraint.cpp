@@ -1,5 +1,7 @@
 #include "pattern/type_constraint.h"
 
+#include "type/type.h"
+
 #include "json.h"
 
 using namespace std;
