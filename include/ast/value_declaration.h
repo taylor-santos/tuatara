@@ -2,9 +2,17 @@
 #define AST_VALUE_DECLARATION_H
 
 #include "ast/declaration.h"
-#include "ast/expression.h"
+
+namespace TypeChecker {
+class Context;
+class Type;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
 
 namespace AST {
+class Node;
 
 // Virtually inherit from Declaration so TypeValueDeclaration can
 // inherit from both ValueDeclaration and TypeDeclaration.

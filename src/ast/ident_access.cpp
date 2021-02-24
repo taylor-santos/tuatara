@@ -1,17 +1,16 @@
 #include "ast/ident_access.h"
 
-#include <sstream>
-#include <string>
-
 #include "ast/call.h"
 #include "ast/field.h"
 #include "ast/variable.h"
 
-#include "type/func.h"
 #include "type/object.h"
-#include "type/type_exception.h"
 
 #include "json.h"
+
+namespace TypeChecker {
+class Context;
+} // namespace TypeChecker
 
 using namespace std;
 

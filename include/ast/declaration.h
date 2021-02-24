@@ -3,6 +3,11 @@
 
 #include "ast/expression.h"
 
+namespace TypeChecker {
+class Context;
+class Type;
+}  // namespace TypeChecker
+
 namespace AST {
 
 class Declaration : public Expression {

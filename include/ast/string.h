@@ -3,6 +3,13 @@
 
 #include "ast/literal.h"
 
+namespace TypeChecker {
+class Context;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
+
 namespace AST {
 
 class String final : public Literal {

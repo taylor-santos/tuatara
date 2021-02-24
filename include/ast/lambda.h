@@ -5,15 +5,20 @@
 
 #include "ast/expression.h"
 
-namespace Pattern {
-class Pattern;
-}
+#include "pattern/pattern.h"
+
+#include "type/type.h"
+
+namespace yy {
+class location;
+} // namespace yy
 
 namespace TypeChecker {
-class Type;
+class Context;
 }
 
 namespace AST {
+class Node;
 
 class Lambda final : public Expression {
 public: // Aliases

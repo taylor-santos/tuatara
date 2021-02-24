@@ -1,10 +1,13 @@
 #ifndef PRINTER_H
 #define PRINTER_H
 
-#include <memory>
+#include <iosfwd>
+#include <string>
 #include <vector>
 
-#include "location.hh"
+namespace yy {
+class location;
+} // namespace yy
 
 namespace Print {
 

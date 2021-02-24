@@ -3,7 +3,15 @@
 
 #include "type/type.h"
 
+namespace AST {
+class Node;
+}  // namespace AST
+namespace yy {
+class location;
+}  // namespace yy
+
 namespace TypeChecker {
+class Context;
 
 class Maybe final : public Type {
 public: // Aliases

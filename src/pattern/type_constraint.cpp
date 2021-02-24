@@ -1,8 +1,10 @@
 #include "pattern/type_constraint.h"
 
-#include "type/type.h"
-
 #include "json.h"
+
+namespace yy {
+class location;
+} // namespace yy
 
 using namespace std;
 

@@ -1,10 +1,16 @@
 #ifndef PATTERN_LITERAL_H
 #define PATTERN_LITERAL_H
 
+#include "ast/literal.h"
+
 #include "pattern/pattern.h"
 
+namespace yy {
+class location;
+} // namespace yy
+
 namespace AST {
-class Literal;
+class Node;
 }
 
 namespace Pattern {

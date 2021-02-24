@@ -1,8 +1,6 @@
 #ifndef TYPE_TYPE_H
 #define TYPE_TYPE_H
 
-#include <vector>
-
 #include "ast.h"
 
 namespace yy {

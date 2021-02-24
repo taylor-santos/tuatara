@@ -2,6 +2,10 @@
 
 #include "json.h"
 
+namespace yy {
+class location;
+} // namespace yy
+
 using namespace std;
 
 namespace Pattern {

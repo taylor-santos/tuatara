@@ -3,6 +3,14 @@
 
 #include "type/type.h"
 
+namespace AST {
+class Expression;
+class Node;
+}  // namespace AST
+namespace yy {
+class location;
+}  // namespace yy
+
 namespace TypeChecker {
 
 class Context;

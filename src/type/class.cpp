@@ -1,8 +1,10 @@
 #include "type/class.h"
 
-#include <utility>
-
 #include "json.h"
+
+namespace TypeChecker {
+class Context;
+} // namespace TypeChecker
 
 using namespace TypeChecker;
 using namespace std;

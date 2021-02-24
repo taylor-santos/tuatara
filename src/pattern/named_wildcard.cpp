@@ -1,9 +1,10 @@
 #include "pattern/named_wildcard.h"
 
-#include "type/type_context.h"
-#include "type/type_exception.h"
-
 #include "json.h"
+
+namespace yy {
+class location;
+} // namespace yy
 
 using namespace std;
 

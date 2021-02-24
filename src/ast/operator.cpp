@@ -1,5 +1,9 @@
 #include "ast/operator.h"
 
+namespace yy {
+class location;
+} // namespace yy
+
 using namespace std;
 
 namespace AST {

@@ -3,11 +3,14 @@
 #include <sstream>
 
 #include "type/class.h"
-#include "type/func.h"
 #include "type/object.h"
 #include "type/type_exception.h"
 
 #include "json.h"
+
+namespace TypeChecker {
+class Context;
+} // namespace TypeChecker
 
 using namespace std;
 

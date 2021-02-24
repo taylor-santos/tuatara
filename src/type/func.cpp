@@ -4,7 +4,6 @@
 
 #include "ast/expression.h"
 
-#include "type/type_context.h"
 #include "type/type_exception.h"
 
 #include "json.h"

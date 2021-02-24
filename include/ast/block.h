@@ -3,7 +3,16 @@
 
 #include "ast/expression.h"
 
+namespace TypeChecker {
+class Context;
+class Type;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
+
 namespace AST {
+class Node;
 
 class Block final : public Expression {
 public: // Aliases

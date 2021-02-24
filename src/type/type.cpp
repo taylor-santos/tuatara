@@ -2,8 +2,6 @@
 
 #include <sstream>
 
-#include "ast/expression.h"
-
 #include "type/type_exception.h"
 
 using namespace std;

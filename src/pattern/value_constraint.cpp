@@ -1,8 +1,10 @@
 #include "pattern/value_constraint.h"
 
-#include "ast/expression.h"
-
 #include "json.h"
+
+namespace yy {
+class location;
+} // namespace yy
 
 using namespace std;
 

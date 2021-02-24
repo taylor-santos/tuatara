@@ -3,11 +3,18 @@
 
 #include "ast/declaration.h"
 
+#include "type/type.h"
+
+namespace yy {
+class location;
+} // namespace yy
+
 namespace TypeChecker {
-class Type;
+class Context;
 }
 
 namespace AST {
+class Node;
 
 // Virtually inherit from Declaration so TypeValueDeclaration can
 // inherit from both ValueDeclaration and TypeDeclaration.

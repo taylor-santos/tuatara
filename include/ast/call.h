@@ -3,7 +3,17 @@
 
 #include "ast/lvalue.h"
 
+#include "type/type.h"
+
+namespace TypeChecker {
+class Context;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
+
 namespace AST {
+class Node;
 
 class Call final : public LValue {
 public: // Aliases

@@ -1,7 +1,10 @@
 #include "ast/expression.h"
 
 #include "type/type.h"
-#include "type/type_exception.h"
+
+namespace yy {
+class location;
+}  // namespace yy
 
 namespace AST {
 

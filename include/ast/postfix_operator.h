@@ -3,7 +3,16 @@
 
 #include "ast/operator.h"
 
+namespace TypeChecker {
+class Context;
+class Type;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
+
 namespace AST {
+class Node;
 
 class PostfixOperator : virtual public Operator {
 public: // Aliases

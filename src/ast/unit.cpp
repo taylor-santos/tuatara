@@ -1,9 +1,13 @@
 #include "ast/unit.h"
 
-#include "type/type_exception.h"
-#include "type/unit.h"
-
 #include "json.h"
+
+namespace TypeChecker {
+class Context;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
 
 using namespace std;
 

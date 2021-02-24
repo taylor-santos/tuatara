@@ -3,11 +3,20 @@
 
 #include "ast/expression.h"
 
+namespace TypeChecker {
+class Context;
+class Type;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
+
 namespace Pattern {
 class Pattern;
 }
 
 namespace AST {
+class Node;
 
 class Match final : public Expression {
 public: // Aliases

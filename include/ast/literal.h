@@ -5,6 +5,10 @@
 
 #include "type/object.h"
 
+namespace yy {
+class location;
+} // namespace yy
+
 namespace AST {
 
 class Literal : public Expression {

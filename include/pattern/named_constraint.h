@@ -3,6 +3,13 @@
 
 #include "pattern/constraint.h"
 
+namespace AST {
+class Node;
+}  // namespace AST
+namespace yy {
+class location;
+}  // namespace yy
+
 namespace Pattern {
 
 class NamedConstraint : public Pattern {

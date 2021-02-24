@@ -1,11 +1,13 @@
 #include "ast/call.h"
 
-#include <sstream>
-
-#include "type/func.h"
-#include "type/type_exception.h"
-
 #include "json.h"
+
+namespace TypeChecker {
+class Context;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
 
 using namespace std;
 

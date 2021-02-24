@@ -5,15 +5,20 @@
 
 #include "ast/declaration.h"
 
-namespace TypeChecker {
-class Type;
-}
+#include "pattern/pattern.h"
 
-namespace Pattern {
-class Pattern;
+#include "type/type.h"
+
+namespace yy {
+class location;
+} // namespace yy
+
+namespace TypeChecker {
+class Context;
 }
 
 namespace AST {
+class Node;
 
 class FuncDeclaration : public Declaration {
 public: // Aliases

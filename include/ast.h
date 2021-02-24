@@ -2,9 +2,7 @@
 #define AST_H
 
 #include <functional>
-#include <iostream>
 #include <memory>
-#include <vector>
 
 #include "location.hh"
 

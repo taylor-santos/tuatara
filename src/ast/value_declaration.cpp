@@ -1,8 +1,14 @@
 #include "ast/value_declaration.h"
 
-#include "type/type_exception.h"
-
 #include "json.h"
+
+namespace TypeChecker {
+class Context;
+class Type;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
 
 using namespace std;
 

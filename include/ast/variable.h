@@ -3,6 +3,14 @@
 
 #include "ast/lvalue.h"
 
+namespace TypeChecker {
+class Context;
+class Type;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
+
 namespace AST {
 
 class Variable final : public LValue {

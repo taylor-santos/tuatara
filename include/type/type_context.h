@@ -1,7 +1,6 @@
 #ifndef TYPE_CONTEXT_H
 #define TYPE_CONTEXT_H
 
-#include <memory>
 #include <optional>
 #include <string>
 #include <unordered_map>
@@ -9,7 +8,6 @@
 namespace TypeChecker {
 
 class Type;
-class Class;
 
 class Context {
 public: // Classes

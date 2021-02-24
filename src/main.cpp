@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "type/type_context.h"
 #include "type/type_exception.h"
 

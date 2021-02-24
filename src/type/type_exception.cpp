@@ -1,7 +1,5 @@
 #include "type/type_exception.h"
 
-#include <utility>
-
 #include "location.hh"
 
 using namespace std;

@@ -1,6 +1,8 @@
 #include "ast/literal.h"
 
-#include <utility>
+namespace yy {
+class location;
+} // namespace yy
 
 using namespace std;
 

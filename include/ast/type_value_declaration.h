@@ -4,7 +4,15 @@
 #include "ast/type_declaration.h"
 #include "ast/value_declaration.h"
 
+namespace TypeChecker {
+class Context;
+}  // namespace TypeChecker
+namespace yy {
+class location;
+}  // namespace yy
+
 namespace AST {
+class Node;
 
 class TypeValueDeclaration final
     : public ValueDeclaration

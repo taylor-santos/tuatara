@@ -1,9 +1,13 @@
 #include "ast/bool.h"
 
-#include "type/object.h"
-#include "type/type_exception.h"
-
 #include "json.h"
+
+namespace TypeChecker {
+class Context;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
 
 using namespace std;
 

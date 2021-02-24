@@ -1,12 +1,18 @@
 #include "ast/match.h"
 
-#include <algorithm>
-
 #include "pattern/pattern.h"
 
 #include "type/type_exception.h"
 
 #include "json.h"
+
+namespace TypeChecker {
+class Context;
+class Type;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
 
 using namespace std;
 
@@ -36,10 +42,10 @@ void
 Match::walk(const function<void(const Node &)> &fn) const {
     Expression::walk(fn);
     value_->walk(fn);
-    for_each(cases_.begin(), cases_.end(), [&](const auto &patternAndBody) {
-        patternAndBody.first->walk(fn);
-        patternAndBody.second->walk(fn);
-    });
+    for (const auto &[pattern, body] : cases_) {
+        pattern->walk(fn);
+        body->walk(fn);
+    }
 }
 
 const string &

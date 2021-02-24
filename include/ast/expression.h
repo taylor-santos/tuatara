@@ -3,6 +3,10 @@
 
 #include "ast.h"
 
+namespace yy {
+class location;
+} // namespace yy
+
 namespace TypeChecker {
 class Type;
 class Context;

@@ -1,11 +1,14 @@
 #ifndef TYPE_CLASS_H
 #define TYPE_CLASS_H
 
-#include <unordered_map>
-
 #include "type/type.h"
 
+namespace yy {
+class location;
+}  // namespace yy
+
 namespace TypeChecker {
+class Context;
 
 class Class final : public Type {
 public: // Aliases

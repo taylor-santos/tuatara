@@ -3,6 +3,10 @@
 
 #include "ast.h"
 
+namespace yy {
+class location;
+} // namespace yy
+
 namespace Pattern {
 
 class Pattern : public AST::Node {

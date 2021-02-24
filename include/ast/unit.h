@@ -5,6 +5,13 @@
 
 #include "type/unit.h"
 
+namespace TypeChecker {
+class Context;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
+
 namespace AST {
 
 class Unit final : public LValue {

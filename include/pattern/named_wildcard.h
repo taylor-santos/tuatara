@@ -3,6 +3,10 @@
 
 #include "pattern/wildcard.h"
 
+namespace yy {
+class location;
+}  // namespace yy
+
 namespace Pattern {
 
 class NamedWildcard final : public Wildcard {

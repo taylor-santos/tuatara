@@ -1,7 +1,6 @@
 #ifndef JSON_H
 #define JSON_H
 
-#include <functional>
 #include <iostream>
 #include <memory>
 #include <optional>

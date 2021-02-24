@@ -1,5 +1,7 @@
 #include "driver.h"
 
+#include <fstream>
+
 #include "scanner.h"
 
 using namespace std;

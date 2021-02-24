@@ -1,8 +1,9 @@
 #include "printer.h"
 
 #include <algorithm>
-#include <cctype>
 #include <iomanip>
+
+#include "location.hh"
 
 using namespace std;
 

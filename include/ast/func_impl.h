@@ -1,15 +1,23 @@
 #ifndef AST_FUNC_IMPL_H
 #define AST_FUNC_IMPL_H
 
+#include "ast/block.h"
 #include "ast/func_declaration.h"
 
+namespace Pattern {
+class Pattern;
+} // namespace Pattern
+namespace yy {
+class location;
+} // namespace yy
+
 namespace TypeChecker {
-class Type;
+class Context;
 }
 
 namespace AST {
 
-class Block;
+class Node;
 
 class FuncImpl final : public FuncDeclaration {
 public: // Aliases

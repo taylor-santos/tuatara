@@ -4,6 +4,17 @@
 #include "ast/postfix_operator.h"
 #include "ast/prefix_operator.h"
 
+namespace AST {
+class Node;
+}  // namespace AST
+namespace TypeChecker {
+class Context;
+class Type;
+}  // namespace TypeChecker
+namespace yy {
+class location;
+}  // namespace yy
+
 using namespace std;
 
 namespace AST {

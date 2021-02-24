@@ -5,7 +5,13 @@
 
 #include "type/type.h"
 
+namespace yy {
+class location;
+} // namespace yy
+
 namespace TypeChecker {
+class Class;
+class Context;
 
 class Object final : public Type {
 public: // Aliases

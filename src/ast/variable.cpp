@@ -5,6 +5,13 @@
 
 #include "json.h"
 
+namespace TypeChecker {
+class Type;
+} // namespace TypeChecker
+namespace yy {
+class location;
+} // namespace yy
+
 using namespace std;
 
 namespace AST {

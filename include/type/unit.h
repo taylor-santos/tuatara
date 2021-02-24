@@ -3,7 +3,12 @@
 
 #include "type/type.h"
 
+namespace yy {
+class location;
+}  // namespace yy
+
 namespace TypeChecker {
+class Context;
 
 class Unit final : public Type {
 public: // Aliases

@@ -33,18 +33,18 @@
 #    include <stdint.h>
 #endif
 
+#include <algorithm>
+#include <cmath>
+#include <sstream>
+
+#include "driver.h"
+
 }
 
 %{
 
-#include <functional>
-#include <cmath>
-#include <sstream>
-#include <cctype>
-
-#include "parser.tab.hh"
 #include "scanner.h"
-#include "driver.h"
+class yyFlexLexer;
 
 #define STEP()                                                          \
     do {                                                                \

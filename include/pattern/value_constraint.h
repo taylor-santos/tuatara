@@ -1,10 +1,16 @@
 #ifndef PATTERN_VALUE_CONSTRAINT_H
 #define PATTERN_VALUE_CONSTRAINT_H
 
+#include "ast/expression.h"
+
 #include "pattern/constraint.h"
 
+namespace yy {
+class location;
+} // namespace yy
+
 namespace AST {
-class Expression;
+class Node;
 }
 
 namespace Pattern {

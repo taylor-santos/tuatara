@@ -3,6 +3,13 @@
 
 #include "pattern/pattern.h"
 
+namespace AST {
+class Node;
+} // namespace AST
+namespace yy {
+class location;
+} // namespace yy
+
 namespace Pattern {
 
 class Tuple final : public Pattern {

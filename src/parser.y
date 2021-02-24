@@ -26,14 +26,40 @@
 #    pragma warning(disable : 4244)
 #endif
 
-#include <iostream>
 #include <sstream>
-
-#include "common.h"
+#include "ast/bool.h"
+#include "ast/call.h"
+#include "ast/field.h"
+#include "ast/float.h"
+#include "ast/func_impl.h"
+#include "ast/ident_access.h"
+#include "ast/if.h"
+#include "ast/if_else.h"
+#include "ast/index.h"
+#include "ast/int.h"
+#include "ast/lambda.h"
+#include "ast/match.h"
+#include "ast/string.h"
+#include "ast/tuple.h"
+#include "ast/type_declaration.h"
+#include "ast/type_value_declaration.h"
+#include "ast/unit.h"
+#include "ast/variable.h"
+#include "ast/while.h"
 #include "driver.h"
-#include "location.hh"
+#include "pattern/literal.h"
+#include "pattern/named_constraint.h"
+#include "pattern/named_wildcard.h"
+#include "pattern/tuple.h"
+#include "pattern/type_constraint.h"
+#include "pattern/value_constraint.h"
 #include "printer.h"
 #include "scanner.h"
+#include "type/array.h"
+#include "type/func.h"
+#include "type/maybe.h"
+#include "type/product.h"
+#include "type/sum.h"
 
 #define yylex driver.scanner->scan
 #define STRINGIFY_(X) #X
@@ -81,15 +107,11 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
 #    pragma warning(disable : 4065)
 #endif
 
-#include <memory>
 #include <optional>
 
 #include "ast/block.h"
-#include "ast/expression.h"
 #include "ast/literal.h"
-
 #include "pattern/constraint.h"
-#include "pattern/pattern.h"
 
 } // %code requires
 

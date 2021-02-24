@@ -2,9 +2,11 @@
 
 #include <algorithm>
 
-#include "type/type_context.h"
-
 #include "json.h"
+
+namespace TypeChecker {
+class Context;
+} // namespace TypeChecker
 
 using namespace std;
 

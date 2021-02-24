@@ -3,6 +3,10 @@
 
 #include "ast/expression.h"
 
+namespace yy {
+class location;
+} // namespace yy
+
 namespace AST {
 
 class LValue : public Expression {

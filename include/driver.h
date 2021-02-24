@@ -1,19 +1,19 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
-#include <fstream>
-#include <iostream>
-#include <memory>
 #include <queue>
 #include <stack>
-#include <string>
-#include <vector>
 
 #include "parser.tab.hh"
+
+namespace AST {
+class Expression;
+} // namespace AST
 
 namespace yy {
 /// Forward declarations of classes
 class Scanner;
+class location;
 
 class Driver {
 public:

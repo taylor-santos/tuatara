@@ -2,7 +2,6 @@
 #define NAMED_H
 
 #include <iostream>
-#include <string_view>
 
 template<typename T>
 constexpr auto
