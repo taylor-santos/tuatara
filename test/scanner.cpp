@@ -35,12 +35,13 @@
 
 #define EXPECT_VALUE_TOK(SCANNER, DRIVER, TYPE, TOKEN, VALUE)                                      \
     do {                                                                                           \
-        auto tok = SCANNER.scan(DRIVER);                                                           \
+        auto tok = (SCANNER).scan(DRIVER);                                                         \
         ASSERT_EQ(tok.type_get(), yy::Parser::symbol_kind_type::S_##TOKEN)                         \
-            << "expected a \"" << yy::Parser::symbol_name(yy::Parser::symbol_kind_type::S_##TOKEN) \
+            << "expected value " << (VALUE) << " to be a \""                                       \
+            << yy::Parser::symbol_name(yy::Parser::symbol_kind_type::S_##TOKEN)                    \
             << "\" but got a \"" << tok.name() << "\"";                                            \
         auto got = tok.value.as<TYPE>();                                                           \
-        EXPECT_EQ(got, VALUE) << "expected value \"" << VALUE << "\" but got \"" << got << "\"";   \
+        EXPECT_EQ(got, VALUE) << "expected value \"" << (VALUE) << "\" but got \"" << got << "\""; \
     } while (0)
 
 #define EXPECT_TOK(SCANNER, DRIVER, TOKEN)                                                         \
@@ -139,6 +140,9 @@ TEST(ScannerTest, NaN) {
     yy::Driver drv;
     for (int i = 0; i < exampleCount; i++) {
         auto tok = scanner.scan(drv);
+        ASSERT_EQ(tok.type_get(), yy::Parser::symbol_kind_type::S_FLOAT)
+            << "expected a \"" << yy::Parser::symbol_name(yy::Parser::symbol_kind_type::S_FLOAT)
+            << "\" but got a \"" << tok.name() << "\"";
         auto got = tok.value.as<double>();
         EXPECT_TRUE(std::isnan(got));
     }
@@ -154,6 +158,9 @@ TEST(ScannerTest, Infinity) {
     yy::Driver drv;
     for (int i = 0; i < exampleCount; i++) {
         auto tok = scanner.scan(drv);
+        ASSERT_EQ(tok.type_get(), yy::Parser::symbol_kind_type::S_FLOAT)
+            << "expected a \"" << yy::Parser::symbol_name(yy::Parser::symbol_kind_type::S_FLOAT)
+            << "\" but got a \"" << tok.name() << "\"";
         auto got = tok.value.as<double>();
         EXPECT_TRUE(std::isinf(got));
     }

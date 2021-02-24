@@ -1,10 +1,12 @@
 #ifndef AST_EXPRESSION_H
 #define AST_EXPRESSION_H
 
-#include "type/type.h"
-#include "type/type_context.h"
-
 #include "ast.h"
+
+namespace TypeChecker {
+class Type;
+class Context;
+} // namespace TypeChecker
 
 namespace AST {
 

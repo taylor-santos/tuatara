@@ -1,3 +1,6 @@
+#ifndef TYPE_EXCEPTION_H
+#define TYPE_EXCEPTION_H
+
 #include <exception>
 #include <vector>
 
@@ -16,3 +19,5 @@ private: // Fields
 };
 
 } // namespace TypeChecker
+
+#endif // TYPE_EXCEPTION_H

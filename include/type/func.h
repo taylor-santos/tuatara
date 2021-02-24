@@ -1,11 +1,11 @@
 #ifndef TYPE_FUNC_H
 #define TYPE_FUNC_H
 
-#include <optional>
-
 #include "type/type.h"
 
 namespace TypeChecker {
+
+class Context;
 
 class Func final : public Type {
 public: // Aliases
@@ -18,6 +18,7 @@ public: // Methods
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
     bool                             operator<=(const Type &other) const override;
+    Type &                           callAsFunc(Context &ctx, AST::Expression &arg) override;
 
 protected: // Methods
     bool operator>=(const Func &other) const override;

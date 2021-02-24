@@ -7,6 +7,11 @@
 #include "ast.h"
 #include "location.hh"
 
+// Forward declaration
+namespace AST {
+class Expression;
+}
+
 namespace TypeChecker {
 
 class Type : public AST::Node {
@@ -20,11 +25,12 @@ public: // Methods
     /// Verify that this type definition is valid in the given context,
     /// and update any needed fields in response.
     /// \param ctx The type checker context
-    void         verify(class Context &ctx);
-    void         pretty(std::ostream &out) const;
-    virtual void pretty(std::ostream &out, bool mod) const = 0;
-    virtual bool operator<=(const Type &other) const       = 0;
-    Type &       operator=(const Type &) = delete;
+    void          verify(class Context &ctx);
+    void          pretty(std::ostream &out) const;
+    virtual void  pretty(std::ostream &out, bool mod) const = 0;
+    virtual Type &callAsFunc(class Context &ctx, AST::Expression &arg);
+    virtual bool  operator<=(const Type &other) const = 0;
+    Type &        operator=(const Type &) = delete;
 
 protected: // Methods
     virtual void verifyImpl(class Context &ctx) = 0;

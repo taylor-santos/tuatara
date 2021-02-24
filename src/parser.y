@@ -110,7 +110,6 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     MATCH       "match"
     CASE        "case"
     SEMICOLON   ";"
-    ASSIGN      "="
     COLON       ":"
     LPAREN      "("
     RPAREN      ")"
@@ -118,12 +117,14 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     RSQUARE     "]"
     LBRACE      "{"
     RBRACE      "}"
-    LANGLE      "<"
-    RANGLE      ">"
     COMMA       ","
+    WILDCARD    "_"
+// Valid ids that are used in other grammar rules:
+    ASSIGN      "="
     OR          "|"
     QUESTION    "?"
-    WILDCARD    "_"
+    LANGLE      "<"
+    RANGLE      ">"
 
 %token<std::string>
     IDENT       "identifier"
@@ -140,7 +141,8 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     primary_expression
     expression_line
     expression
-    operator_expression
+    access_expression
+    ident_expression
     declaration
     func_impl
     while_expression
@@ -151,18 +153,15 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     value_pattern
 %type<AST::Expression::Vec>
     opt_expressions
+    file_expressions
     expressions
     tuple_expression
     multi_expression
     multi_semi_expression
-%type<std::optional<AST::Expression::Ptr>>
-    opt_expression
 %type<AST::Literal::Ptr>
     literal
 %type<AST::Block::Ptr>
     block_expression
-%type<AST::LValue::Ptr>
-    lvalue
 %type<AST::Match::Case>
     case
 %type<std::vector<AST::Match::Case>>
@@ -190,8 +189,7 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
 %type<Pattern::Constraint::Ptr>
     constraint_pattern
 %type<std::string>
-    operator
-
+    ident
 %start file
 
 %%
@@ -203,7 +201,18 @@ file
 
 opt_expressions
     : %empty {}
-    | expressions
+    | file_expressions
+
+file_expressions
+    : expression_line {
+        $$.push_back($1);
+        std::cerr << *$$.back() << std::endl;
+    }
+    | file_expressions expression_line {
+        $$ = $1;
+        $$.push_back($2);
+        std::cerr << *$$.back() << std::endl;
+    }
 
 expression_line
     : expression "line break" {
@@ -224,7 +233,7 @@ expressions
     }
 
 expression
-    : operator_expression
+    : ident_expression
     | declaration
     | lambda
     | ternary
@@ -240,73 +249,61 @@ semicolons
     | semicolons ";"
 
 multi_semi_expression
-    : operator_expression semicolons {
+    : ident_expression semicolons {
         $$.push_back($1);
     }
-    | multi_semi_expression operator_expression semicolons {
+    | multi_semi_expression ident_expression semicolons {
         $$ = $1;
         $$.push_back($2);
     }
 
 multi_expression
     : multi_semi_expression
-    | multi_semi_expression operator_expression {
+    | multi_semi_expression ident_expression {
         $$ = $1;
         $$.push_back($2);
     }
 
 declaration
-    : "var" "identifier" "=" expression {
-        $$ = make_unique<AST::ValueDeclaration>(@$, $2, $4);
+    : "var" ident "=" expression {
+        $$ = make_unique<AST::ValueDeclaration>(@$, @2, $2, $4);
     }
-    | "var" "identifier" ":" type {
-        $$ = make_unique<AST::TypeDeclaration>(@$, $2, $4);
+    | "var" ident ":" type {
+        $$ = make_unique<AST::TypeDeclaration>(@$, @2, $2, $4);
     }
-    | "var" "identifier" ":" type "=" expression {
-        $$ = make_unique<AST::TypeValueDeclaration>(@$, $2, $4, $6);
+    | "var" ident ":" type "=" expression {
+        $$ = make_unique<AST::TypeValueDeclaration>(@$, @2, $2, $4, $6);
     }
     | func_impl {
         $$ = $1;
     }
 
 tuple_expression
-    : operator_expression "," operator_expression {
+    : ident_expression "," ident_expression {
         $$.push_back($1);
         $$.push_back($3);
     }
-    | tuple_expression "," operator_expression {
+    | tuple_expression "," ident_expression {
         $$ = $1;
         $$.push_back($3);
     }
 
-operator_expression
-    : primary_expression
-    | primary_expression operator primary_expression {
-        $$ = make_unique<AST::InfixOperator>(@$, $2, $1, $3);
-    }
-    | primary_expression operator {
-        $$ = make_unique<AST::PostfixOperator>(@$, $2, $1);
-    }
-    | operator primary_expression {
-        $$ = make_unique<AST::PrefixOperator>(@$, $1, $2);
-    }
-
-operator
-    : "operator"
+ident
+    : "identifier"
     | "=" {
         $$ = "=";
-    }
-    | "<" {
-        $$ = "<";
-    }
-    | ">" {
-        $$ = ">";
     }
     | "|" {
         $$ = "|";
     }
     | "?" {
         $$ = "?";
+    }
+    | "<" {
+        $$ = "<";
+    }
+    | ">" {
+        $$ = ">";
     }
 
 block_expression
@@ -324,12 +321,12 @@ if_expression
     }
 
 ternary
-    : "if" expression "then" operator_expression {
+    : "if" expression "then" ident_expression {
         AST::Expression::Vec stmts;
         stmts.emplace_back($4);
         $$ = make_unique<AST::If>(@$, $2, make_unique<AST::Block>(@4, move(stmts)));
     }
-    | "if" expression "then" operator_expression "else" operator_expression {
+    | "if" expression "then" ident_expression "else" ident_expression {
         AST::Expression::Vec trueStmts, falseStmts;
         trueStmts.emplace_back($4);
         falseStmts.emplace_back($6);
@@ -368,11 +365,29 @@ case
         $$ = make_pair($2, $3);
     }
 
+ident_expression
+    : access_expression
+    | ident {
+        $$ = make_unique<AST::Variable>(@$, $1);
+    }
+
+access_expression
+    : primary_expression
+    | ident_expression "." ident {
+        $$ = make_unique<AST::Field>(@$, $1, @3, $3);
+    }
+    | ident_expression ident {
+        $$ = make_unique<AST::IdentAccess>(@$, $1, @2, $2);
+    }
+    | ident_expression primary_expression {
+        $$ = make_unique<AST::Call>(@$, $1, $2);
+    }
+    | ident_expression "[" expression "]" {
+        $$ = make_unique<AST::Index>(@$, $1, $3);
+    }
+
 primary_expression
     : literal {
-        $$ = $1;
-    }
-    | lvalue {
         $$ = $1;
     }
     | "(" expression ")" {
@@ -383,23 +398,6 @@ primary_expression
     }
     | "(" ")" {
         $$ = make_unique<AST::Unit>(@$);
-    }
-
-lvalue
-    : "identifier" {
-        $$ = make_unique<AST::Variable>(@$, $1);
-    }
-    | primary_expression "(" opt_expression ")" {
-        $$ = make_unique<AST::Call>(@$, $1, $3);
-    }
-    | primary_expression "[" expression "]" {
-        $$ = make_unique<AST::Index>(@$, $1, $3);
-    }
-
-opt_expression
-    : %empty {}
-    | expression {
-        $$ = move($1);
     }
 
 literal
@@ -471,7 +469,7 @@ post_type
     }
 
 base_type
-    : "identifier" {
+    : ident {
         $$ = make_unique<TypeChecker::Object>(@$, $1);
     }
     | "(" product_type_list ")" {
@@ -498,10 +496,10 @@ product_type_list
     }
 
 func_impl
-    : "func" "identifier" opt_patterns opt_ret_type "line break" "indent" expressions "outdent" {
+    : "func" ident opt_patterns opt_ret_type "line break" "indent" expressions "outdent" {
         @$ = yy::location{@1.begin, @7.end};
         auto block = make_unique<AST::Block>(@7, $7);
-        $$ = make_unique<AST::FuncImpl>(@$, $2, $3, move(block), $4);
+        $$ = make_unique<AST::FuncImpl>(@$, @2, $2, $3, move(block), $4);
     }
 
 lambda
@@ -541,7 +539,7 @@ pattern_list
     }
 
 pattern
-    : "identifier" {
+    : ident {
         $$ = make_unique<Pattern::NamedWildcard>(@$, $1);
     }
     | literal {
@@ -559,8 +557,8 @@ pattern
     | constraint_pattern {
         $$ = $1;
     }
-    | "identifier" constraint_pattern {
-        $$ = make_unique<Pattern::NamedConstraint>(@$, $1, $2);
+    | "var" ident constraint_pattern {
+        $$ = make_unique<Pattern::NamedConstraint>(@$, $2, $3);
     }
 
 constraint_pattern
@@ -577,7 +575,7 @@ type_pattern
     }
 
 value_pattern
-    : "=" operator_expression {
+    : "=" ident_expression {
         $$ = $2;
     }
 

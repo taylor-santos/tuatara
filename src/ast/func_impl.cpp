@@ -1,5 +1,10 @@
 #include "ast/func_impl.h"
 
+#include "ast/block.h"
+
+#include "pattern/pattern.h"
+
+#include "type/type.h"
 #include "type/type_exception.h"
 
 #include "json.h"
@@ -11,11 +16,12 @@ namespace AST {
 
 FuncImpl::FuncImpl(
     const yy::location &  loc,
+    const yy::location &  varLoc,
     string                variable,
     Pattern::Pattern::Vec args,
     Block::Ptr            body,
     optional<Type::Ptr>   retType)
-    : FuncDeclaration(loc, move(variable), move(args), move(retType))
+    : FuncDeclaration(loc, varLoc, move(variable), move(args), move(retType))
     , body_{move(body)} {}
 
 void

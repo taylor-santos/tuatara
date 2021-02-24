@@ -34,18 +34,17 @@ Object::verifyImpl(Context &ctx) {
     if (!symbol) {
         throw TypeException({"error: unknown class name \"" + className_ + "\"", getLoc()});
     }
-    try {
-        auto &cl = dynamic_cast<TypeChecker::Class &>(symbol->type);
-        ofClass_ = cl;
-    } catch (std::bad_cast &) {
+    auto cl = dynamic_cast<TypeChecker::Class *>(&symbol->type);
+    if (!cl) {
         stringstream ss;
         ss << "note: \"" << className_ << "\" previously defined as \"";
         symbol->type.pretty(ss);
-        ss << "\" here:";
+        ss << "\"";
         throw TypeException(
             {{"error: type name \"" + className_ + "\" does not name a class.", getLoc()},
              {ss.str(), symbol->type.getLoc()}});
     }
+    ofClass_ = *cl;
 }
 
 void
@@ -61,6 +60,11 @@ Object::operator<=(const Type &other) const {
 bool
 Object::operator>=(const Object &other) const {
     return (other.ofClass_->get()) <= (ofClass_->get());
+}
+
+const Class &
+Object::getClass() const {
+    return *ofClass_;
 }
 
 } // namespace TypeChecker

@@ -18,7 +18,7 @@ public: // Fields
     void                             pretty(std::ostream &out, bool mod) const override;
     bool                             operator<=(const Type &other) const override;
 
-protected:
+protected: // Methods
     bool operator>=(const Type &other) const override;
 
 private: // Fields

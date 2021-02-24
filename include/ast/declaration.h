@@ -11,7 +11,7 @@ public: // Aliases
     using Vec = std::vector<Ptr>;
 
 protected: // Methods
-    Declaration(const yy::location &loc, std::string variable);
+    Declaration(const yy::location &loc, const yy::location &varLoc, std::string variable);
     [[nodiscard]] const std::string &getVariable() const;
     /// Add a type to the symbol table if the variable name is new, or update it if not.
     /// Throws a TypeException if the new type is incompatible with an existing type.
@@ -21,7 +21,8 @@ protected: // Methods
     void assignType(TypeChecker::Context &ctx, TypeChecker::Type &type, bool init) const;
 
 private: // Fields
-    std::string variable_;
+    yy::location varLoc_;
+    std::string  variable_;
 };
 
 } // namespace AST

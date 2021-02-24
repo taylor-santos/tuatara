@@ -9,8 +9,12 @@ using namespace std;
 
 namespace AST {
 
-TypeDeclaration::TypeDeclaration(const yy::location &loc, string variable, Type::Ptr declType)
-    : Declaration(loc, move(variable))
+TypeDeclaration::TypeDeclaration(
+    const yy::location &loc,
+    const yy::location &varLoc,
+    string              variable,
+    Type::Ptr           declType)
+    : Declaration(loc, varLoc, move(variable))
     , declType_{move(declType)} {}
 
 void

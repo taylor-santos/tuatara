@@ -1,5 +1,6 @@
 #include "ast/expression.h"
 
+#include "type/type.h"
 #include "type/type_exception.h"
 
 namespace AST {

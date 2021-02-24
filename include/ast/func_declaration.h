@@ -6,9 +6,13 @@
 
 #include "ast/declaration.h"
 
-#include "pattern/pattern.h"
+namespace TypeChecker {
+class Type;
+}
 
-#include "type/type.h"
+namespace Pattern {
+class Pattern;
+}
 
 namespace AST {
 
@@ -19,20 +23,21 @@ public: // Aliases
 
 public: // Methods
     FuncDeclaration(
-        const yy::location &                  loc,
-        std::string                           variable,
-        Pattern::Pattern::Vec                 args,
-        std::optional<TypeChecker::Type::Ptr> retType = {});
+        const yy::location &                              loc,
+        const yy::location &                              varLoc,
+        std::string                                       variable,
+        std::vector<std::unique_ptr<Pattern::Pattern>>    args,
+        std::optional<std::unique_ptr<TypeChecker::Type>> retType = {});
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 protected: // Methods
-    [[nodiscard]] const Pattern::Pattern::Vec &                getArgs() const;
-    [[nodiscard]] const std::optional<TypeChecker::Type::Ptr> &getRetType() const;
+    [[nodiscard]] const std::vector<std::unique_ptr<Pattern::Pattern>> &   getArgs() const;
+    [[nodiscard]] const std::optional<std::unique_ptr<TypeChecker::Type>> &getRetType() const;
 
 private: // Fields
-    Pattern::Pattern::Vec                 args_;
-    std::optional<TypeChecker::Type::Ptr> retType_;
+    std::vector<std::unique_ptr<Pattern::Pattern>>    args_;
+    std::optional<std::unique_ptr<TypeChecker::Type>> retType_;
 
 private: // Methods
     void               json(std::ostream &os) const override;

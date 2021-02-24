@@ -2,14 +2,16 @@
 
 #include <sstream>
 
+#include "type/type_context.h"
 #include "type/type_exception.h"
 
 using namespace std;
 
 namespace AST {
 
-Declaration::Declaration(const yy::location &loc, string variable)
+Declaration::Declaration(const yy::location &loc, const yy::location &varLoc, string variable)
     : Expression(loc)
+    , varLoc_{varLoc}
     , variable_{move(variable)} {}
 
 const string &
@@ -25,13 +27,14 @@ Declaration::assignType(TypeChecker::Context &ctx, TypeChecker::Type &type, bool
             symbol->initialized = init;
             return;
         }
+        vector<pair<string, yy::location>> msgs;
+        msgs.emplace_back("error: redefining variable \"" + getVariable() + "\"", varLoc_);
         stringstream ss;
         ss << "note: \"" << getVariable() << "\" previously defined as \"";
         symbol->type.pretty(ss);
-        ss << "\" here:";
-        throw TypeChecker::TypeException(
-            {{"error: redefining variable \"" + getVariable() + "\"", getLoc()},
-             {ss.str(), (*symbol).type.getLoc()}});
+        ss << "\"";
+        msgs.emplace_back(ss.str(), symbol->type.getLoc());
+        throw TypeChecker::TypeException(msgs);
     }
     ctx.setSymbol({getVariable(), type, init});
 }

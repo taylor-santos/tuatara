@@ -1,3 +1,6 @@
+#ifndef TYPE_CONTEXT_H
+#define TYPE_CONTEXT_H
+
 #include <optional>
 #include <unordered_map>
 
@@ -22,7 +25,8 @@ public: // Methods
 private: // Fields
     std::unordered_map<std::string, Symbol>                  symbols_;
     std::unordered_map<std::string, TypeChecker::Class::Ptr> builtins_;
-    const static char *                                      builtinNames_[];
 };
 
 } // namespace TypeChecker
+
+#endif // TYPE_CONTEXT_H

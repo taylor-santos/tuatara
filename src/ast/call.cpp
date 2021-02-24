@@ -1,5 +1,8 @@
 #include "ast/call.h"
 
+#include <sstream>
+
+#include "type/func.h"
 #include "type/type_exception.h"
 
 #include "json.h"
@@ -8,7 +11,7 @@ using namespace std;
 
 namespace AST {
 
-Call::Call(const yy::location &loc, Expression::Ptr func, optional<Expression::Ptr> arg)
+Call::Call(const yy::location &loc, Expression::Ptr func, Expression::Ptr arg)
     : LValue(loc)
     , func_{move(func)}
     , arg_{move(arg)} {}
@@ -25,9 +28,7 @@ void
 Call::walk(const function<void(const Node &)> &fn) const {
     LValue::walk(fn);
     func_->walk(fn);
-    if (arg_) {
-        (*arg_)->walk(fn);
-    }
+    arg_->walk(fn);
 }
 
 const string &
@@ -37,8 +38,10 @@ Call::getNodeName() const {
 }
 
 TypeChecker::Type &
-Call::getTypeImpl(TypeChecker::Context &) {
-    throw TypeChecker::TypeException("type error: call type checking not implemented", getLoc());
+Call::getTypeImpl(TypeChecker::Context &ctx) {
+    auto &type = func_->getType(ctx);
+    auto &ret  = type.callAsFunc(ctx, *arg_);
+    return ret;
 }
 
 } // namespace AST

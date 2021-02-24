@@ -14,7 +14,11 @@ public: // Aliases
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    ValueDeclaration(const yy::location &loc, std::string variable, Expression::Ptr value);
+    ValueDeclaration(
+        const yy::location &loc,
+        const yy::location &varLoc,
+        std::string         variable,
+        Expression::Ptr     value);
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 

@@ -2,7 +2,6 @@
 #define AST_BLOCK_H
 
 #include "ast/expression.h"
-#include "ast/lvalue.h"
 
 namespace AST {
 

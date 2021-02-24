@@ -162,14 +162,14 @@
 %s PAREN
 %x COMMENT
 
-ident   [a-zA-Z0-9][a-zA-Z0-9_]*
-str     \"([^\\\"\n]|\\.)*\"
-exp     [eE][+-]?[[:digit:]]+
-nan     (?i:nan)
-inf     (?i:inf)
-
-reserved    [=|?<>]
-op          [+\-*/\\%&!@#$^~]+
+reserved  [=|?<>\\]
+op        [+\-*/%&!@#$^~]
+id_start  [a-zA-Z]
+id        [_0-9]|{id_start}
+str       \"([^\\\"\n]|\\.)*\"
+exp       [eE][+-]?[[:digit:]]+
+nan       (?i:nan)
+inf       (?i:inf)
 
 %%
 
@@ -304,9 +304,6 @@ op          [+\-*/\\%&!@#$^~]+
 "<"         PUSH_TOKEN_AND_POP(LANGLE);
 ">"         PUSH_TOKEN_AND_POP(RANGLE);
 
-{op}({op}|{reserved})*       PUSH_VALUE_AND_POP(OPERATION, yytext);
-{reserved}({op}|{reserved})+ PUSH_VALUE_AND_POP(OPERATION, yytext);
-
 [[:digit:]]+                        LEX_INT();
 [[:digit:]]+{exp}                   LEX_FLOAT();
 [[:digit:]]*"."[[:digit:]]+({exp})? LEX_FLOAT();
@@ -318,8 +315,9 @@ op          [+\-*/\\%&!@#$^~]+
     str = str.substr(1, str.size()-2);
     PUSH_VALUE_AND_POP(STRING, str);
 }
-
-{ident}     PUSH_VALUE_AND_POP(IDENT, yytext);
+{id_start}{id}*              PUSH_VALUE_AND_POP(IDENT, yytext);
+{op}({op}|{reserved})*       PUSH_VALUE_AND_POP(IDENT, yytext);
+{reserved}({op}|{reserved})+ PUSH_VALUE_AND_POP(IDENT, yytext);
 
 [[:blank:]]+  // Ignore non-leading whitespace
 

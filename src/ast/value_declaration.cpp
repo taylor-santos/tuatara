@@ -8,8 +8,12 @@ using namespace std;
 
 namespace AST {
 
-ValueDeclaration::ValueDeclaration(const yy::location &loc, string variable, Expression::Ptr value)
-    : Declaration(loc, move(variable))
+ValueDeclaration::ValueDeclaration(
+    const yy::location &loc,
+    const yy::location &varLoc,
+    string              variable,
+    Expression::Ptr     value)
+    : Declaration(loc, varLoc, move(variable))
     , value_{move(value)} {}
 
 void

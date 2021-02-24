@@ -1,6 +1,10 @@
 #include "type/type.h"
 
-#include "type/type_context.h"
+#include <sstream>
+
+#include "ast/expression.h"
+
+#include "type/type_exception.h"
 
 using namespace std;
 
@@ -22,6 +26,15 @@ Type::verify(Context &ctx) {
 void
 Type::pretty(std::ostream &out) const {
     pretty(out, false);
+}
+
+Type &
+Type::callAsFunc(Context &, AST::Expression &) {
+    stringstream ss;
+    ss << "error: \"";
+    pretty(ss);
+    ss << "\" cannot be called as a function";
+    throw TypeException(ss.str(), getLoc());
 }
 
 bool

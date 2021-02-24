@@ -11,12 +11,13 @@ namespace AST {
 
 TypeValueDeclaration::TypeValueDeclaration(
     const yy::location &loc,
+    const yy::location &varLoc,
     const string &      variable,
     Type::Ptr           type,
     Expression::Ptr     value)
-    : Declaration(loc, variable)
-    , ValueDeclaration(loc, variable, move(value))
-    , TypeDeclaration(loc, variable, move(type)) {}
+    : Declaration(loc, varLoc, variable)
+    , ValueDeclaration(loc, varLoc, variable, move(value))
+    , TypeDeclaration(loc, varLoc, variable, move(type)) {}
 
 void
 TypeValueDeclaration::json(ostream &os) const {

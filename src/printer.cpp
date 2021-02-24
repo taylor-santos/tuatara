@@ -10,6 +10,11 @@ namespace Print {
 
 void
 error(ostream &out, const string &msg, const yy::location &location, const vector<string> &lines) {
+    if (location.begin.line == 0) {
+        // Some errors will originate outside of source code, just print the message in that case.
+        out << msg << endl;
+        return;
+    }
     size_t numWidth = to_string(location.end.line).length();
     out << "*" << std::string(numWidth, ' ');
     if (location.begin.filename) {

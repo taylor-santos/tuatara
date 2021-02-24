@@ -1,24 +1,31 @@
-#ifndef AST_CALL_H
-#define AST_CALL_H
+#ifndef AST_FIELD_H
+#define AST_FIELD_H
+
+#include <optional>
 
 #include "ast/lvalue.h"
 
 namespace AST {
 
-class Call final : public LValue {
+class Field final : public LValue {
 public: // Aliases
-    using Ptr = std::unique_ptr<Call>;
+    using Ptr = std::unique_ptr<Field>;
     using Vec = std::vector<Ptr>;
 
 public: // Methods
-    Call(const yy::location &loc, Expression::Ptr func, Expression::Ptr arg);
-    ~Call() override = default;
+    Field(
+        const yy::location &loc,
+        Expression::Ptr     expr,
+        const yy::location &fieldLoc,
+        std::string         field);
+    ~Field() override = default;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
-    Expression::Ptr func_;
-    Expression::Ptr arg_;
+    Expression::Ptr expr_;
+    yy::location    fieldLoc_;
+    std::string     field_;
 
 private: // Methods
     void               json(std::ostream &os) const override;
@@ -27,4 +34,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // AST_CALL_H
+#endif // AST_FIELD_H

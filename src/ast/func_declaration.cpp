@@ -2,6 +2,9 @@
 
 #include <algorithm>
 
+#include "pattern/pattern.h"
+
+#include "type/type.h"
 #include "type/type_exception.h"
 
 #include "json.h"
@@ -13,10 +16,11 @@ namespace AST {
 
 FuncDeclaration::FuncDeclaration(
     const yy::location &  loc,
+    const yy::location &  varLoc,
     string                variable,
     Pattern::Pattern::Vec args,
     optional<Type::Ptr>   retType)
-    : Declaration(loc, move(variable))
+    : Declaration(loc, varLoc, move(variable))
     , args_{move(args)}
     , retType_{move(retType)} {}
 

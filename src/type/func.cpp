@@ -1,5 +1,12 @@
 #include "type/func.h"
 
+#include <sstream>
+
+#include "ast/expression.h"
+
+#include "type/type_context.h"
+#include "type/type_exception.h"
+
 #include "json.h"
 
 using namespace std;
@@ -50,6 +57,32 @@ Func::pretty(ostream &out, bool mod) const {
     if (mod) {
         out << ")";
     }
+}
+
+Type &
+Func::callAsFunc(Context &ctx, AST::Expression &arg) {
+    auto &type = arg.getType(ctx);
+    if (type <= *argType_) {
+        return *retType_;
+    }
+    vector<pair<string, yy::location>> msgs;
+    {
+        stringstream ss;
+        ss << "error: function expecting an argument with type \"";
+        argType_->pretty(ss);
+        ss << "\" cannot be called with type \"";
+        type.pretty(ss);
+        ss << "\"";
+        msgs.emplace_back(ss.str(), arg.getLoc());
+    }
+    {
+        stringstream ss;
+        ss << "note: function has signature \"";
+        Type::pretty(ss);
+        ss << "\"";
+        msgs.emplace_back(ss.str(), getLoc());
+    }
+    throw TypeException(msgs);
 }
 
 bool

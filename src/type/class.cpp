@@ -23,12 +23,36 @@ Class::getNodeName() const {
     return name;
 }
 
+const string &
+Class::getClassName() const {
+    return name_;
+}
+
 void
 Class::verifyImpl(Context &) {}
 
 void
 Class::pretty(ostream &out, bool) const {
     out << "<class>";
+}
+
+Type *
+Class::getField(const std::string &name) const {
+    auto it = fields_.find(name);
+    if (it == fields_.end()) {
+        return nullptr;
+    }
+    return it->second.get();
+}
+
+bool
+Class::addField(const string &name, Type::Ptr type) {
+    auto prev = fields_.find(name);
+    if (prev != fields_.end()) {
+        return true;
+    }
+    fields_.emplace(name, move(type));
+    return false;
 }
 
 bool

@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "type/type_context.h"
 #include "type/type_exception.h"
 
 #include "driver.h"
@@ -25,6 +26,7 @@ main(int argc, char *argv[]) {
             try {
                 for (const auto &stmt : drv.statements) {
                     stmt->getType(ctx);
+                    cout << *stmt << endl;
                     // stmt->walk([&](const AST::Node &node) -> void {
                     //    Print::error(cout, node.getTypeName(), node.getLoc(), drv.lines);
                     //});
