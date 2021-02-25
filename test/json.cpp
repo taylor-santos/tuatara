@@ -9,36 +9,38 @@
 
 #include "gtest/gtest.h"
 
+using namespace std;
+
 TEST(JSONTest, EmptyObject) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     { JSON::Object obj(ss); }
     EXPECT_EQ(ss.str(), "{}");
 }
 
 TEST(JSONTest, MinimizedEmptyObject) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     { JSON::Object obj(ss); }
     EXPECT_EQ(ss.str(), "{}");
 }
 
 TEST(JSONTest, EmptyArray) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     { JSON::Array arr(ss); }
     EXPECT_EQ(ss.str(), "[]");
 }
 
 TEST(JSONTest, MinimizedEmptyArray) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     { JSON::Array arr(ss); }
     EXPECT_EQ(ss.str(), "[]");
 }
 
 TEST(JSONTest, ObjectWithOneString) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     {
         JSON::Object obj(ss);
@@ -48,7 +50,7 @@ TEST(JSONTest, ObjectWithOneString) {
 }
 
 TEST(JSONTest, MinimizedObjectWithOneString) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     {
         JSON::Object obj(ss);
@@ -58,7 +60,7 @@ TEST(JSONTest, MinimizedObjectWithOneString) {
 }
 
 TEST(JSONTest, ObjectWithOneInt) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     {
         JSON::Object obj(ss);
@@ -68,7 +70,7 @@ TEST(JSONTest, ObjectWithOneInt) {
 }
 
 TEST(JSONTest, MinimizedObjectWithOneInt) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     {
         JSON::Object obj(ss);
@@ -78,7 +80,7 @@ TEST(JSONTest, MinimizedObjectWithOneInt) {
 }
 
 TEST(JSONTest, ObjectWithOneFloat) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     {
         JSON::Object obj(ss);
@@ -88,7 +90,7 @@ TEST(JSONTest, ObjectWithOneFloat) {
 }
 
 TEST(JSONTest, MinimizedObjectWithOneFloat) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     {
         JSON::Object obj(ss);
@@ -98,7 +100,7 @@ TEST(JSONTest, MinimizedObjectWithOneFloat) {
 }
 
 TEST(JSONTest, ObjectWithTwoStrings) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     {
         JSON::Object obj(ss);
@@ -114,7 +116,7 @@ TEST(JSONTest, ObjectWithTwoStrings) {
 }
 
 TEST(JSONTest, MinimizedObjectWithTwoStrings) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     {
         JSON::Object obj(ss);
@@ -125,7 +127,7 @@ TEST(JSONTest, MinimizedObjectWithTwoStrings) {
 }
 
 TEST(JSONTest, ObjectWithStringInt) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     {
         JSON::Object obj(ss);
@@ -141,7 +143,7 @@ TEST(JSONTest, ObjectWithStringInt) {
 }
 
 TEST(JSONTest, MinimizedObjectWithStringInt) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     {
         JSON::Object obj(ss);
@@ -152,7 +154,7 @@ TEST(JSONTest, MinimizedObjectWithStringInt) {
 }
 
 TEST(JSONTest, ObjectWithIntString) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     {
         JSON::Object obj(ss);
@@ -168,7 +170,7 @@ TEST(JSONTest, ObjectWithIntString) {
 }
 
 TEST(JSONTest, MinimizedObjectWithIntString) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     {
         JSON::Object obj(ss);
@@ -179,7 +181,7 @@ TEST(JSONTest, MinimizedObjectWithIntString) {
 }
 
 TEST(JSONTest, ObjectWithTwoInts) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     {
         JSON::Object obj(ss);
@@ -195,7 +197,7 @@ TEST(JSONTest, ObjectWithTwoInts) {
 }
 
 TEST(JSONTest, MinimizedObjectWithTwoInts) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     {
         JSON::Object obj(ss);
@@ -206,7 +208,7 @@ TEST(JSONTest, MinimizedObjectWithTwoInts) {
 }
 
 TEST(JSONTest, ArrayWithOneString) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     {
         JSON::Array arr(ss);
@@ -220,7 +222,7 @@ TEST(JSONTest, ArrayWithOneString) {
 }
 
 TEST(JSONTest, MinimizedArrayWithOneString) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     {
         JSON::Array arr(ss);
@@ -230,7 +232,7 @@ TEST(JSONTest, MinimizedArrayWithOneString) {
 }
 
 TEST(JSONTest, ArrayWithTwoStrings) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     {
         JSON::Array arr(ss);
@@ -246,7 +248,7 @@ TEST(JSONTest, ArrayWithTwoStrings) {
 }
 
 TEST(JSONTest, MinimizedArrayWithTwoStrings) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     {
         JSON::Array arr(ss);
@@ -257,7 +259,7 @@ TEST(JSONTest, MinimizedArrayWithTwoStrings) {
 }
 
 TEST(JSONTest, NestedObjects) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(false);
     {
         JSON::Object obj(ss);
@@ -277,7 +279,7 @@ TEST(JSONTest, NestedObjects) {
 }
 
 TEST(JSONTest, MinimizedNestedObjects) {
-    std::ostringstream ss;
+    ostringstream ss;
     JSON::JSON::setMinimize(true);
     {
         JSON::Object obj(ss);

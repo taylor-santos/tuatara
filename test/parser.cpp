@@ -8,37 +8,39 @@
 #include "driver.h"
 #include "gtest/gtest.h"
 
-#define EXPECT_JSON(INPUT, TYPE, JSON)                                                            \
-    do {                                                                                          \
-        std::istringstream iss(INPUT);                                                            \
-        std::ostringstream oss;                                                                   \
-        yy::Driver         drv;                                                                   \
-        EXPECT_EQ(drv.parse(iss, oss), 0);                                                        \
-        EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";                         \
-        ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";  \
-        EXPECT_NO_THROW({                                                                         \
-            const auto &       node = dynamic_cast<AST::TYPE &>(*drv.statements[0]);              \
-            std::ostringstream ss;                                                                \
-            ss << node;                                                                           \
-            EXPECT_EQ(ss.str(), JSON);                                                            \
-        }) << "Expected AST node to be a \""                                                      \
-           << #TYPE << "\" but got a \"" << drv.statements[0]->getNodeName() << "\"" << std::endl \
-           << *drv.statements[0];                                                                 \
+using namespace std;
+
+#define EXPECT_JSON(INPUT, TYPE, JSON)                                                           \
+    do {                                                                                         \
+        istringstream iss(INPUT);                                                                \
+        ostringstream oss;                                                                       \
+        yy::Driver    drv;                                                                       \
+        EXPECT_EQ(drv.parse(iss, oss), 0);                                                       \
+        EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";                        \
+        ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement"; \
+        EXPECT_NO_THROW({                                                                        \
+            const auto &  node = dynamic_cast<AST::TYPE &>(*drv.statements[0]);                  \
+            ostringstream ss;                                                                    \
+            ss << node;                                                                          \
+            EXPECT_EQ(ss.str(), JSON);                                                           \
+        }) << "Expected AST node to be a \""                                                     \
+           << #TYPE << "\" but got a \"" << drv.statements[0]->getNodeName() << "\"" << endl     \
+           << *drv.statements[0];                                                                \
     } while (0)
 
 TEST(ParserTest, EmptyFile) {
-    std::istringstream iss("");
-    std::ostringstream oss;
-    yy::Driver         drv;
+    istringstream iss("");
+    ostringstream oss;
+    yy::Driver    drv;
     EXPECT_EQ(drv.parse(iss, oss), 0);
     EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
     EXPECT_TRUE(drv.statements.empty()) << "Expected statements list to be empty";
 }
 
 TEST(ParserTest, WhitespaceFile) {
-    std::istringstream iss("    ");
-    std::ostringstream oss;
-    yy::Driver         drv;
+    istringstream iss("    ");
+    ostringstream oss;
+    yy::Driver    drv;
     EXPECT_EQ(drv.parse(iss, oss), 0);
     EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
     EXPECT_TRUE(drv.statements.empty()) << "Expected statements list to be empty";
@@ -782,9 +784,9 @@ TEST(ParserTest, BlockExpression) {
 }
 
 TEST(ParserTest, SyntaxError) {
-    std::istringstream iss("func\n");
-    std::ostringstream oss;
-    yy::Driver         drv;
+    istringstream iss("func\n");
+    ostringstream oss;
+    yy::Driver    drv;
     EXPECT_NE(drv.parse(iss, oss), 0) << "Expected Bison to return an error code";
     EXPECT_EQ(
         oss.str(),

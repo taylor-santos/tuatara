@@ -11,6 +11,8 @@
 #include "gtest/gtest.h"
 #include "macro_map.h"
 
+using namespace std;
+
 #define STR(x) #x
 
 // Define the sample data as a macro so we can automatically construct matching float and string
@@ -59,9 +61,9 @@
     })
 
 TEST(ScannerTest, Whitespace) {
-    yy::Scanner        scanner;
-    std::istringstream iss("\t \n \t \r\n\t \t\t  ");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("\t \n \t \r\n\t \t\t  ");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     auto       tok = scanner.scan(drv);
@@ -70,16 +72,16 @@ TEST(ScannerTest, Whitespace) {
 }
 
 TEST(ScannerTest, Int) {
-    yy::Scanner       scanner;
-    int64_t           max = std::numeric_limits<int64_t>::max();
-    std::stringstream iss;
-    int64_t           expected[] = {INT_SCAN_SAMPLES, max};           // Insert the data as floats
-    auto              samples    = {MAP_LIST(STR, INT_SCAN_SAMPLES)}; // Convert the data to strings
+    yy::Scanner  scanner;
+    int64_t      max = numeric_limits<int64_t>::max();
+    stringstream iss;
+    int64_t      expected[] = {INT_SCAN_SAMPLES, max};           // Insert the data as floats
+    auto         samples    = {MAP_LIST(STR, INT_SCAN_SAMPLES)}; // Convert the data to strings
     for (const auto &s : samples) {
         iss << s << " ";
     }
-    iss << std::setprecision(20) << max;
-    std::ostringstream oss;
+    iss << setprecision(20) << max;
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     for (const auto &expect : expected) {
@@ -89,11 +91,11 @@ TEST(ScannerTest, Int) {
 }
 
 TEST(ScannerTest, IntOverflow) {
-    yy::Scanner       scanner;
-    uint64_t          max = std::numeric_limits<int64_t>::max();
-    std::stringstream ss;
+    yy::Scanner  scanner;
+    uint64_t     max = numeric_limits<int64_t>::max();
+    stringstream ss;
     ss << max + 1;
-    std::ostringstream oss;
+    ostringstream oss;
     scanner.switch_streams(ss, oss);
     yy::Driver drv;
     EXPECT_THROW(
@@ -101,7 +103,7 @@ TEST(ScannerTest, IntOverflow) {
             try {
                 scanner.scan(drv);
             } catch (const yy::Parser::syntax_error &e) {
-                EXPECT_EQ(e.what(), "int is out of range: " + std::to_string(max + 1));
+                EXPECT_EQ(e.what(), "int is out of range: " + to_string(max + 1));
                 throw; // Re-throw exception
             }
         },
@@ -112,17 +114,17 @@ TEST(ScannerTest, IntOverflow) {
 }
 
 TEST(ScannerTest, Float) {
-    yy::Scanner       scanner;
-    double            max = std::numeric_limits<double>::max();
-    double            min = std::numeric_limits<double>::min();
-    std::stringstream iss;
-    double            expected[] = {FLOAT_SCAN_SAMPLES, max, min};   // Insert the data as floats
-    auto              samples = {MAP_LIST(STR, FLOAT_SCAN_SAMPLES)}; // Convert the data to strings
+    yy::Scanner  scanner;
+    double       max = numeric_limits<double>::max();
+    double       min = numeric_limits<double>::min();
+    stringstream iss;
+    double       expected[] = {FLOAT_SCAN_SAMPLES, max, min};      // Insert the data as floats
+    auto         samples    = {MAP_LIST(STR, FLOAT_SCAN_SAMPLES)}; // Convert the data to strings
     for (const auto &s : samples) {
         iss << s << " ";
     }
-    iss << std::setprecision(20) << max << " " << min;
-    std::ostringstream oss;
+    iss << setprecision(20) << max << " " << min;
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     for (const auto &expect : expected) {
@@ -132,10 +134,10 @@ TEST(ScannerTest, Float) {
 }
 
 TEST(ScannerTest, NaN) {
-    yy::Scanner        scanner;
-    int                exampleCount = 8;
-    std::istringstream iss(R"(nan Nan nAn NAn naN NaN nAN NAN)");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    int           exampleCount = 8;
+    istringstream iss(R"(nan Nan nAn NAn naN NaN nAN NAN)");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     for (int i = 0; i < exampleCount; i++) {
@@ -144,16 +146,16 @@ TEST(ScannerTest, NaN) {
             << "expected a \"" << yy::Parser::symbol_name(yy::Parser::symbol_kind_type::S_FLOAT)
             << "\" but got a \"" << tok.name() << "\"";
         auto got = tok.value.as<double>();
-        EXPECT_TRUE(std::isnan(got));
+        EXPECT_TRUE(isnan(got));
     }
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, Infinity) {
-    yy::Scanner        scanner;
-    int                exampleCount = 8;
-    std::istringstream iss(R"(inf Inf iNf INf inF InF iNF INF)");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    int           exampleCount = 8;
+    istringstream iss(R"(inf Inf iNf INf inF InF iNF INF)");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     for (int i = 0; i < exampleCount; i++) {
@@ -162,17 +164,17 @@ TEST(ScannerTest, Infinity) {
             << "expected a \"" << yy::Parser::symbol_name(yy::Parser::symbol_kind_type::S_FLOAT)
             << "\" but got a \"" << tok.name() << "\"";
         auto got = tok.value.as<double>();
-        EXPECT_TRUE(std::isinf(got));
+        EXPECT_TRUE(isinf(got));
     }
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, Comment) {
-    yy::Scanner        scanner;
-    std::istringstream iss("// Comments should be ignored up to the line break\n"
-                           "123 // Everything before a comment should be matched\n"
-                           "// Comments at end of source should be ignored too");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("// Comments should be ignored up to the line break\n"
+                      "123 // Everything before a comment should be matched\n"
+                      "// Comments at end of source should be ignored too");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_VALUE_TOK(scanner, drv, int64_t, INT, 123);
@@ -180,10 +182,10 @@ TEST(ScannerTest, Comment) {
 }
 
 TEST(ScannerTest, BlockComment) {
-    yy::Scanner        scanner;
-    std::istringstream iss(R"(/* Block comments can span
+    yy::Scanner   scanner;
+    istringstream iss(R"(/* Block comments can span
                                  multiple lines. */)");
-    std::ostringstream oss;
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     auto       tok = scanner.scan(drv);
@@ -192,11 +194,11 @@ TEST(ScannerTest, BlockComment) {
 }
 
 TEST(ScannerTest, BlockCommentsMustClose) {
-    yy::Scanner        scanner;
-    std::istringstream iss(R"(/* Block comments must be closed.
+    yy::Scanner   scanner;
+    istringstream iss(R"(/* Block comments must be closed.
                                  If the file ends inside a block comment,
                                  it is an error.)");
-    std::ostringstream oss;
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_THROW(
@@ -213,9 +215,9 @@ TEST(ScannerTest, BlockCommentsMustClose) {
 }
 
 TEST(ScannerTest, BlockCommentMustEndLine) {
-    yy::Scanner        scanner;
-    std::istringstream iss(R"(/* Block comments must be followed by line breaks */ foo)");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss(R"(/* Block comments must be followed by line breaks */ foo)");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_THROW(
@@ -232,62 +234,62 @@ TEST(ScannerTest, BlockCommentMustEndLine) {
 }
 
 TEST(ScannerTest, IndependentBlockCommentsDontOutputNewlines) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo\n/* block comment on its own line */\n");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo\n/* block comment on its own line */\n");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, BlockCommentOwnLine) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo\n/* block comment on its own line */\n");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo\n/* block comment on its own line */\n");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, BlockCommentOwnLineEOF) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo\n/* block comment on its own line */");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo\n/* block comment on its own line */");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, BlockCommentSameLine) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo /* block comment on same line */\n");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo /* block comment on same line */\n");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, BlockCommentSameLineEOF) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo /* block comment on same line */");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo /* block comment on same line */");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, NestedBlockComment) {
-    yy::Scanner        scanner;
-    std::istringstream iss(R"(/* Block comments can be
+    yy::Scanner   scanner;
+    istringstream iss(R"(/* Block comments can be
                               /* nested */ but every
                                  comment opening /* needs to be matched
                                  by an equivalent closing */ */)");
-    std::ostringstream oss;
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     auto       tok = scanner.scan(drv);
@@ -296,12 +298,12 @@ TEST(ScannerTest, NestedBlockComment) {
 }
 
 TEST(ScannerTest, NestedBlockCommentsMustClose) {
-    yy::Scanner        scanner;
-    std::istringstream iss(R"(/* Nested Block comments must also be closed.
+    yy::Scanner   scanner;
+    istringstream iss(R"(/* Nested Block comments must also be closed.
                               /* Even if the inner block is closed, */
                                  failing to close the outer block by the end of
                                  the file is an error.)");
-    std::ostringstream oss;
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_THROW(
@@ -318,9 +320,9 @@ TEST(ScannerTest, NestedBlockCommentsMustClose) {
 }
 
 TEST(ScannerTest, MisplacedBlockCommentClose) {
-    yy::Scanner        scanner;
-    std::istringstream iss(R"(  */  )");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss(R"(  */  )");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_THROW(
@@ -337,9 +339,9 @@ TEST(ScannerTest, MisplacedBlockCommentClose) {
 }
 
 TEST(ScannerTest, NoLeadingUnderscoresInIdent) {
-    yy::Scanner        scanner;
-    std::istringstream iss("_NoLeadingUnderscores");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("_NoLeadingUnderscores");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     auto       tok = scanner.scan(drv);
@@ -348,87 +350,87 @@ TEST(ScannerTest, NoLeadingUnderscoresInIdent) {
 }
 
 TEST(ScannerTest, EmptyStringLiteral) {
-    yy::Scanner        scanner;
-    std::istringstream iss(R"("")");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss(R"("")");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, STRING, "");
+    EXPECT_VALUE_TOK(scanner, drv, string, STRING, "");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, StringLiteral) {
-    yy::Scanner        scanner;
-    std::istringstream iss(R"("foo bar")");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss(R"("foo bar")");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, STRING, "foo bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, STRING, "foo bar");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, StringLiteralWithEscapedQuote) {
-    yy::Scanner        scanner;
-    std::istringstream iss(R"("foo\"bar")");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss(R"("foo\"bar")");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, STRING, R"(foo\"bar)");
+    EXPECT_VALUE_TOK(scanner, drv, string, STRING, R"(foo\"bar)");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, EscapedNewline) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo\\\nbar");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo\\\nbar");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, EscapedNewlineWithTrailingWhitespace) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo\\ \nbar");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo\\ \nbar");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, NewlineInParensLeadingWitespace) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo(\n  bar\n)");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo(\n  bar\n)");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_TOK(scanner, drv, LPAREN);
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
     EXPECT_TOK(scanner, drv, RPAREN);
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, NewlineInParens) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo(\nbar\n)");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo(\nbar\n)");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_TOK(scanner, drv, LPAREN);
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
     EXPECT_TOK(scanner, drv, RPAREN);
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, MixedTabWithSpaces) {
-    yy::Scanner        scanner;
-    std::istringstream iss("    \tfoo");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("    \tfoo");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_THROW(
@@ -445,9 +447,9 @@ TEST(ScannerTest, MixedTabWithSpaces) {
 }
 
 TEST(ScannerTest, MixedSpaceWithTabs) {
-    yy::Scanner        scanner;
-    std::istringstream iss("\t foo");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("\t foo");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_THROW(
@@ -464,18 +466,18 @@ TEST(ScannerTest, MixedSpaceWithTabs) {
 }
 
 TEST(ScannerTest, InconsistentTabs) {
-    yy::Scanner        scanner;
-    std::istringstream iss("    foo\n\tbar");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("    foo\n\tbar");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_THROW(
         {
             try {
                 EXPECT_TOK(scanner, drv, INDENT);
-                EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+                EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
                 EXPECT_TOK(scanner, drv, NEWLINE);
-                EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+                EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
             } catch (const yy::Parser::syntax_error &e) {
                 EXPECT_STREQ(e.what(), "inconsistent use of tabs and spaces in indentation");
                 throw; // Re-throw exception
@@ -486,18 +488,18 @@ TEST(ScannerTest, InconsistentTabs) {
 }
 
 TEST(ScannerTest, InconsistentSpaces) {
-    yy::Scanner        scanner;
-    std::istringstream iss("\tfoo\n    bar");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("\tfoo\n    bar");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_THROW(
         {
             try {
                 EXPECT_TOK(scanner, drv, INDENT);
-                EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+                EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
                 EXPECT_TOK(scanner, drv, NEWLINE);
-                EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+                EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
             } catch (const yy::Parser::syntax_error &e) {
                 EXPECT_STREQ(e.what(), "inconsistent use of tabs and spaces in indentation");
                 throw; // Re-throw exception
@@ -508,123 +510,123 @@ TEST(ScannerTest, InconsistentSpaces) {
 }
 
 TEST(ScanerTest, EOFLineBreak) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo\n");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo\n");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScanerTest, EOFNoLineBreak) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScanerTest, EOFLineBreakTrailingWhitespace) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo\n    ");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo\n    ");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScanerTest, EOFNoLineBreakTrailingWhitespace) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo    ");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo    ");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, TrailingSemicolon) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo;\nbar");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo;\nbar");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_TOK(scanner, drv, NEWLINE);
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, TrailingSemicolonWhitespace) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo;    \nbar");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo;    \nbar");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_TOK(scanner, drv, NEWLINE);
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, TrailingSemicolons) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo;;\nbar");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo;;\nbar");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_TOK(scanner, drv, NEWLINE);
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, SemicolonSeparator) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo;bar");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo;bar");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_TOK(scanner, drv, SEMICOLON);
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, SemicolonSeparatorWhitespace) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo;   bar");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo;   bar");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_TOK(scanner, drv, SEMICOLON);
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, SemicolonsSeparator) {
-    yy::Scanner        scanner;
-    std::istringstream iss("foo;;bar");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("foo;;bar");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "foo");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "foo");
     EXPECT_TOK(scanner, drv, SEMICOLON);
-    EXPECT_VALUE_TOK(scanner, drv, std::string, IDENT, "bar");
+    EXPECT_VALUE_TOK(scanner, drv, string, IDENT, "bar");
     EXPECT_EOF(scanner, drv);
 }
 
 TEST(ScannerTest, InvalidEscapeCharacters) {
-    yy::Scanner        scanner;
-    std::string        chars = "abfv";
-    std::string        input = "\a\b\f\v";
-    std::istringstream iss(input);
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    string        chars = "abfv";
+    string        input = "\a\b\f\v";
+    istringstream iss(input);
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     for (char c : chars) {
@@ -633,7 +635,7 @@ TEST(ScannerTest, InvalidEscapeCharacters) {
                 try {
                     scanner.scan(drv);
                 } catch (const yy::Parser::syntax_error &e) {
-                    std::string msg = "invalid character: '\\";
+                    string msg = "invalid character: '\\";
                     msg += c;
                     msg += "'";
                     EXPECT_EQ(e.what(), msg);
@@ -646,9 +648,9 @@ TEST(ScannerTest, InvalidEscapeCharacters) {
 }
 
 TEST(ScannerTest, HexEscapeCharacters) {
-    yy::Scanner        scanner;
-    std::istringstream iss("\x1B");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss("\x1B");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_THROW(
@@ -665,9 +667,9 @@ TEST(ScannerTest, HexEscapeCharacters) {
 }
 
 TEST(ScannerTest, SingleCloseParen) {
-    yy::Scanner        scanner;
-    std::istringstream iss(")");
-    std::ostringstream oss;
+    yy::Scanner   scanner;
+    istringstream iss(")");
+    ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
     EXPECT_TOK(scanner, drv, RPAREN);
