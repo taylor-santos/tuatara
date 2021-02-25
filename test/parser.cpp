@@ -788,7 +788,7 @@ TEST(ParserTest, SyntaxError) {
     EXPECT_NE(drv.parse(iss, oss), 0) << "Expected Bison to return an error code";
     EXPECT_EQ(
         oss.str(),
-        "* 2:1 - 2:1: syntax error: unexpected line break\n"
+        "  <2:1>: syntax error: unexpected line break\n"
         "expected: \"->\", \":\", \"(\", \"=\", \"|\", \"?\", \"<\", \">\", \"identifier\", or "
         "\"operator\"\n")
         << "Expected Bison to output a syntax error message";

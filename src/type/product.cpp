@@ -56,24 +56,24 @@ Product::pretty(ostream &out, bool mod) const {
 }
 
 bool
-Product::isSubtype(const Type &other) const {
-    return other.isSupertype(*this);
+Product::isSubtype(const Type &other, Context &ctx) const {
+    return other.isSupertype(*this, ctx);
 }
 
 bool
-Product::isSupertype(const Type &other) const {
-    return other.isSubtype(*this);
+Product::isSupertype(const Type &other, Context &ctx) const {
+    return other.isSubtype(*this, ctx);
 }
 
 bool
-Product::isSupertype(const Product &other) const {
+Product::isSupertype(const class Product &other, Context &ctx) const {
     // Find the first tuple element that isn't a subtype, or the end if they all match.
     auto firstDiff = mismatch(
         types_.begin(),
         types_.end(),
         other.types_.begin(),
         other.types_.end(),
-        [](const auto &a, const auto &b) { return b.get().isSubtype(a.get()); });
+        [&](const auto &a, const auto &b) { return b.get().isSubtype(a.get(), ctx); });
     return firstDiff.first == types_.end();
 }
 

@@ -38,43 +38,48 @@ Type::callAsFunc(Context &, AST::Expression &) {
 }
 
 bool
-Type::isSupertype(const class Array &) const {
+Type::isSupertype(const class Array &, Context &) const {
     return false;
 }
 
 bool
-Type::isSupertype(const class Class &) const {
+Type::isSupertype(const class Class &, Context &) const {
     return false;
 }
 
 bool
-Type::isSupertype(const class Func &) const {
+Type::isSupertype(const class Func &, Context &) const {
     return false;
 }
 
 bool
-Type::isSupertype(const class Maybe &) const {
+Type::isSupertype(const class Maybe &, Context &) const {
     return false;
 }
 
 bool
-Type::isSupertype(const class Object &) const {
+Type::isSupertype(const class Object &, Context &) const {
     return false;
 }
 
 bool
-Type::isSupertype(const class Product &) const {
+Type::isSupertype(const class Product &, Context &) const {
     return false;
 }
 
 bool
-Type::isSupertype(const class Sum &) const {
+Type::isSupertype(const class Sum &, Context &) const {
     return false;
 }
 
 bool
-Type::isSupertype(const class Unit &) const {
+Type::isSupertype(const class Unit &, Context &) const {
     return false;
+}
+
+void
+Type::setVerifyState(Type::VerifyState verifyState) {
+    verifyState_ = verifyState;
 }
 
 } // namespace TypeChecker

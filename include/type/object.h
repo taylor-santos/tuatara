@@ -19,12 +19,12 @@ public: // Methods
     ~Object() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
-    bool                             isSubtype(const Type &other) const override;
-    bool                             isSupertype(const Type &other) const override;
+    bool                             isSubtype(const Type &other, Context &ctx) const override;
+    bool                             isSupertype(const Type &other, Context &ctx) const override;
     [[nodiscard]] const Class &      getClass() const;
 
 protected: // Methods
-    bool isSupertype(const Object &other) const override;
+    bool isSupertype(const class Object &other, Context &ctx) const override;
 
 private: // Fields
     std::string                                  className_;

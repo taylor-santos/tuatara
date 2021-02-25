@@ -1,6 +1,8 @@
 #ifndef TYPE_SUM_H
 #define TYPE_SUM_H
 
+#include <vector>
+
 #include "type/type.h"
 
 namespace yy {
@@ -18,8 +20,8 @@ public: // Fields
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
-    bool                             isSubtype(const Type &other) const override;
-    bool                             isSupertype(const Type &other) const override;
+    bool                             isSubtype(const Type &other, Context &ctx) const override;
+    bool                             isSupertype(const Type &other, Context &ctx) const override;
 
 private: // Fields
     std::vector<std::unique_ptr<Type>> types_;

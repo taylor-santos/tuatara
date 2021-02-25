@@ -2,6 +2,7 @@
 #define PATTERN_TUPLE_H
 
 #include <optional>
+#include <vector>
 
 #include "pattern/pattern.h"
 

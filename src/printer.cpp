@@ -18,12 +18,11 @@ error(ostream &out, const string &msg, const yy::location &location, const vecto
         return;
     }
     size_t numWidth = to_string(location.end.line).length();
-    out << "*" << string(numWidth, ' ');
+    out << string(numWidth + 1, ' ') << "<";
     if (location.begin.filename) {
         out << *location.begin.filename << ":";
     }
-    out << location.begin.line << ":" << location.begin.column << " - " << location.end.line << ":"
-        << location.end.column << ": " << msg << endl;
+    out << location.begin.line << ":" << location.begin.column << ">: " << msg << endl;
     // If the last line ends before the first character, skip it.
     auto endLine = location.end.column > 1 ? location.end.line : location.end.line - 1;
     for (auto i = location.begin.line; i <= endLine; i++) {

@@ -57,14 +57,14 @@ Sum::pretty(ostream &out, bool mod) const {
 }
 
 bool
-Sum::isSubtype(const Type &other) const {
-    return other.isSupertype(*this);
+Sum::isSubtype(const Type &other, Context &ctx) const {
+    return other.isSupertype(*this, ctx);
 }
 
 bool
-Sum::isSupertype(const Type &other) const {
+Sum::isSupertype(const Type &other, Context &ctx) const {
     return any_of(types_.begin(), types_.end(), [&](const auto &type) {
-        return other.isSubtype(*type);
+        return other.isSubtype(*type, ctx);
     });
 }
 

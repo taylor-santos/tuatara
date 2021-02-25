@@ -1,6 +1,8 @@
 #ifndef TYPE_PRODUCT_H
 #define TYPE_PRODUCT_H
 
+#include <vector>
+
 #include "type/type.h"
 
 namespace yy {
@@ -18,11 +20,11 @@ public: // Methods
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
-    bool                             isSubtype(const Type &other) const override;
-    bool                             isSupertype(const Type &other) const override;
+    bool                             isSubtype(const Type &other, Context &ctx) const override;
+    bool                             isSupertype(const Type &other, Context &ctx) const override;
 
 protected: // Methods
-    bool isSupertype(const Product &other) const override;
+    bool isSupertype(const class Product &other, Context &ctx) const override;
 
 private: // Fields
     std::vector<std::reference_wrapper<Type>> types_;

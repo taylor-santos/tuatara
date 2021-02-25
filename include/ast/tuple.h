@@ -1,6 +1,8 @@
 #ifndef AST_TUPLE_H
 #define AST_TUPLE_H
 
+#include <vector>
+
 #include "ast/lvalue.h"
 
 namespace TypeChecker {

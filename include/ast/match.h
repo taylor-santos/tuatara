@@ -1,6 +1,8 @@
 #ifndef AST_MATCH_H
 #define AST_MATCH_H
 
+#include <vector>
+
 #include "ast/expression.h"
 
 namespace TypeChecker {

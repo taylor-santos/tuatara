@@ -2,6 +2,7 @@
 #define AST_FUNC_DECLARATION_H
 
 #include <optional>
+#include <vector>
 
 #include "ast/declaration.h"
 

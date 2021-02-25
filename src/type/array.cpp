@@ -47,18 +47,18 @@ Array::pretty(ostream &out, bool) const {
 }
 
 bool
-Array::isSubtype(const Type &other) const {
-    return other.isSupertype(*this);
+Array::isSubtype(const Type &other, Context &ctx) const {
+    return other.isSupertype(*this, ctx);
 }
 
 bool
-Array::isSupertype(const Type &other) const {
-    return other.isSubtype(*this);
+Array::isSupertype(const Type &other, Context &ctx) const {
+    return other.isSubtype(*this, ctx);
 }
 
 bool
-Array::isSupertype(const Array &other) const {
-    return other.type_->isSubtype(*type_);
+Array::isSupertype(const class Array &other, Context &ctx) const {
+    return other.type_->isSubtype(*type_, ctx);
 }
 
 } // namespace TypeChecker

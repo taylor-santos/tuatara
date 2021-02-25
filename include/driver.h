@@ -4,6 +4,7 @@
 #include <functional>
 #include <queue>
 #include <stack>
+#include <vector>
 
 #include "parser.tab.hh"
 

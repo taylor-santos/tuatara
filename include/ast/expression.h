@@ -20,7 +20,6 @@ public: // Methods
 
 protected: // Methods
     explicit Expression(const yy::location &loc);
-    Expression() = default;
 
     virtual TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) = 0;
 

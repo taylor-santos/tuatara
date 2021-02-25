@@ -36,12 +36,12 @@ Unit::pretty(ostream &out, bool) const {
 }
 
 bool
-Unit::isSubtype(const Type &other) const {
-    return other.isSupertype(*this);
+Unit::isSubtype(const Type &other, Context &ctx) const {
+    return other.isSupertype(*this, ctx);
 }
 
 bool
-Unit::isSupertype(const Type &) const {
+Unit::isSupertype(const Type &, Context &) const {
     return true;
 }
 

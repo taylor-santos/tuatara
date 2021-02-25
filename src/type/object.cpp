@@ -32,21 +32,11 @@ Object::getNodeName() const {
 
 void
 Object::verifyImpl(Context &ctx) {
-    auto symbol = ctx.getSymbol(className_);
+    auto symbol = ctx.getClass(className_);
     if (!symbol) {
         throw TypeException({"error: unknown class name \"" + className_ + "\"", getLoc()});
     }
-    auto cl = dynamic_cast<TypeChecker::Class *>(&symbol->type);
-    if (!cl) {
-        stringstream ss;
-        ss << "note: \"" << className_ << "\" previously defined as \"";
-        symbol->type.pretty(ss);
-        ss << "\"";
-        throw TypeException(
-            {{"error: type name \"" + className_ + "\" does not name a class.", getLoc()},
-             {ss.str(), symbol->type.getLoc()}});
-    }
-    ofClass_ = *cl;
+    ofClass_ = *symbol;
 }
 
 void
@@ -55,18 +45,18 @@ Object::pretty(ostream &out, bool) const {
 }
 
 bool
-Object::isSubtype(const Type &other) const {
-    return other.isSupertype(*this);
+Object::isSubtype(const Type &other, Context &ctx) const {
+    return other.isSupertype(*this, ctx);
 }
 
 bool
-Object::isSupertype(const Type &other) const {
-    return other.isSubtype(*this);
+Object::isSupertype(const Type &other, Context &ctx) const {
+    return other.isSubtype(*this, ctx);
 }
 
 bool
-Object::isSupertype(const Object &other) const {
-    return other.ofClass_->get().isSubtype(ofClass_->get());
+Object::isSupertype(const class Object &other, Context &ctx) const {
+    return other.ofClass_->get().isSubtype(ofClass_->get(), ctx);
 }
 
 const Class &

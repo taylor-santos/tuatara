@@ -1,6 +1,8 @@
 #ifndef TYPE_CLASS_H
 #define TYPE_CLASS_H
 
+#include <unordered_map>
+
 #include "type/type.h"
 
 namespace yy {
@@ -16,22 +18,30 @@ public: // Methods
     ~Class() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
-    bool                             isSubtype(const Type &other) const override;
-    bool                             isSupertype(const Type &other) const override;
+    bool                             isSubtype(const Type &other, Context &ctx) const override;
+    bool                             isSupertype(const Type &other, Context &ctx) const override;
     Type *                           getField(const std::string &name) const;
     [[nodiscard]] bool               addField(const std::string &name, std::unique_ptr<Type> type);
     const std::string &              getClassName() const;
+    void                             addSubType(Class *cl);
+    void                             addSuperType(Class *cl);
+
+    static std::unordered_map<std::string, std::unique_ptr<Class>> generateBuiltins();
 
 protected: // Methods
-    bool isSupertype(const Class &other) const override;
+    bool isSupertype(const class Class &other, Context &ctx) const override;
 
 private: // Fields
     std::string                                            name_;
     std::unordered_map<std::string, std::unique_ptr<Type>> fields_;
+    enum class ClassRelation { SUBTYPE, SUPERTYPE };
+    std::unordered_map<const Class *, ClassRelation> classRltns_;
 
 private: // Methods
     void json(std::ostream &os) const override;
     void verifyImpl(Context &ctx) override;
+    void addSubTypeImpl(Class *cl);
+    void addSuperTypeImpl(Class *cl);
 };
 
 } // namespace TypeChecker

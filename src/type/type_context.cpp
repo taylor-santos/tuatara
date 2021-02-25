@@ -11,84 +11,13 @@ using std::make_unique, std::nullopt, std::optional, std::string, std::unique_pt
 
 namespace TypeChecker {
 
-static unique_ptr<Class>
-makeClass(const string &name) {
-    yy::location loc{nullptr, 0, 0};
-    auto         cl = make_unique<Class>(loc, name);
-    for (const auto &op : {"+"}) {
-        auto fn =
-            make_unique<Func>(loc, make_unique<Object>(loc, name), make_unique<Object>(loc, name));
-        (void)cl->addField(op, move(fn));
-    }
-    return cl;
-}
+static unordered_map<string, unique_ptr<Class>> BUILTINS = Class::generateBuiltins();
 
-static unordered_map<string, unique_ptr<Type>>
-generateBuiltins() noexcept {
-    static auto numerics = {"int", "float"};
-    static auto logics   = {"bool"};
-    static auto others   = {"string"};
-
-    /*
-    static auto prefixes  = {"-", "++", "--"};
-    static auto postfixes = {
-        "-",
-        "++",
-        "-- ",
-    };
-     */
-    static auto infixes = {
-        "+",
-        "-",
-        "*",
-        "/",
-        "+=",
-        "-=",
-        "*=",
-        "/=",
-        "=",
-        "+",
-    };
-
-    static yy::location                     loc{nullptr, 0, 0};
-    unordered_map<string, unique_ptr<Type>> builtins;
-    for (const auto &name : numerics) {
-        auto  clptr = makeClass(name);
-        auto &cl    = *clptr;
-        builtins.emplace(name, move(clptr));
-        /*
-        for (const auto &op : prefixes) {
-            builtins.emplace(
-                op,
-                make_unique<Func>(
-                    loc,
-                    make_unique<Object>(loc, name),
-                    make_unique<Object>(loc, name)));
-        }
-         */
-        for (const auto &op : infixes) {
-            (void)cl.addField(
-                op,
-                make_unique<Func>(
-                    loc,
-                    make_unique<Object>(loc, name),
-                    make_unique<Object>(loc, name)));
-        }
-    }
-    for (const auto &name : logics) {
-        builtins.emplace(name, makeClass(name));
-    }
-    for (const auto &name : others) {
-        builtins.emplace(name, makeClass(name));
-    }
-    return builtins;
-}
-
-static unordered_map<string, unique_ptr<Type>> BUILTINS = generateBuiltins();
+Context::~Context() = default;
 
 Context::Context() {
     for (const auto &[name, type] : BUILTINS) {
-        symbols_.emplace(name, Symbol{name, *type, true});
+        addClass(name, *type);
     }
     for (const auto &[_, symbol] : symbols_) {
         symbol.type.verify(*this);
@@ -116,6 +45,25 @@ Context::getFuncSignature() const {
 void
 Context::setFuncSignature(Func *funcSignature) {
     funcSignature_ = funcSignature;
+}
+
+void
+Context::addClass(const std::string &name, Class &cl) {
+    classes_.emplace(name, cl);
+}
+
+Class *
+Context::getClass(const string &name) const {
+    auto it = classes_.find(name);
+    if (it == classes_.end()) {
+        return nullptr;
+    }
+    return &it->second.get();
+}
+
+const std::unordered_map<std::string, std::reference_wrapper<Class>> &
+Context::getClasses() const {
+    return classes_;
 }
 
 } // namespace TypeChecker

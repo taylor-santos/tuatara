@@ -1,6 +1,8 @@
 #ifndef INCLUDE_AST_BLOCK_H
 #define INCLUDE_AST_BLOCK_H
 
+#include <vector>
+
 #include "ast/expression.h"
 
 namespace TypeChecker {

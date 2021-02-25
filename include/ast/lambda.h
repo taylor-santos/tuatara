@@ -2,6 +2,7 @@
 #define AST_LAMBDA_H
 
 #include <optional>
+#include <vector>
 
 #include "ast/expression.h"
 

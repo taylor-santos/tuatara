@@ -1,6 +1,8 @@
 #ifndef AST_FUNC_IMPL_H
 #define AST_FUNC_IMPL_H
 
+#include <vector>
+
 #include "ast/func_declaration.h"
 
 namespace Pattern {

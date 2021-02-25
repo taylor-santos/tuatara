@@ -13,7 +13,6 @@ namespace AST {
 class Declaration : public Expression {
 protected: // Methods
     Declaration(const yy::location &loc, const yy::location &varLoc, std::string variable);
-    Declaration() = default;
     ~Declaration() override;
     [[nodiscard]] const std::string &getVariable() const;
     /// Add a type to the symbol table if the variable name is new, or update it if not.
