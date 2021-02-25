@@ -5,7 +5,7 @@
 
 #include "location.hh"
 
-using namespace std;
+using std::endl, std::ostream, std::right, std::setw, std::string, std::to_string, std::vector;
 
 namespace Print {
 
@@ -18,7 +18,7 @@ error(ostream &out, const string &msg, const yy::location &location, const vecto
         return;
     }
     size_t numWidth = to_string(location.end.line).length();
-    out << "*" << std::string(numWidth, ' ');
+    out << "*" << string(numWidth, ' ');
     if (location.begin.filename) {
         out << *location.begin.filename << ":";
     }
@@ -33,7 +33,7 @@ error(ostream &out, const string &msg, const yy::location &location, const vecto
         if (first == string::npos) {
             continue;
         }
-        out << right << std::setw(numWidth) << i << " | ";
+        out << right << setw(numWidth) << i << " | ";
         out << line << endl;
         out << string(numWidth, ' ') << " | ";
         auto firstCol = i == location.begin.line ? location.begin.column - 1 : first;
@@ -50,14 +50,11 @@ error(ostream &out, const string &msg, const yy::location &location, const vecto
     }
 }
 
-std::string
+string
 pretty(string str) {
-    std::replace(str.begin(), str.end(), '\t', ' ');
+    replace(str.begin(), str.end(), '\t', ' ');
     str.erase(
-        std::remove_if(
-            str.begin(),
-            str.end(),
-            [](unsigned char c) { return c == '\n' || c == '\r'; }),
+        remove_if(str.begin(), str.end(), [](unsigned char c) { return c == '\n' || c == '\r'; }),
         str.end());
     return str;
 }

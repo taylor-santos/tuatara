@@ -6,7 +6,7 @@
 #include "type/type_context.h"
 #include "type/type_exception.h"
 
-using namespace std;
+using std::pair, std::string, std::stringstream, std::vector;
 
 namespace AST {
 
@@ -14,6 +14,8 @@ Declaration::Declaration(const yy::location &loc, const yy::location &varLoc, st
     : Expression(loc)
     , varLoc_{varLoc}
     , variable_{move(variable)} {}
+
+Declaration::~Declaration() = default;
 
 const string &
 Declaration::getVariable() const {

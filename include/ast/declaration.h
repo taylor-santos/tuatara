@@ -6,17 +6,15 @@
 namespace TypeChecker {
 class Context;
 class Type;
-}  // namespace TypeChecker
+} // namespace TypeChecker
 
 namespace AST {
 
 class Declaration : public Expression {
-public: // Aliases
-    using Ptr = std::unique_ptr<Declaration>;
-    using Vec = std::vector<Ptr>;
-
 protected: // Methods
     Declaration(const yy::location &loc, const yy::location &varLoc, std::string variable);
+    Declaration() = default;
+    ~Declaration() override;
     [[nodiscard]] const std::string &getVariable() const;
     /// Add a type to the symbol table if the variable name is new, or update it if not.
     /// Throws a TypeException if the new type is incompatible with an existing type.

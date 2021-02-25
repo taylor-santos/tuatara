@@ -12,21 +12,17 @@ class location;
 } // namespace yy
 
 namespace AST {
-class Node;
 
 // Virtually inherit from Declaration so TypeValueDeclaration can
 // inherit from both ValueDeclaration and TypeDeclaration.
 class ValueDeclaration : virtual public Declaration {
-public: // Aliases
-    using Ptr = std::unique_ptr<ValueDeclaration>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     ValueDeclaration(
-        const yy::location &loc,
-        const yy::location &varLoc,
-        std::string         variable,
-        Expression::Ptr     value);
+        const yy::location &        loc,
+        const yy::location &        varLoc,
+        std::string                 variable,
+        std::unique_ptr<Expression> value);
+    ~ValueDeclaration() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
@@ -35,7 +31,7 @@ protected: // Methods
     TypeChecker::Type &             getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
-    Expression::Ptr value_;
+    std::unique_ptr<Expression> value_;
 
 private: // Methods
     void json(std::ostream &os) const override;

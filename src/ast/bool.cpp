@@ -1,5 +1,7 @@
 #include "ast/bool.h"
 
+#include "type/object.h"
+
 #include "json.h"
 
 namespace TypeChecker {
@@ -9,13 +11,15 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::ostream, std::string, std::vector;
 
 namespace AST {
 
 Bool::Bool(const yy::location &loc, bool value)
     : Literal(loc, "bool")
     , value_{value} {}
+
+Bool::~Bool() = default;
 
 void
 Bool::json(ostream &os) const {

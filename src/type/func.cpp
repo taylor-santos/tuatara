@@ -8,14 +8,17 @@
 
 #include "json.h"
 
-using namespace std;
+using std::function, std::ostream, std::pair, std::string, std::stringstream, std::unique_ptr,
+    std::vector;
 
 namespace TypeChecker {
 
-Func::Func(yy::location loc, Type::Ptr argType, Type::Ptr retType)
+Func::Func(yy::location loc, unique_ptr<Type> argType, unique_ptr<Type> retType)
     : Type(loc)
     , argType_{move(argType)}
     , retType_{move(retType)} {}
+
+Func::~Func() = default;
 
 void
 Func::json(ostream &os) const {
@@ -26,7 +29,7 @@ Func::json(ostream &os) const {
 }
 
 void
-Func::walk(const std::function<void(const Node &)> &fn) const {
+Func::walk(const function<void(const Node &)> &fn) const {
     Type::walk(fn);
     argType_->walk(fn);
     retType_->walk(fn);

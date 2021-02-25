@@ -1,5 +1,7 @@
 #include "ast/call.h"
 
+#include "type/type.h"
+
 #include "json.h"
 
 namespace TypeChecker {
@@ -9,14 +11,16 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::ostream, std::unique_ptr, std::string;
 
 namespace AST {
 
-Call::Call(const yy::location &loc, Expression::Ptr func, Expression::Ptr arg)
+Call::Call(const yy::location &loc, unique_ptr<Expression> func, unique_ptr<Expression> arg)
     : LValue(loc)
     , func_{move(func)}
     , arg_{move(arg)} {}
+
+Call::~Call() = default;
 
 void
 Call::json(ostream &os) const {

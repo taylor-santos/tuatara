@@ -58,8 +58,10 @@
 #include "type/array.h"
 #include "type/func.h"
 #include "type/maybe.h"
+#include "type/object.h"
 #include "type/product.h"
 #include "type/sum.h"
+#include "type/unit.h"
 
 #define yylex driver.scanner->scan
 #define STRINGIFY_(X) #X
@@ -111,6 +113,8 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
 
 #include "ast/block.h"
 #include "ast/literal.h"
+#include "type/object.h"
+#include "type/type.h"
 #include "pattern/constraint.h"
 
 } // %code requires
@@ -359,12 +363,12 @@ if_expression
 
 ternary
     : "if" expression "then" ident_expression {
-        AST::Expression::Vec stmts;
+        std::vector<std::unique_ptr<AST::Expression>> stmts;
         stmts.emplace_back($4);
         $$ = make_unique<AST::If>(@$, $2, make_unique<AST::Block>(@4, move(stmts)));
     }
     | "if" expression "then" ident_expression "else" ident_expression {
-        AST::Expression::Vec trueStmts, falseStmts;
+        std::vector<std::unique_ptr<AST::Expression>> trueStmts, falseStmts;
         trueStmts.emplace_back($4);
         falseStmts.emplace_back($6);
         $$ = make_unique<AST::IfElse>(

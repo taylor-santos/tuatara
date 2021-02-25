@@ -8,13 +8,15 @@
 
 #include "json.h"
 
-using namespace std;
+using std::ostream, std::string, std::stringstream;
 
 namespace TypeChecker {
 
 Object::Object(yy::location loc, string className)
     : Type(loc)
     , className_{move(className)} {}
+
+Object::~Object() = default;
 
 void
 Object::json(ostream &os) const {

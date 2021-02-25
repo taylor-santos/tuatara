@@ -5,13 +5,12 @@
 
 #include "json.h"
 
+using std::function, std::ostream, std::ref, std::reference_wrapper, std::string, std::unique_ptr,
+    std::vector;
+
 namespace TypeChecker {
+
 class Context;
-} // namespace TypeChecker
-
-using namespace std;
-
-namespace TypeChecker {
 
 Product::Product(yy::location loc, vector<reference_wrapper<Type>> types)
     : Type(loc)
@@ -25,7 +24,7 @@ Product::json(ostream &os) const {
 }
 
 void
-Product::walk(const std::function<void(const Node &)> &fn) const {
+Product::walk(const function<void(const Node &)> &fn) const {
     Type::walk(fn);
     for_each(types_.begin(), types_.end(), [&](const auto &t) { t.get().walk(fn); });
 }
@@ -74,7 +73,7 @@ Product::operator>=(const Product &other) const {
 }
 
 static vector<reference_wrapper<Type>>
-makeTypeWrappers(vector<Type::Ptr> &types) {
+makeTypeWrappers(vector<unique_ptr<Type>> &types) {
     vector<reference_wrapper<Type>> out;
     out.reserve(types.size());
     transform(types.begin(), types.end(), back_inserter(out), [](auto &type) {
@@ -83,8 +82,12 @@ makeTypeWrappers(vector<Type::Ptr> &types) {
     return out;
 }
 
-ManagedProduct::ManagedProduct(yy::location loc, vector<Type::Ptr> types)
+ManagedProduct::ManagedProduct(yy::location loc, vector<unique_ptr<Type>> types)
     : Product(loc, makeTypeWrappers(types))
     , types_{move(types)} {}
+
+ManagedProduct::~ManagedProduct() = default;
+
+Product::~Product() = default;
 
 } // namespace TypeChecker

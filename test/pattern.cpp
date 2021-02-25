@@ -103,9 +103,9 @@ TEST(PatternTest, LiteralNode) {
 }
 
 TEST(PatternTest, TupleNode) {
-    yy::location          loc;
-    auto                  value = make_unique<AST::Int>(loc, 123);
-    Pattern::Pattern::Vec patterns;
+    yy::location                         loc;
+    auto                                 value = make_unique<AST::Int>(loc, 123);
+    vector<unique_ptr<Pattern::Pattern>> patterns;
     patterns.emplace_back(make_unique<Pattern::ValueConstraint>(loc, move(value)));
     patterns.emplace_back(make_unique<Pattern::Wildcard>(loc));
     Pattern::Tuple    node(loc, move(patterns));

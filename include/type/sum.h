@@ -3,24 +3,18 @@
 
 #include "type/type.h"
 
-namespace AST {
-class Node;
-}  // namespace AST
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace TypeChecker {
 class Context;
 
 class Sum final : public Type {
-public: // Aliases
-    using Ptr = std::unique_ptr<Sum>;
-    using Vec = std::vector<Ptr>;
-
 public: // Fields
-    Sum(yy::location loc, Type::Vec types);
-    ~Sum() override = default;
+    Sum(yy::location loc, std::vector<std::unique_ptr<Type>> types);
+    ~Sum() override;
+
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
@@ -30,7 +24,7 @@ protected: // Methods
     bool operator>=(const Type &other) const override;
 
 private: // Fields
-    Type::Vec types_;
+    std::vector<std::unique_ptr<Type>> types_;
 
 private: // Methods
     void json(std::ostream &os) const override;

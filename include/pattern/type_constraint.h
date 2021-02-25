@@ -3,11 +3,9 @@
 
 #include "pattern/constraint.h"
 
-#include "type/type.h"
-
-namespace AST {
-class Node;
-} // namespace AST
+namespace TypeChecker {
+class Type;
+} // namespace TypeChecker
 namespace yy {
 class location;
 } // namespace yy
@@ -15,13 +13,10 @@ class location;
 namespace Pattern {
 
 class TypeConstraint final : public Constraint {
-public: // Aliases
-    using Ptr = std::unique_ptr<TypeConstraint>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     TypeConstraint(const yy::location &loc, std::unique_ptr<TypeChecker::Type> type);
-    ~TypeConstraint() override = default;
+    ~TypeConstraint() override;
+
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
     TypeChecker::Type &              getTypeImpl(TypeChecker::Context &ctx) override;

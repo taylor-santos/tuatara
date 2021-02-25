@@ -12,14 +12,16 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr;
 
 namespace AST {
 
-Index::Index(const yy::location &loc, Expression::Ptr expr, Expression::Ptr index)
+Index::Index(const yy::location &loc, unique_ptr<Expression> expr, unique_ptr<Expression> index)
     : LValue(loc)
     , expr_{move(expr)}
     , index_{move(index)} {}
+
+Index::~Index() = default;
 
 void
 Index::json(ostream &os) const {

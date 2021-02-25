@@ -14,14 +14,16 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr, std::vector;
 
 namespace AST {
 
-Match::Match(const yy::location &loc, Expression::Ptr value, std::vector<Case> cases)
+Match::Match(const yy::location &loc, unique_ptr<Expression> value, vector<Case> cases)
     : Expression(loc)
     , value_{move(value)}
     , cases_{move(cases)} {}
+
+Match::~Match() = default;
 
 void
 Match::json(ostream &os) const {

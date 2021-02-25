@@ -16,13 +16,8 @@ class Pattern;
 } // namespace Pattern
 
 namespace AST {
-class Node;
 
 class FuncDeclaration : public Declaration {
-public: // Aliases
-    using Ptr = std::unique_ptr<FuncDeclaration>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     FuncDeclaration(
         const yy::location &                              loc,

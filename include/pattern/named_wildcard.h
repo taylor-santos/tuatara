@@ -10,13 +10,10 @@ class location;
 namespace Pattern {
 
 class NamedWildcard final : public Wildcard {
-public: // Aliases
-    using Ptr = std::unique_ptr<NamedWildcard>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     NamedWildcard(const yy::location &loc, std::string name);
-    ~NamedWildcard() override = default;
+    ~NamedWildcard() override;
+
     [[nodiscard]] const std::string &getNodeName() const override;
     const std::string *              getName() override;
 

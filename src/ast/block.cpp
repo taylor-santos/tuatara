@@ -14,13 +14,15 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr, std::vector;
 
 namespace AST {
 
-Block::Block(const yy::location &loc, Expression::Vec stmts)
+Block::Block(const yy::location &loc, vector<unique_ptr<Expression>> stmts)
     : Expression(loc)
     , stmts_{move(stmts)} {}
+
+Block::~Block() = default;
 
 void
 Block::json(ostream &os) const {

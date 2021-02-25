@@ -5,21 +5,17 @@
 
 namespace TypeChecker {
 class Context;
-}  // namespace TypeChecker
+} // namespace TypeChecker
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace AST {
 
 class Bool final : public Literal {
-public: // Aliases
-    using Ptr = std::unique_ptr<Bool>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     Bool(const yy::location &loc, bool value);
-    ~Bool() override = default;
+    ~Bool() override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields

@@ -17,14 +17,9 @@ class Context;
 
 namespace AST {
 
-class Node;
 class Block;
 
 class FuncImpl final : public FuncDeclaration {
-public: // Aliases
-    using Ptr = std::unique_ptr<FuncImpl>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     FuncImpl(
         const yy::location &                              loc,
@@ -33,6 +28,7 @@ public: // Methods
         std::vector<std::unique_ptr<Pattern::Pattern>>    args,
         std::unique_ptr<Block>                            body,
         std::optional<std::unique_ptr<TypeChecker::Type>> retType = {});
+    ~FuncImpl() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 

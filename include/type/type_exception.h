@@ -14,6 +14,7 @@ class TypeException final : public std::exception {
 public: // Methods
     TypeException(const std::string &msg, const yy::location &loc);
     explicit TypeException(std::vector<std::pair<std::string, yy::location>> msgs);
+    ~TypeException() override;
     [[nodiscard]] const std::vector<std::pair<std::string, yy::location>> &getMsgs() const;
 
 private: // Fields

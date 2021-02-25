@@ -3,8 +3,9 @@
 
 #include "ast/declaration.h"
 
-#include "type/type.h"
-
+namespace TypeChecker {
+class Type;
+} // namespace TypeChecker
 namespace yy {
 class location;
 } // namespace yy
@@ -14,25 +15,23 @@ class Context;
 }
 
 namespace AST {
-class Node;
 
 // Virtually inherit from Declaration so TypeValueDeclaration can
 // inherit from both ValueDeclaration and TypeDeclaration.
 class TypeDeclaration : virtual public Declaration {
-public: // Aliases
-    using Ptr = std::unique_ptr<TypeDeclaration>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     TypeDeclaration(
         const yy::location &               loc,
         const yy::location &               varLoc,
         std::string                        variable,
         std::unique_ptr<TypeChecker::Type> declType);
+    ~TypeDeclaration() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void walk(const std::function<void(const Node &)> &fn) const override;
 
 protected: // Methods
+    // Constructor for virtual inheritance when Declaration has already been initialized
+    TypeDeclaration(std::unique_ptr<TypeChecker::Type> declType);
     [[nodiscard]] const TypeChecker::Type &getDeclType() const;
     TypeChecker::Type &                    getTypeImpl(TypeChecker::Context &ctx) override;
 

@@ -5,7 +5,6 @@
 #include "pattern/pattern.h"
 
 #include "type/type.h"
-
 #include "type/type_context.h"
 #include "type/type_exception.h"
 
@@ -19,17 +18,17 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace TypeChecker;
-using namespace std;
+using std::function, std::make_unique, std::optional, std::ostream, std::reference_wrapper,
+    std::string, std::unique_ptr, std::vector;
 
 namespace AST {
 
 FuncDeclaration::FuncDeclaration(
-    const yy::location &                 loc,
-    const yy::location &                 varLoc,
-    string                               variable,
-    vector<unique_ptr<Pattern::Pattern>> args,
-    optional<unique_ptr<Type>>           retType)
+    const yy::location &                    loc,
+    const yy::location &                    varLoc,
+    string                                  variable,
+    vector<unique_ptr<Pattern::Pattern>>    args,
+    optional<unique_ptr<TypeChecker::Type>> retType)
     : Declaration(loc, varLoc, move(variable))
     , args_{move(args)}
     , retType_{move(retType)} {}
@@ -73,20 +72,23 @@ FuncDeclaration::getNodeName() const {
 TypeChecker::Context &
 FuncDeclaration::calculateContext(TypeChecker::Context &outerCtx) {
     implCtx_ = make_unique<TypeChecker::Context>(outerCtx);
-    vector<reference_wrapper<Type>> types;
+    vector<reference_wrapper<TypeChecker::Type>> types;
     for (const auto &arg : args_) {
         auto &type = arg->getType(*implCtx_);
         // TODO
+        (void)type;
     }
+    return *implCtx_;
 }
 
-Type &
+TypeChecker::Type &
 FuncDeclaration::getTypeImpl(TypeChecker::Context &ctx) {
-    auto                            newContext = ctx;
-    vector<reference_wrapper<Type>> types;
+    auto                                         newContext = ctx;
+    vector<reference_wrapper<TypeChecker::Type>> types;
     for (const auto &arg : args_) {
         auto &type = arg->getType(newContext);
         // TODO
+        (void)type;
     }
     throw TypeChecker::TypeException(
         "type error: " + getNodeName() + " type checking not implemented",

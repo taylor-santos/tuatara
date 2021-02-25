@@ -14,12 +14,9 @@ class Context;
 namespace Pattern {
 
 class Pattern : public AST::Node {
-public: // Aliases
-    using Ptr = std::unique_ptr<Pattern>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     explicit Pattern(const yy::location &loc);
+    ~Pattern() override;
     TypeChecker::Type &        getType(TypeChecker::Context &ctx);
     virtual const std::string *getName();
 

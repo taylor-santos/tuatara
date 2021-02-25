@@ -6,7 +6,6 @@
 namespace yy {
 class location;
 } // namespace yy
-
 namespace TypeChecker {
 class Type;
 class Context;
@@ -15,15 +14,14 @@ class Context;
 namespace AST {
 
 class Expression : public Node {
-public: // Aliases
-    using Ptr = std::unique_ptr<Expression>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
+    ~Expression() override;
     TypeChecker::Type &getType(TypeChecker::Context &ctx);
 
 protected: // Methods
     explicit Expression(const yy::location &loc);
+    Expression() = default;
+
     virtual TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) = 0;
 
 private: // Fields

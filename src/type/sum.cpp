@@ -4,17 +4,17 @@
 
 #include "json.h"
 
+using std::function, std::ostream, std::string, std::unique_ptr, std::vector;
+
 namespace TypeChecker {
+
 class Context;
-} // namespace TypeChecker
 
-using namespace std;
-
-namespace TypeChecker {
-
-Sum::Sum(yy::location loc, Type::Vec types)
+Sum::Sum(yy::location loc, vector<unique_ptr<Type>> types)
     : Type(loc)
     , types_{move(types)} {}
+
+Sum::~Sum() = default;
 
 void
 Sum::json(ostream &os) const {
@@ -24,7 +24,7 @@ Sum::json(ostream &os) const {
 }
 
 void
-Sum::walk(const std::function<void(const Node &)> &fn) const {
+Sum::walk(const function<void(const Node &)> &fn) const {
     Type::walk(fn);
     for_each(types_.begin(), types_.end(), [&](const auto &t) { t->walk(fn); });
 }
@@ -63,9 +63,7 @@ Sum::operator<=(const Type &other) const {
 
 bool
 Sum::operator>=(const Type &other) const {
-    return std::any_of(types_.begin(), types_.end(), [&](const auto &type) {
-        return other <= (*type);
-    });
+    return any_of(types_.begin(), types_.end(), [&](const auto &type) { return other <= (*type); });
 }
 
 } // namespace TypeChecker

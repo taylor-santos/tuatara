@@ -5,21 +5,18 @@
 
 namespace TypeChecker {
 class Context;
-}  // namespace TypeChecker
+} // namespace TypeChecker
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace AST {
 
 class Int final : public Literal {
-public: // Aliases
-    using Ptr = std::unique_ptr<Int>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     Int(const yy::location &loc, int64_t value);
-    ~Int() override = default;
+    ~Int() override;
+
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields

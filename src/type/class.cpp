@@ -2,16 +2,17 @@
 
 #include "json.h"
 
-namespace TypeChecker {
-class Context;
-} // namespace TypeChecker
+using std::all_of, std::ostream, std::string, std::unique_ptr;
 
-using namespace TypeChecker;
-using namespace std;
+namespace TypeChecker {
+
+class Context;
 
 Class::Class(yy::location loc, string name)
     : Type(loc)
     , name_{move(name)} {}
+
+Class::~Class() = default;
 
 void
 Class::json(ostream &os) const {
@@ -39,7 +40,7 @@ Class::pretty(ostream &out, bool) const {
 }
 
 Type *
-Class::getField(const std::string &name) const {
+Class::getField(const string &name) const {
     auto it = fields_.find(name);
     if (it == fields_.end()) {
         return nullptr;
@@ -48,7 +49,7 @@ Class::getField(const std::string &name) const {
 }
 
 bool
-Class::addField(const string &name, Type::Ptr type) {
+Class::addField(const string &name, unique_ptr<Type> type) {
     auto prev = fields_.find(name);
     if (prev != fields_.end()) {
         return true;
@@ -64,6 +65,15 @@ Class::operator<=(const Type &other) const {
 
 bool
 Class::operator>=(const Class &other) const {
-    // TODO implement actual class comparison
-    return this == &other;
+    if (this == &other) {
+        return true;
+    }
+    // TODO: fix the infinite recursion here
+    return all_of(fields_.begin(), fields_.end(), [&](auto &it) {
+        auto &[name, field] = it;
+        auto *otherField    = other.getField(name);
+        return otherField && (*otherField) <= (*field);
+    });
 }
+
+} // namespace TypeChecker

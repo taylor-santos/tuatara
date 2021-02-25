@@ -10,9 +10,8 @@ class location;
 namespace AST {
 
 class LValue : public Expression {
-public: // Aliases
-    using Ptr = std::unique_ptr<LValue>;
-    using Vec = std::vector<Ptr>;
+public: // Methods
+    ~LValue() override;
 
 protected: // Methods
     explicit LValue(const yy::location &loc);

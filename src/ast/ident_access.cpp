@@ -12,19 +12,21 @@ namespace TypeChecker {
 class Context;
 } // namespace TypeChecker
 
-using namespace std;
+using std::function, std::make_unique, std::ostream, std::string, std::unique_ptr;
 
 namespace AST {
 
 IdentAccess::IdentAccess(
-    const yy::location &loc,
-    Expression::Ptr     expr,
-    const yy::location &idLoc,
-    string              ident)
+    const yy::location &   loc,
+    unique_ptr<Expression> expr,
+    const yy::location &   idLoc,
+    string                 ident)
     : LValue(loc)
     , expr_{move(expr)}
     , idLoc_{idLoc}
     , ident_{move(ident)} {}
+
+IdentAccess::~IdentAccess() = default;
 
 void
 IdentAccess::json(ostream &os) const {

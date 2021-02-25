@@ -16,22 +16,20 @@ class Pattern;
 }
 
 namespace AST {
-class Node;
 
 class Match final : public Expression {
 public: // Aliases
-    using Ptr  = std::unique_ptr<Match>;
-    using Vec  = std::vector<Ptr>;
-    using Case = std::pair<std::unique_ptr<Pattern::Pattern>, AST::Expression::Ptr>;
+    using Case = std::pair<std::unique_ptr<Pattern::Pattern>, std::unique_ptr<AST::Expression>>;
 
 public: // Methods
-    Match(const yy::location &loc, Expression::Ptr value, std::vector<Case> cases);
+    Match(const yy::location &loc, std::unique_ptr<Expression> value, std::vector<Case> cases);
+    ~Match() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
-    Expression::Ptr   value_;
-    std::vector<Case> cases_;
+    std::unique_ptr<Expression> value_;
+    std::vector<Case>           cases_;
 
 private: // Methods
     void               json(std::ostream &os) const override;

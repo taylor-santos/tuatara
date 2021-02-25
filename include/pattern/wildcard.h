@@ -3,8 +3,9 @@
 
 #include "pattern/pattern.h"
 
-#include "type/unit.h"
-
+namespace TypeChecker {
+class Unit;
+} // namespace TypeChecker
 namespace yy {
 class location;
 } // namespace yy
@@ -12,13 +13,9 @@ class location;
 namespace Pattern {
 
 class Wildcard : public Pattern {
-public: // Aliases
-    using Ptr = std::unique_ptr<Wildcard>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     explicit Wildcard(const yy::location &loc);
-    ~Wildcard() override = default;
+    ~Wildcard() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     TypeChecker::Type &              getTypeImpl(TypeChecker::Context &ctx) override;
 
@@ -26,7 +23,7 @@ private: // Methods
     void json(std::ostream &os) const override;
 
 private: // Fields
-    TypeChecker::Unit type_;
+    std::unique_ptr<TypeChecker::Unit> type_;
 };
 
 } // namespace Pattern

@@ -1,5 +1,7 @@
 #include "ast/type_value_declaration.h"
 
+#include "type/type.h"
+
 #include "json.h"
 
 namespace TypeChecker {
@@ -9,20 +11,21 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace TypeChecker;
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr;
 
 namespace AST {
 
 TypeValueDeclaration::TypeValueDeclaration(
-    const yy::location &loc,
-    const yy::location &varLoc,
-    const string &      variable,
-    Type::Ptr           type,
-    Expression::Ptr     value)
+    const yy::location &          loc,
+    const yy::location &          varLoc,
+    const string &                variable,
+    unique_ptr<TypeChecker::Type> type,
+    unique_ptr<Expression>        value)
     : Declaration(loc, varLoc, variable)
     , ValueDeclaration(loc, varLoc, variable, move(value))
     , TypeDeclaration(loc, varLoc, variable, move(type)) {}
+
+TypeValueDeclaration::~TypeValueDeclaration() = default;
 
 void
 TypeValueDeclaration::json(ostream &os) const {
@@ -39,7 +42,7 @@ TypeValueDeclaration::getNodeName() const {
     return name;
 }
 
-Type &
+TypeChecker::Type &
 TypeValueDeclaration::getTypeImpl(TypeChecker::Context &ctx) {
     TypeDeclaration::getTypeImpl(ctx);
     return ValueDeclaration::getTypeImpl(ctx);

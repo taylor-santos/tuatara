@@ -6,13 +6,15 @@ namespace TypeChecker {
 class Context;
 } // namespace TypeChecker
 
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr;
 
 namespace TypeChecker {
 
-Array::Array(yy::location loc, Type::Ptr type)
+Array::Array(yy::location loc, unique_ptr<Type> type)
     : Type(loc)
     , type_{move(type)} {}
+
+Array::~Array() = default;
 
 void
 Array::json(ostream &os) const {
@@ -22,7 +24,7 @@ Array::json(ostream &os) const {
 }
 
 void
-Array::walk(const std::function<void(const Node &)> &fn) const {
+Array::walk(const function<void(const Node &)> &fn) const {
     Type::walk(fn);
     type_->walk(fn);
 }

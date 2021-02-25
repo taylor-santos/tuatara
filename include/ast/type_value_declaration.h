@@ -6,28 +6,24 @@
 
 namespace TypeChecker {
 class Context;
-}  // namespace TypeChecker
+} // namespace TypeChecker
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace AST {
-class Node;
 
 class TypeValueDeclaration final
     : public ValueDeclaration
     , public TypeDeclaration {
-public: // Aliases
-    using Ptr = std::unique_ptr<TypeValueDeclaration>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     TypeValueDeclaration(
         const yy::location &               loc,
         const yy::location &               varLoc,
         const std::string &                variable,
         std::unique_ptr<TypeChecker::Type> type,
-        Expression::Ptr                    value);
+        std::unique_ptr<Expression>        value);
+    ~TypeValueDeclaration() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void walk(const std::function<void(const Node &)> &fn) const override;
 

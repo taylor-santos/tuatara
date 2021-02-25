@@ -1,5 +1,7 @@
 #include "ast/string.h"
 
+#include "type/object.h"
+
 #include "json.h"
 
 namespace TypeChecker {
@@ -9,13 +11,15 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::ostream, std::string;
 
 namespace AST {
 
 String::String(const yy::location &loc, string value)
     : Literal(loc, "string")
     , value_{move(value)} {}
+
+String::~String() = default;
 
 void
 String::json(ostream &os) const {

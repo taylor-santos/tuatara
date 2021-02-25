@@ -12,14 +12,16 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr;
 
 namespace AST {
 
-If::If(const yy::location &loc, Expression::Ptr cond, Block::Ptr block)
+If::If(const yy::location &loc, unique_ptr<Expression> cond, unique_ptr<Block> block)
     : Expression(loc)
     , cond_{move(cond)}
     , block_{move(block)} {}
+
+If::~If() = default;
 
 void
 If::json(ostream &os) const {

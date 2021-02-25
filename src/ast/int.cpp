@@ -1,5 +1,7 @@
 #include "ast/int.h"
 
+#include "type/object.h"
+
 #include "json.h"
 
 namespace TypeChecker {
@@ -9,13 +11,15 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::ostream, std::string;
 
 namespace AST {
 
 Int::Int(const yy::location &loc, int64_t value)
     : Literal(loc, "int")
     , value_{value} {}
+
+Int::~Int() = default;
 
 void
 Int::json(ostream &os) const {

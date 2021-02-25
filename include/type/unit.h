@@ -5,19 +5,15 @@
 
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace TypeChecker {
 class Context;
 
 class Unit final : public Type {
-public: // Aliases
-    using Ptr = std::unique_ptr<Unit>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     explicit Unit(yy::location loc);
-    ~Unit() override = default;
+    ~Unit() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
     bool                             operator<=(const Type &other) const override;

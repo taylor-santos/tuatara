@@ -8,18 +8,10 @@
 
 namespace AST {
 
-template<typename T>
-using Ptr = std::unique_ptr<T>;
-template<typename T>
-using Vec = std::vector<Ptr<T>>;
-
 class Node {
-public: // Aliases
-    using Ptr = std::unique_ptr<Node>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
-    virtual ~Node() = default;
+    Node(const Node &) = delete;
+    virtual ~Node();
     virtual void                      walk(const std::function<void(const Node &)> &fn) const;
     friend std::ostream &             operator<<(std::ostream &os, const Node &ast);
     [[nodiscard]] const yy::location &getLoc() const;

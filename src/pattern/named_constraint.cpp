@@ -6,20 +6,22 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr;
 
 namespace Pattern {
 
 NamedConstraint::NamedConstraint(
-    const yy::location &loc,
-    std::string         name,
-    Constraint::Ptr     constraint)
+    const yy::location &   loc,
+    string                 name,
+    unique_ptr<Constraint> constraint)
     : Pattern(loc)
-    , name_{std::move(name)}
+    , name_{move(name)}
     , constraint_{move(constraint)} {}
 
+NamedConstraint::~NamedConstraint() = default;
+
 void
-NamedConstraint::json(std::ostream &os) const {
+NamedConstraint::json(ostream &os) const {
     JSON::Object obj(os);
     obj.printKeyValue("pattern", "named constraint");
     obj.printKeyValue("name", name_);
@@ -27,12 +29,12 @@ NamedConstraint::json(std::ostream &os) const {
 }
 
 void
-NamedConstraint::walk(const std::function<void(const Node &)> &fn) const {
+NamedConstraint::walk(const function<void(const Node &)> &fn) const {
     Pattern::walk(fn);
     constraint_->walk(fn);
 }
 
-const std::string &
+const string &
 NamedConstraint::getNodeName() const {
     const static string name = "Named Constraint Pattern";
     return name;

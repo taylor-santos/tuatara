@@ -6,12 +6,14 @@ namespace TypeChecker {
 class Context;
 } // namespace TypeChecker
 
-using namespace std;
+using std::ostream, std::string;
 
 namespace TypeChecker {
 
 Unit::Unit(yy::location loc)
     : Type(loc) {}
+
+Unit::~Unit() = default;
 
 void
 Unit::json(ostream &os) const {

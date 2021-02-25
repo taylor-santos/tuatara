@@ -12,21 +12,17 @@ class location;
 } // namespace yy
 
 namespace AST {
-class Node;
 
 class While final : public Expression {
-public: // Aliases
-    using Ptr = std::unique_ptr<While>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
-    While(const yy::location &loc, Expression::Ptr cond, Block::Ptr block);
+    While(const yy::location &loc, std::unique_ptr<Expression> cond, std::unique_ptr<Block> block);
+    ~While() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
-    Expression::Ptr cond_;
-    Block::Ptr      block_;
+    std::unique_ptr<Expression> cond_;
+    std::unique_ptr<Block>      block_;
 
 private: // Methods
     void               json(std::ostream &os) const override;

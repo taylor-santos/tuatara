@@ -12,17 +12,19 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr;
 
 namespace AST {
 
 IfElse::IfElse(
-    const yy::location &loc,
-    Expression::Ptr     cond,
-    Block::Ptr          block,
-    Block::Ptr          elseBlock)
+    const yy::location &   loc,
+    unique_ptr<Expression> cond,
+    unique_ptr<Block>      block,
+    unique_ptr<Block>      elseBlock)
     : If(loc, move(cond), move(block))
     , elseBlock_{move(elseBlock)} {}
+
+IfElse::~IfElse() = default;
 
 void
 IfElse::json(ostream &os) const {

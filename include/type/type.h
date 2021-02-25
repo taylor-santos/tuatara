@@ -15,13 +15,9 @@ class Expression;
 namespace TypeChecker {
 
 class Type : public AST::Node {
-public: // Aliases
-    using Ptr = std::unique_ptr<Type>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     explicit Type(yy::location loc);
-    Type(const Type &) = delete;
+    ~Type() override;
     /// Verify that this type definition is valid in the given context,
     /// and update any needed fields in response.
     /// \param ctx The type checker context

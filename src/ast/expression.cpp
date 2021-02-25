@@ -4,13 +4,15 @@
 
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace AST {
 
 Expression::Expression(const yy::location &loc)
     : Node(loc)
     , myType_{nullptr} {}
+
+Expression::~Expression() = default;
 
 TypeChecker::Type &
 Expression::getType(TypeChecker::Context &ctx) {

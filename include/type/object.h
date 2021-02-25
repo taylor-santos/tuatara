@@ -14,12 +14,9 @@ class Class;
 class Context;
 
 class Object final : public Type {
-public: // Aliases
-    using Ptr = std::unique_ptr<Object>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     Object(yy::location loc, std::string className);
+    ~Object() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
     bool                             operator<=(const Type &other) const override;

@@ -2,17 +2,17 @@
 
 #include "json.h"
 
+using std::function, std::ostream, std::string, std::unique_ptr;
+
 namespace TypeChecker {
+
 class Context;
-} // namespace TypeChecker
 
-using namespace std;
-
-namespace TypeChecker {
-
-Maybe::Maybe(yy::location loc, Type::Ptr type)
+Maybe::Maybe(yy::location loc, unique_ptr<Type> type)
     : Type(loc)
     , type_{move(type)} {}
+
+Maybe::~Maybe() = default;
 
 void
 Maybe::json(ostream &os) const {
@@ -22,7 +22,7 @@ Maybe::json(ostream &os) const {
 }
 
 void
-Maybe::walk(const std::function<void(const Node &)> &fn) const {
+Maybe::walk(const function<void(const Node &)> &fn) const {
     Type::walk(fn);
     type_->walk(fn);
 }

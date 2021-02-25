@@ -10,17 +10,19 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr;
 
 namespace AST {
 
 ValueDeclaration::ValueDeclaration(
-    const yy::location &loc,
-    const yy::location &varLoc,
-    string              variable,
-    Expression::Ptr     value)
+    const yy::location &   loc,
+    const yy::location &   varLoc,
+    string                 variable,
+    unique_ptr<Expression> value)
     : Declaration(loc, varLoc, move(variable))
     , value_{move(value)} {}
+
+ValueDeclaration::~ValueDeclaration() = default;
 
 void
 ValueDeclaration::json(ostream &os) const {

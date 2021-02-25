@@ -1,5 +1,5 @@
-#ifndef AST_BLOCK_H
-#define AST_BLOCK_H
+#ifndef INCLUDE_AST_BLOCK_H
+#define INCLUDE_AST_BLOCK_H
 
 #include "ast/expression.h"
 
@@ -12,20 +12,16 @@ class location;
 } // namespace yy
 
 namespace AST {
-class Node;
 
 class Block final : public Expression {
-public: // Aliases
-    using Ptr = std::unique_ptr<Block>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
-    Block(const yy::location &loc, Expression::Vec stmts);
+    Block(const yy::location &loc, std::vector<std::unique_ptr<Expression>> stmts);
+    ~Block() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
-    Expression::Vec stmts_;
+    std::vector<std::unique_ptr<Expression>> stmts_;
 
 private: // Methods
     void               json(std::ostream &os) const override;
@@ -34,4 +30,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // AST_BLOCK_H
+#endif // INCLUDE_AST_BLOCK_H

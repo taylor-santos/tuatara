@@ -12,19 +12,21 @@ namespace TypeChecker {
 class Context;
 } // namespace TypeChecker
 
-using namespace std;
+using std::function, std::ostream, std::string, std::stringstream, std::unique_ptr;
 
 namespace AST {
 
 Field::Field(
-    const yy::location &loc,
-    Expression::Ptr     expr,
-    const yy::location &fieldLoc,
-    string              field)
+    const yy::location &   loc,
+    unique_ptr<Expression> expr,
+    const yy::location &   fieldLoc,
+    string                 field)
     : LValue(loc)
     , expr_{move(expr)}
     , fieldLoc_{fieldLoc}
     , field_{move(field)} {}
+
+Field::~Field() = default;
 
 void
 Field::json(ostream &os) const {

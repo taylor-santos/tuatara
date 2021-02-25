@@ -6,11 +6,12 @@
 #include "type/product.h"
 #include "type/unit.h"
 
-using namespace std;
+using std::make_unique, std::nullopt, std::optional, std::string, std::unique_ptr,
+    std::unordered_map;
 
 namespace TypeChecker {
 
-static Class::Ptr
+static unique_ptr<Class>
 makeClass(const string &name) {
     yy::location loc{nullptr, 0, 0};
     auto         cl = make_unique<Class>(loc, name);
@@ -22,7 +23,7 @@ makeClass(const string &name) {
     return cl;
 }
 
-static unordered_map<string, Type::Ptr>
+static unordered_map<string, unique_ptr<Type>>
 generateBuiltins() noexcept {
     static auto numerics = {"int", "float"};
     static auto logics   = {"bool"};
@@ -49,8 +50,8 @@ generateBuiltins() noexcept {
         "+",
     };
 
-    static yy::location              loc{nullptr, 0, 0};
-    unordered_map<string, Type::Ptr> builtins;
+    static yy::location                     loc{nullptr, 0, 0};
+    unordered_map<string, unique_ptr<Type>> builtins;
     for (const auto &name : numerics) {
         auto  clptr = makeClass(name);
         auto &cl    = *clptr;
@@ -83,7 +84,7 @@ generateBuiltins() noexcept {
     return builtins;
 }
 
-static unordered_map<string, Type::Ptr> BUILTINS = generateBuiltins();
+static unordered_map<string, unique_ptr<Type>> BUILTINS = generateBuiltins();
 
 Context::Context() {
     for (const auto &[name, type] : BUILTINS) {

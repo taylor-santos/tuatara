@@ -3,24 +3,18 @@
 
 #include "type/type.h"
 
-namespace AST {
-class Node;
-}  // namespace AST
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace TypeChecker {
 class Context;
 
 class Array final : public Type {
-public: // Aliases
-    using Ptr = std::unique_ptr<Array>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
-    Array(yy::location loc, Type::Ptr type);
-    ~Array() override = default;
+    Array(yy::location loc, std::unique_ptr<Type> type);
+    ~Array() override;
+
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
@@ -30,7 +24,7 @@ protected: // Methods
     bool operator>=(const Array &other) const override;
 
 private: // Fields
-    Type::Ptr type_;
+    std::unique_ptr<Type> type_;
 
 private: // Methods
     void json(std::ostream &os) const override;

@@ -43,8 +43,8 @@ TEST(TypeTest, ArrayNode) {
 }
 
 TEST(TypeTest, ProductNode) {
-    yy::location           loc;
-    TypeChecker::Type::Vec types;
+    yy::location                          loc;
+    vector<unique_ptr<TypeChecker::Type>> types;
     types.reserve(2);
     types.emplace_back(make_unique<TypeChecker::Object>(loc, "S"));
     types.emplace_back(make_unique<TypeChecker::Object>(loc, "T"));
@@ -64,8 +64,8 @@ TEST(TypeTest, ProductNode) {
 }
 
 TEST(TypeTest, SumNode) {
-    yy::location           loc;
-    TypeChecker::Type::Vec types;
+    yy::location                          loc;
+    vector<unique_ptr<TypeChecker::Type>> types;
     types.reserve(2);
     types.emplace_back(make_unique<TypeChecker::Object>(loc, "S"));
     types.emplace_back(make_unique<TypeChecker::Object>(loc, "T"));

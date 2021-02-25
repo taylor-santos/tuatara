@@ -1,5 +1,7 @@
 #include "ast/float.h"
 
+#include "type/object.h"
+
 #include "json.h"
 
 namespace TypeChecker {
@@ -9,13 +11,15 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::ostream, std::string;
 
 namespace AST {
 
 Float::Float(const yy::location &loc, double value)
     : Literal(loc, "float")
     , value_{value} {}
+
+Float::~Float() = default;
 
 void
 Float::json(ostream &os) const {

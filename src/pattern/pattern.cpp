@@ -6,12 +6,16 @@ namespace yy {
 class location;
 } // namespace yy
 
+using std::string;
+
 namespace Pattern {
 
 Pattern::Pattern(const yy::location &loc)
     : AST::Node(loc) {}
 
-const std::string *
+Pattern::~Pattern() = default;
+
+const string *
 Pattern::getName() {
     return nullptr;
 }

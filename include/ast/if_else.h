@@ -12,20 +12,20 @@ class location;
 } // namespace yy
 
 namespace AST {
-class Node;
 
 class IfElse final : public If {
-public: // Aliases
-    using Ptr = std::unique_ptr<IfElse>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
-    IfElse(const yy::location &loc, Expression::Ptr cond, Block::Ptr block, Block::Ptr elseBlock);
+    IfElse(
+        const yy::location &        loc,
+        std::unique_ptr<Expression> cond,
+        std::unique_ptr<Block>      block,
+        std::unique_ptr<Block>      elseBlock);
+    ~IfElse() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
-    Block::Ptr elseBlock_;
+    std::unique_ptr<Block> elseBlock_;
 
 private: // Methods
     void               json(std::ostream &os) const override;

@@ -5,11 +5,9 @@
 
 #include "pattern/pattern.h"
 
-#include "type/product.h"
-
-namespace AST {
-class Node;
-} // namespace AST
+namespace TypeChecker {
+class Product;
+} // namespace TypeChecker
 namespace yy {
 class location;
 } // namespace yy
@@ -17,20 +15,17 @@ class location;
 namespace Pattern {
 
 class Tuple final : public Pattern {
-public: // Aliases
-    using Ptr = std::unique_ptr<Tuple>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
-    Tuple(const yy::location &loc, Pattern::Vec patterns);
-    ~Tuple() override = default;
+    Tuple(const yy::location &loc, std::vector<std::unique_ptr<Pattern>> patterns);
+    ~Tuple() override;
+
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
     TypeChecker::Type &              getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
-    Pattern::Vec                        patterns_;
-    std::optional<TypeChecker::Product> type_;
+    std::vector<std::unique_ptr<Pattern>> patterns_;
+    std::unique_ptr<TypeChecker::Product> type_;
 
 private: // Methods
     void json(std::ostream &os) const override;

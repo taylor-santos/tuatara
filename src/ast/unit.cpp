@@ -1,5 +1,7 @@
 #include "ast/unit.h"
 
+#include "type/unit.h"
+
 #include "json.h"
 
 namespace TypeChecker {
@@ -9,13 +11,15 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::make_unique, std::ostream, std::string;
 
 namespace AST {
 
 Unit::Unit(const yy::location &loc)
     : LValue(loc)
-    , myType_(loc) {}
+    , myType_{make_unique<TypeChecker::Unit>(loc)} {}
+
+Unit::~Unit() = default;
 
 void
 Unit::json(ostream &os) const {
@@ -31,7 +35,7 @@ Unit::getNodeName() const {
 
 TypeChecker::Type &
 Unit::getTypeImpl(TypeChecker::Context &) {
-    return myType_;
+    return *myType_;
 }
 
 } // namespace AST

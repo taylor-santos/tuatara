@@ -6,22 +6,24 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::ostream, std::string;
 
 namespace Pattern {
 
-NamedWildcard::NamedWildcard(const yy::location &loc, std::string name)
+NamedWildcard::NamedWildcard(const yy::location &loc, string name)
     : Wildcard(loc)
-    , name_{std::move(name)} {}
+    , name_{move(name)} {}
+
+NamedWildcard::~NamedWildcard() = default;
 
 void
-NamedWildcard::json(std::ostream &os) const {
+NamedWildcard::json(ostream &os) const {
     JSON::Object obj(os);
     obj.printKeyValue("pattern", "named wildcard");
     obj.printKeyValue("name", name_);
 }
 
-const std::string &
+const string &
 NamedWildcard::getNodeName() const {
     const static string name = "Named Wildcard Pattern";
     return name;

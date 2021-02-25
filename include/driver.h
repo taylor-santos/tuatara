@@ -1,6 +1,7 @@
 #ifndef DRIVER_H
 #define DRIVER_H
 
+#include <functional>
 #include <queue>
 #include <stack>
 

@@ -145,9 +145,9 @@ TEST(ASTTest, TypeValueDeclarationNode) {
 }
 
 TEST(ASTTest, BlockNode) {
-    std::ostringstream ss;
-    yy::location       loc;
-    Expression::Vec    stmts;
+    std::ostringstream             ss;
+    yy::location                   loc;
+    vector<unique_ptr<Expression>> stmts;
     stmts.emplace_back(make_unique<Int>(loc, 123));
     stmts.emplace_back(make_unique<Float>(loc, 45.6));
     Block node(loc, move(stmts));
@@ -167,10 +167,10 @@ TEST(ASTTest, BlockNode) {
 }
 
 TEST(ASTTest, IfNode) {
-    std::ostringstream           ss;
-    yy::location                 loc;
-    auto                         cond = make_unique<Bool>(loc, true);
-    vector<AST::Expression::Ptr> stmts;
+    std::ostringstream                  ss;
+    yy::location                        loc;
+    auto                                cond = make_unique<Bool>(loc, true);
+    vector<unique_ptr<AST::Expression>> stmts;
     stmts.emplace_back(make_unique<Int>(loc, 123));
     auto block = make_unique<Block>(loc, move(stmts));
     If   node(loc, move(cond), move(block));
@@ -193,13 +193,13 @@ TEST(ASTTest, IfNode) {
 }
 
 TEST(ASTTest, IfElseNode) {
-    std::ostringstream           ss;
-    yy::location                 loc;
-    auto                         cond = make_unique<Bool>(loc, true);
-    vector<AST::Expression::Ptr> trueStmts;
+    std::ostringstream                  ss;
+    yy::location                        loc;
+    auto                                cond = make_unique<Bool>(loc, true);
+    vector<unique_ptr<AST::Expression>> trueStmts;
     trueStmts.emplace_back(make_unique<Int>(loc, 123));
-    auto                         trueBlock = make_unique<Block>(loc, move(trueStmts));
-    vector<AST::Expression::Ptr> falseStmts;
+    auto                                trueBlock = make_unique<Block>(loc, move(trueStmts));
+    vector<unique_ptr<AST::Expression>> falseStmts;
     falseStmts.emplace_back(make_unique<Float>(loc, 4.56));
     auto   falseBlock = make_unique<Block>(loc, move(falseStmts));
     IfElse node(loc, move(cond), move(trueBlock), move(falseBlock));
@@ -227,10 +227,10 @@ TEST(ASTTest, IfElseNode) {
 }
 
 TEST(ASTTest, WhileNode) {
-    std::ostringstream ss;
-    yy::location       loc;
-    auto               cond = make_unique<Bool>(loc, true);
-    Expression::Vec    stmts;
+    std::ostringstream             ss;
+    yy::location                   loc;
+    auto                           cond = make_unique<Bool>(loc, true);
+    vector<unique_ptr<Expression>> stmts;
     stmts.emplace_back(make_unique<Int>(loc, 123));
     auto  block = make_unique<AST::Block>(loc, move(stmts));
     While node(loc, move(cond), move(block));
@@ -297,12 +297,12 @@ TEST(ASTTest, IndexNode) {
 }
 
 TEST(ASTTest, FuncDeclarationNode) {
-    std::ostringstream    ss;
-    yy::location          loc;
-    string                name = "foo";
-    Pattern::Pattern::Vec args;
-    auto                  argType        = make_unique<TypeChecker::Object>(loc, "S");
-    auto                  typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
+    std::ostringstream                   ss;
+    yy::location                         loc;
+    string                               name = "foo";
+    vector<unique_ptr<Pattern::Pattern>> args;
+    auto                                 argType = make_unique<TypeChecker::Object>(loc, "S");
+    auto typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
     args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
     auto            ret = make_unique<TypeChecker::Object>(loc, "T");
     FuncDeclaration node(loc, loc, name, move(args), move(ret));
@@ -331,15 +331,15 @@ TEST(ASTTest, FuncDeclarationNode) {
 }
 
 TEST(ASTTest, FuncImplNode) {
-    std::ostringstream    ss;
-    yy::location          loc;
-    string                name = "foo";
-    Pattern::Pattern::Vec args;
-    auto                  argType        = make_unique<TypeChecker::Object>(loc, "S");
-    auto                  typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
+    std::ostringstream                   ss;
+    yy::location                         loc;
+    string                               name = "foo";
+    vector<unique_ptr<Pattern::Pattern>> args;
+    auto                                 argType = make_unique<TypeChecker::Object>(loc, "S");
+    auto typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
     args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
-    auto            ret = make_unique<TypeChecker::Object>(loc, "T");
-    Expression::Vec stmts;
+    auto                           ret = make_unique<TypeChecker::Object>(loc, "T");
+    vector<unique_ptr<Expression>> stmts;
     stmts.emplace_back(make_unique<Variable>(loc, "b"));
     auto     block = make_unique<Block>(loc, move(stmts));
     FuncImpl node(loc, loc, name, move(args), move(block), move(ret));
@@ -374,14 +374,14 @@ TEST(ASTTest, FuncImplNode) {
 }
 
 TEST(ASTTest, LambdaNode) {
-    std::ostringstream    ss;
-    yy::location          loc;
-    Pattern::Pattern::Vec args;
-    auto                  argType        = make_unique<TypeChecker::Object>(loc, "S");
-    auto                  typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
+    std::ostringstream                   ss;
+    yy::location                         loc;
+    vector<unique_ptr<Pattern::Pattern>> args;
+    auto                                 argType = make_unique<TypeChecker::Object>(loc, "S");
+    auto typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
     args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
-    auto            ret = make_unique<TypeChecker::Object>(loc, "T");
-    Expression::Vec stmts;
+    auto                           ret = make_unique<TypeChecker::Object>(loc, "T");
+    vector<unique_ptr<Expression>> stmts;
     stmts.emplace_back(make_unique<Variable>(loc, "b"));
     auto   block = make_unique<Block>(loc, move(stmts));
     Lambda node(loc, move(args), move(ret), move(block));
@@ -415,9 +415,9 @@ TEST(ASTTest, LambdaNode) {
 }
 
 TEST(ASTTest, TupleNode) {
-    std::ostringstream ss;
-    yy::location       loc;
-    Expression::Vec    exprs;
+    std::ostringstream             ss;
+    yy::location                   loc;
+    vector<unique_ptr<Expression>> exprs;
     exprs.emplace_back(make_unique<Variable>(loc, "var"));
     exprs.emplace_back(make_unique<Int>(loc, 123));
     Tuple node(loc, move(exprs));

@@ -14,13 +14,15 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr, std::vector;
 
 namespace AST {
 
-Tuple::Tuple(const yy::location &loc, Expression::Vec exprs)
+Tuple::Tuple(const yy::location &loc, vector<unique_ptr<Expression>> exprs)
     : LValue(loc)
     , exprs_{move(exprs)} {}
+
+Tuple::~Tuple() = default;
 
 void
 Tuple::json(ostream &os) const {

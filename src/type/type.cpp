@@ -4,12 +4,14 @@
 
 #include "type/type_exception.h"
 
-using namespace std;
+using std::ostream, std::stringstream;
 
 namespace TypeChecker {
 
 Type::Type(yy::location loc)
     : Node(loc) {}
+
+Type::~Type() = default;
 
 void
 Type::verify(Context &ctx) {
@@ -22,7 +24,7 @@ Type::verify(Context &ctx) {
 }
 
 void
-Type::pretty(std::ostream &out) const {
+Type::pretty(ostream &out) const {
     pretty(out, false);
 }
 

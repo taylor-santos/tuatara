@@ -5,23 +5,19 @@
 
 namespace AST {
 class Expression;
-class Node;
-}  // namespace AST
+} // namespace AST
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace TypeChecker {
 
 class Context;
 
 class Func final : public Type {
-public: // Aliases
-    using Ptr = std::unique_ptr<Func>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
-    Func(yy::location loc, Type::Ptr argType, Type::Ptr retType);
+    Func(yy::location loc, std::unique_ptr<Type> argType, std::unique_ptr<Type> retType);
+    ~Func() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
@@ -32,8 +28,8 @@ protected: // Methods
     bool operator>=(const Func &other) const override;
 
 private: // Fields
-    Type::Ptr argType_;
-    Type::Ptr retType_;
+    std::unique_ptr<Type> argType_;
+    std::unique_ptr<Type> retType_;
 
 private: // Methods
     void json(std::ostream &os) const override;

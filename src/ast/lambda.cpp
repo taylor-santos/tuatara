@@ -2,6 +2,9 @@
 
 #include <algorithm>
 
+#include "pattern/pattern.h"
+
+#include "type/type.h"
 #include "type/type_exception.h"
 
 #include "json.h"
@@ -13,19 +16,21 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::optional, std::ostream, std::string, std::unique_ptr, std::vector;
 
 namespace AST {
 
 Lambda::Lambda(
-    const yy::location &                  loc,
-    Pattern::Pattern::Vec                 args,
-    std::optional<TypeChecker::Type::Ptr> retType,
-    Expression::Ptr                       body)
+    const yy::location &                    loc,
+    vector<unique_ptr<Pattern::Pattern>>    args,
+    optional<unique_ptr<TypeChecker::Type>> retType,
+    unique_ptr<Expression>                  body)
     : Expression(loc)
     , args_{move(args)}
     , retType_{move(retType)}
     , body_{move(body)} {}
+
+Lambda::~Lambda() = default;
 
 void
 Lambda::json(ostream &os) const {

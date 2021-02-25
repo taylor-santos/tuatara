@@ -5,18 +5,14 @@
 
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace Pattern {
 
 class Constraint : public Pattern {
-public: // Aliases
-    using Ptr = std::unique_ptr<Constraint>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
     explicit Constraint(const yy::location &loc);
-    ~Constraint() override = default;
+    ~Constraint() override;
 };
 
 } // namespace Pattern

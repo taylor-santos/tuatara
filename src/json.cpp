@@ -3,7 +3,8 @@
 #include <algorithm>
 #include <sstream>
 
-using namespace std;
+using std::boolalpha, std::endl, std::hex, std::ostream, std::string, std::stringstream,
+    std::uppercase;
 
 namespace JSON {
 
@@ -69,11 +70,11 @@ escapeChar(char c) {
         case '\"': return "\\\"";
         case '\?': return "\\?";
         default:
-            if (std::isprint(static_cast<unsigned char>(c))) {
+            if (isprint(static_cast<unsigned char>(c))) {
                 return {c};
             } else {
-                std::stringstream ss;
-                ss << "\\x" << std::hex << std::uppercase;
+                stringstream ss;
+                ss << "\\x" << hex << uppercase;
                 if (c < 0) {
                     ss << c + 256;
                 } else {
@@ -137,7 +138,7 @@ Array::next() {
 }
 
 void
-Array::printValue(const std::string &str) {
+Array::printValue(const string &str) {
     next();
     out_ << '"' << str << '"';
 }

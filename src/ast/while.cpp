@@ -12,14 +12,16 @@ namespace yy {
 class location;
 } // namespace yy
 
-using namespace std;
+using std::function, std::ostream, std::string, std::unique_ptr;
 
 namespace AST {
 
-While::While(const yy::location &loc, Expression::Ptr cond, Block::Ptr block)
+While::While(const yy::location &loc, unique_ptr<Expression> cond, unique_ptr<Block> block)
     : Expression(loc)
     , cond_{move(cond)}
     , block_{move(block)} {}
+
+While::~While() = default;
 
 void
 While::json(ostream &os) const {

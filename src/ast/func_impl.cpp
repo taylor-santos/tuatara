@@ -9,7 +9,7 @@
 
 #include "json.h"
 
-using namespace std;
+using std::function, std::optional, std::ostream, std::string, std::unique_ptr, std::vector;
 
 namespace AST {
 
@@ -22,6 +22,8 @@ FuncImpl::FuncImpl(
     optional<unique_ptr<TypeChecker::Type>> retType)
     : FuncDeclaration(loc, varLoc, move(variable), move(args), move(retType))
     , body_{move(body)} {}
+
+FuncImpl::~FuncImpl() = default;
 
 void
 FuncImpl::json(ostream &os) const {

@@ -12,21 +12,17 @@ class location;
 } // namespace yy
 
 namespace AST {
-class Node;
 
 class Tuple final : public LValue {
-public: // Aliases
-    using Ptr = std::unique_ptr<Tuple>;
-    using Vec = std::vector<Ptr>;
-
 public: // Methods
-    Tuple(const yy::location &loc, Expression::Vec exprs);
-    ~Tuple() override = default;
+    Tuple(const yy::location &loc, std::vector<std::unique_ptr<Expression>> exprs);
+    ~Tuple() override;
+
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
-    Expression::Vec exprs_;
+    std::vector<std::unique_ptr<Expression>> exprs_;
 
 private: // Methods
     void               json(std::ostream &os) const override;

@@ -1,11 +1,13 @@
 #include "ast.h"
 
-using namespace std;
+using std::function, std::ostream;
 
 namespace AST {
 
 Node::Node(const yy::location &loc)
     : loc_(loc) {}
+
+Node::~Node() = default;
 
 ostream &
 operator<<(ostream &os, const Node &ast) {
@@ -14,7 +16,7 @@ operator<<(ostream &os, const Node &ast) {
 }
 
 void
-Node::walk(const std::function<void(const Node &)> &fn) const {
+Node::walk(const function<void(const Node &)> &fn) const {
     fn(*this);
 }
 
