@@ -55,13 +55,18 @@ Object::pretty(ostream &out, bool) const {
 }
 
 bool
-Object::operator<=(const Type &other) const {
-    return other >= (*this);
+Object::isSubtype(const Type &other) const {
+    return other.isSupertype(*this);
 }
 
 bool
-Object::operator>=(const Object &other) const {
-    return (other.ofClass_->get()) <= (ofClass_->get());
+Object::isSupertype(const Type &other) const {
+    return other.isSubtype(*this);
+}
+
+bool
+Object::isSupertype(const Object &other) const {
+    return other.ofClass_->get().isSubtype(ofClass_->get());
 }
 
 const Class &

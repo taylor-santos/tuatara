@@ -64,7 +64,7 @@ Func::pretty(ostream &out, bool mod) const {
 Type &
 Func::callAsFunc(Context &ctx, AST::Expression &arg) {
     auto &type = arg.getType(ctx);
-    if (type <= *argType_) {
+    if (type.isSubtype(*argType_)) {
         return *retType_;
     }
     vector<pair<string, yy::location>> msgs;
@@ -88,13 +88,18 @@ Func::callAsFunc(Context &ctx, AST::Expression &arg) {
 }
 
 bool
-Func::operator<=(const Type &other) const {
-    return other >= (*this);
+Func::isSubtype(const Type &other) const {
+    return other.isSupertype(*this);
 }
 
 bool
-Func::operator>=(const Func &other) const {
-    return (*argType_) <= (*other.argType_) && (*other.retType_) <= (*retType_);
+Func::isSupertype(const Type &other) const {
+    return other.isSubtype(*this);
+}
+
+bool
+Func::isSupertype(const Func &other) const {
+    return argType_->isSubtype(*other.argType_) && other.retType_->isSubtype(*retType_);
 }
 
 } // namespace TypeChecker

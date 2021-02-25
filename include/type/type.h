@@ -25,28 +25,28 @@ public: // Methods
     void          pretty(std::ostream &out) const;
     virtual void  pretty(std::ostream &out, bool mod) const = 0;
     virtual Type &callAsFunc(class Context &ctx, AST::Expression &arg);
-    virtual bool  operator<=(const Type &other) const = 0;
+    virtual bool  isSubtype(const Type &other) const   = 0;
+    virtual bool  isSupertype(const Type &other) const = 0;
     Type &        operator=(const Type &) = delete;
 
 protected: // Methods
     virtual void verifyImpl(class Context &ctx) = 0;
-    virtual bool operator>=(const Type &other) const;
     friend class Array;
-    virtual bool operator>=(const class Array &other) const;
+    virtual bool isSupertype(const class Array &other) const;
     friend class Class;
-    virtual bool operator>=(const class Class &other) const;
+    virtual bool isSupertype(const class Class &other) const;
     friend class Func;
-    virtual bool operator>=(const class Func &other) const;
+    virtual bool isSupertype(const class Func &other) const;
     friend class Maybe;
-    virtual bool operator>=(const class Maybe &other) const;
+    virtual bool isSupertype(const class Maybe &other) const;
     friend class Object;
-    virtual bool operator>=(const class Object &other) const;
+    virtual bool isSupertype(const class Object &other) const;
     friend class Product;
-    virtual bool operator>=(const class Product &other) const;
+    virtual bool isSupertype(const class Product &other) const;
     friend class Sum;
-    virtual bool operator>=(const class Sum &other) const;
+    virtual bool isSupertype(const class Sum &other) const;
     friend class Unit;
-    virtual bool operator>=(const class Unit &other) const;
+    virtual bool isSupertype(const class Unit &other) const;
 
 private: // Fields
     enum class VerifyState { NONE, FAILED, VERIFIED } verifyState_ = VerifyState::NONE;

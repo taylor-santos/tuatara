@@ -45,18 +45,18 @@ Maybe::pretty(ostream &out, bool) const {
 }
 
 bool
-Maybe::operator<=(const Type &other) const {
-    return other >= (*this);
+Maybe::isSubtype(const Type &other) const {
+    return other.isSupertype(*this);
 }
 
 bool
-Maybe::operator>=(const Type &other) const {
-    return other <= (*type_);
+Maybe::isSupertype(const Type &other) const {
+    return other.isSubtype(*type_);
 }
 
 bool
-Maybe::operator>=(const Maybe &other) const {
-    return (*other.type_) <= (*type_);
+Maybe::isSupertype(const Maybe &other) const {
+    return other.type_->isSubtype(*type_);
 }
 
 } // namespace TypeChecker

@@ -26,7 +26,7 @@ void
 Declaration::assignType(TypeChecker::Context &ctx, TypeChecker::Type &type, bool init) const {
     auto symbol = ctx.getSymbol(getVariable());
     if (symbol) {
-        if (type <= symbol->type) {
+        if (type.isSubtype(symbol->type)) {
             symbol->initialized = init;
             return;
         }

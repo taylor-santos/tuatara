@@ -16,13 +16,14 @@ public: // Methods
     ~Class() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
-    bool                             operator<=(const Type &other) const override;
+    bool                             isSubtype(const Type &other) const override;
+    bool                             isSupertype(const Type &other) const override;
     Type *                           getField(const std::string &name) const;
     [[nodiscard]] bool               addField(const std::string &name, std::unique_ptr<Type> type);
     const std::string &              getClassName() const;
 
 protected: // Methods
-    bool operator>=(const Class &other) const override;
+    bool isSupertype(const Class &other) const override;
 
 private: // Fields
     std::string                                            name_;

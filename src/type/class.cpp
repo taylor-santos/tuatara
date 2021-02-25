@@ -1,5 +1,7 @@
 #include "type/class.h"
 
+#include <algorithm>
+
 #include "json.h"
 
 using std::all_of, std::ostream, std::string, std::unique_ptr;
@@ -32,7 +34,11 @@ Class::getClassName() const {
 }
 
 void
-Class::verifyImpl(Context &) {}
+Class::verifyImpl(Context &ctx) {
+    for (const auto &[name, field] : fields_) {
+        field->verify(ctx);
+    }
+}
 
 void
 Class::pretty(ostream &out, bool) const {
@@ -59,12 +65,17 @@ Class::addField(const string &name, unique_ptr<Type> type) {
 }
 
 bool
-Class::operator<=(const Type &other) const {
-    return other >= (*this);
+Class::isSubtype(const Type &other) const {
+    return other.isSupertype(*this);
 }
 
 bool
-Class::operator>=(const Class &other) const {
+Class::isSupertype(const Type &other) const {
+    return other.isSubtype(*this);
+}
+
+bool
+Class::isSupertype(const Class &other) const {
     if (this == &other) {
         return true;
     }
@@ -72,7 +83,7 @@ Class::operator>=(const Class &other) const {
     return all_of(fields_.begin(), fields_.end(), [&](auto &it) {
         auto &[name, field] = it;
         auto *otherField    = other.getField(name);
-        return otherField && (*otherField) <= (*field);
+        return otherField && otherField->isSubtype(*field);
     });
 }
 

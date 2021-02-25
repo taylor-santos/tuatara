@@ -38,47 +38,42 @@ Type::callAsFunc(Context &, AST::Expression &) {
 }
 
 bool
-Type::operator>=(const Type &) const {
+Type::isSupertype(const class Array &) const {
     return false;
 }
 
 bool
-Type::operator>=(const class Array &) const {
+Type::isSupertype(const class Class &) const {
     return false;
 }
 
 bool
-Type::operator>=(const class Class &) const {
+Type::isSupertype(const class Func &) const {
     return false;
 }
 
 bool
-Type::operator>=(const class Func &) const {
+Type::isSupertype(const class Maybe &) const {
     return false;
 }
 
 bool
-Type::operator>=(const class Maybe &) const {
+Type::isSupertype(const class Object &) const {
     return false;
 }
 
 bool
-Type::operator>=(const class Object &) const {
+Type::isSupertype(const class Product &) const {
     return false;
 }
 
 bool
-Type::operator>=(const class Product &) const {
+Type::isSupertype(const class Sum &) const {
     return false;
 }
 
 bool
-Type::operator>=(const class Sum &) const {
-    return false;
-}
-
-bool
-Type::operator>=(const class Unit &) const {
+Type::isSupertype(const class Unit &) const {
     return false;
 }
 

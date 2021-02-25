@@ -46,24 +46,26 @@ Sum::pretty(ostream &out, bool mod) const {
         out << "(";
     }
     string sep;
-    for_each(types_.begin(), types_.end(), [&](const auto &t) {
+    for (auto &t : types_) {
         out << sep;
         t->pretty(out, false);
         sep = ",";
-    });
+    }
     if (mod) {
         out << ")";
     }
 }
 
 bool
-Sum::operator<=(const Type &other) const {
-    return other >= (*this);
+Sum::isSubtype(const Type &other) const {
+    return other.isSupertype(*this);
 }
 
 bool
-Sum::operator>=(const Type &other) const {
-    return any_of(types_.begin(), types_.end(), [&](const auto &type) { return other <= (*type); });
+Sum::isSupertype(const Type &other) const {
+    return any_of(types_.begin(), types_.end(), [&](const auto &type) {
+        return other.isSubtype(*type);
+    });
 }
 
 } // namespace TypeChecker
