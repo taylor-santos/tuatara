@@ -12,7 +12,8 @@ namespace Print {
 void
 error(ostream &out, const string &msg, const yy::location &location, const vector<string> &lines) {
     if (location.begin.line == 0) {
-        // Some errors will originate outside of source code, just print the message in that case.
+        // Some errors will originate outside of source code, and will therefore have an invalid
+        // location. Print only the message in this case.
         out << msg << endl;
         return;
     }
@@ -23,9 +24,10 @@ error(ostream &out, const string &msg, const yy::location &location, const vecto
     }
     out << location.begin.line << ":" << location.begin.column << " - " << location.end.line << ":"
         << location.end.column << ": " << msg << endl;
-    for (auto i = location.begin.line; i <= location.end.line; i++) {
-        string line = pretty(lines[i - 1]);
-        std::replace(line.begin(), line.end(), '\t', ' ');
+    // If the last line ends before the first character, skip it.
+    auto endLine = location.end.column > 1 ? location.end.line : location.end.line - 1;
+    for (auto i = location.begin.line; i <= endLine; i++) {
+        string line  = pretty(lines[i - 1]);
         size_t first = line.find_first_not_of(' ');
         size_t last  = line.find_last_not_of(' ');
         if (first == string::npos) {
@@ -52,7 +54,10 @@ std::string
 pretty(string str) {
     std::replace(str.begin(), str.end(), '\t', ' ');
     str.erase(
-        std::remove_if(str.begin(), str.end(), [](unsigned char c) { return !std::isprint(c); }),
+        std::remove_if(
+            str.begin(),
+            str.end(),
+            [](unsigned char c) { return c == '\n' || c == '\r'; }),
         str.end());
     return str;
 }

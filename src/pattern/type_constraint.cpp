@@ -33,4 +33,10 @@ TypeConstraint::getNodeName() const {
     return name;
 }
 
+TypeChecker::Type &
+TypeConstraint::getTypeImpl(TypeChecker::Context &ctx) {
+    type_->verify(ctx);
+    return *type_;
+}
+
 } // namespace Pattern

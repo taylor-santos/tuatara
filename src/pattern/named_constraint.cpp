@@ -38,4 +38,14 @@ NamedConstraint::getNodeName() const {
     return name;
 }
 
+TypeChecker::Type &
+NamedConstraint::getTypeImpl(TypeChecker::Context &ctx) {
+    return constraint_->getType(ctx);
+}
+
+const string *
+NamedConstraint::getName() {
+    return &name_;
+}
+
 } // namespace Pattern

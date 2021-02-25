@@ -5,7 +5,7 @@
 
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace Pattern {
 
@@ -18,6 +18,7 @@ public: // Methods
     NamedWildcard(const yy::location &loc, std::string name);
     ~NamedWildcard() override = default;
     [[nodiscard]] const std::string &getNodeName() const override;
+    const std::string *              getName() override;
 
 private: // Fields
     std::string name_;

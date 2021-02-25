@@ -316,8 +316,8 @@ inf       (?i:inf)
     PUSH_VALUE_AND_POP(STRING, str);
 }
 {id_start}{id}*              PUSH_VALUE_AND_POP(IDENT, yytext);
-{op}({op}|{reserved})*       PUSH_VALUE_AND_POP(IDENT, yytext);
-{reserved}({op}|{reserved})+ PUSH_VALUE_AND_POP(IDENT, yytext);
+{op}({op}|{reserved})*       PUSH_VALUE_AND_POP(OPERATOR, yytext);
+{reserved}({op}|{reserved})+ PUSH_VALUE_AND_POP(OPERATOR, yytext);
 
 [[:blank:]]+  // Ignore non-leading whitespace
 
@@ -331,19 +331,20 @@ inf       (?i:inf)
 
 ";"[[:blank:]]*/[\n\r;]  // Ignore ';'s that are immediately followed by a line break or another ';'
 ";"[[:blank:]]* {
-    driver.location->end = driver.location->begin;
     PUSH_TOKEN_AND_POP(SEMICOLON);
 }
 
 [\n\r]+/[[:blank:]] {
+    auto begin = driver.location->begin;
     LINE();
-    driver.location->end = driver.location->begin;
+    driver.location->begin = begin;
     PUSH_TOKEN_AND_POP(NEWLINE);
 }
 
 [\n\r]+/. {
+    auto begin = driver.location->begin;
     LINE();
-    driver.location->end = driver.location->begin;
+    driver.location->begin = begin;
     PUSH_TOKEN(NEWLINE);
     if (driver.applyIndent(0)) {
         throw Parser::syntax_error(LOC, "indentation does not match any previous indentation levels");

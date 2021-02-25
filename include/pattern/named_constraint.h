@@ -5,14 +5,14 @@
 
 namespace AST {
 class Node;
-}  // namespace AST
+} // namespace AST
 namespace yy {
 class location;
-}  // namespace yy
+} // namespace yy
 
 namespace Pattern {
 
-class NamedConstraint : public Pattern {
+class NamedConstraint final : public Pattern {
 public: // Aliases
     using Ptr = std::unique_ptr<NamedConstraint>;
     using Vec = std::vector<Ptr>;
@@ -22,6 +22,8 @@ public: // Methods
     ~NamedConstraint() override = default;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
+    TypeChecker::Type &              getTypeImpl(TypeChecker::Context &ctx) override;
+    const std::string *              getName() override;
 
 private: // Fields
     std::string     name_;

@@ -40,8 +40,12 @@ IdentAccess::json(ostream &os) const {
 
 void
 IdentAccess::walk(const function<void(const Node &)> &fn) const {
-    LValue::walk(fn);
-    expr_->walk(fn);
+    if (state_) {
+        (*state_)->walk(fn);
+    } else {
+        LValue::walk(fn);
+        expr_->walk(fn);
+    }
 }
 
 const string &
@@ -56,6 +60,9 @@ IdentAccess::getTypeImpl(TypeChecker::Context &ctx) {
      *  1) If a is an object, "a b" is equivalent to a member access expression "a.b".
      *  2) If a is a function, "a b" is equivalent to the function call "a(b)".
      */
+    if (state_) {
+        return (*state_)->getType(ctx);
+    }
     auto &type = expr_->getType(ctx);
     auto  obj  = dynamic_cast<TypeChecker::Object *>(&type);
     if (obj) {

@@ -3,6 +3,8 @@
 
 #include "pattern/pattern.h"
 
+#include "type/unit.h"
+
 namespace yy {
 class location;
 } // namespace yy
@@ -18,9 +20,13 @@ public: // Methods
     explicit Wildcard(const yy::location &loc);
     ~Wildcard() override = default;
     [[nodiscard]] const std::string &getNodeName() const override;
+    TypeChecker::Type &              getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Methods
     void json(std::ostream &os) const override;
+
+private: // Fields
+    TypeChecker::Unit type_;
 };
 
 } // namespace Pattern

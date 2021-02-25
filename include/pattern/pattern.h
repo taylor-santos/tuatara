@@ -6,6 +6,10 @@
 namespace yy {
 class location;
 } // namespace yy
+namespace TypeChecker {
+class Type;
+class Context;
+} // namespace TypeChecker
 
 namespace Pattern {
 
@@ -16,6 +20,11 @@ public: // Aliases
 
 public: // Methods
     explicit Pattern(const yy::location &loc);
+    TypeChecker::Type &        getType(TypeChecker::Context &ctx);
+    virtual const std::string *getName();
+
+private: // Methods
+    virtual TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) = 0;
 };
 
 } // namespace Pattern

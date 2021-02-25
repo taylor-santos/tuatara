@@ -83,67 +83,6 @@ TEST(ASTTest, VariableNode) {
     EXPECT_EQ(walk.str(), "Variable\n");
 }
 
-TEST(ASTTest, InfixOperatorNode) {
-    std::ostringstream ss;
-    yy::location       loc;
-    auto               lhs = make_unique<Variable>(loc, "var");
-    auto               rhs = make_unique<Int>(loc, 123);
-    InfixOperator      node(loc, "+", move(lhs), move(rhs));
-    ss << node;
-    EXPECT_EQ(
-        ss.str(),
-        R"({"node":"infix operator",)"
-        R"("operation":"+",)"
-        R"("lhs":{)"
-        R"("node":"variable",)"
-        R"("name":"var"},)"
-        R"("rhs":{)"
-        R"("node":"int",)"
-        R"("value":123}})");
-
-    std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
-    EXPECT_EQ(walk.str(), "Infix Operator\nVariable\nInt\n");
-}
-
-TEST(ASTTest, PrefixOperatorNode) {
-    std::ostringstream ss;
-    yy::location       loc;
-    auto               rhs = make_unique<Int>(loc, 123);
-    PrefixOperator     node(loc, "+", move(rhs));
-    ss << node;
-    EXPECT_EQ(
-        ss.str(),
-        R"({"node":"prefix operator",)"
-        R"("operation":"+",)"
-        R"("rhs":{)"
-        R"("node":"int",)"
-        R"("value":123}})");
-
-    std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
-    EXPECT_EQ(walk.str(), "Prefix Operator\nInt\n");
-}
-
-TEST(ASTTest, PostfixOperatorNode) {
-    std::ostringstream ss;
-    yy::location       loc;
-    auto               lhs = make_unique<Variable>(loc, "var");
-    PostfixOperator    node(loc, "+", move(lhs));
-    ss << node;
-    EXPECT_EQ(
-        ss.str(),
-        R"({"node":"postfix operator",)"
-        R"("operation":"+",)"
-        R"("lhs":{)"
-        R"("node":"variable",)"
-        R"("name":"var"}})");
-
-    std::ostringstream walk;
-    node.walk([&walk](const AST::Node &n) { walk << n.getNodeName() << std::endl; });
-    EXPECT_EQ(walk.str(), "Postfix Operator\nVariable\n");
-}
-
 TEST(ASTTest, ValueDeclarationNode) {
     std::ostringstream ss;
     yy::location       loc;

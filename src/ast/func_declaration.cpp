@@ -2,12 +2,18 @@
 
 #include <algorithm>
 
+#include "pattern/pattern.h"
+
+#include "type/type.h"
+
+#include "type/type_context.h"
 #include "type/type_exception.h"
 
 #include "json.h"
 
 namespace TypeChecker {
 class Context;
+
 } // namespace TypeChecker
 namespace yy {
 class location;
@@ -19,14 +25,16 @@ using namespace std;
 namespace AST {
 
 FuncDeclaration::FuncDeclaration(
-    const yy::location &  loc,
-    const yy::location &  varLoc,
-    string                variable,
-    Pattern::Pattern::Vec args,
-    optional<Type::Ptr>   retType)
+    const yy::location &                 loc,
+    const yy::location &                 varLoc,
+    string                               variable,
+    vector<unique_ptr<Pattern::Pattern>> args,
+    optional<unique_ptr<Type>>           retType)
     : Declaration(loc, varLoc, move(variable))
     , args_{move(args)}
     , retType_{move(retType)} {}
+
+FuncDeclaration::~FuncDeclaration() = default;
 
 void
 FuncDeclaration::json(ostream &os) const {
@@ -37,14 +45,23 @@ FuncDeclaration::json(ostream &os) const {
     obj.printKeyValue("return type", retType_);
 }
 
-const Pattern::Pattern::Vec &
+const vector<unique_ptr<Pattern::Pattern>> &
 FuncDeclaration::getArgs() const {
     return args_;
 }
 
-const std::optional<TypeChecker::Type::Ptr> &
+const optional<unique_ptr<TypeChecker::Type>> &
 FuncDeclaration::getRetType() const {
     return retType_;
+}
+
+void
+FuncDeclaration::walk(const function<void(const Node &)> &fn) const {
+    Declaration::walk(fn);
+    for_each(args_.begin(), args_.end(), [&](const auto &a) { a->walk(fn); });
+    if (retType_) {
+        (*retType_)->walk(fn);
+    }
 }
 
 const string &
@@ -53,20 +70,27 @@ FuncDeclaration::getNodeName() const {
     return name;
 }
 
+TypeChecker::Context &
+FuncDeclaration::calculateContext(TypeChecker::Context &outerCtx) {
+    implCtx_ = make_unique<TypeChecker::Context>(outerCtx);
+    vector<reference_wrapper<Type>> types;
+    for (const auto &arg : args_) {
+        auto &type = arg->getType(*implCtx_);
+        // TODO
+    }
+}
+
 Type &
-FuncDeclaration::getTypeImpl(TypeChecker::Context &) {
+FuncDeclaration::getTypeImpl(TypeChecker::Context &ctx) {
+    auto                            newContext = ctx;
+    vector<reference_wrapper<Type>> types;
+    for (const auto &arg : args_) {
+        auto &type = arg->getType(newContext);
+        // TODO
+    }
     throw TypeChecker::TypeException(
         "type error: " + getNodeName() + " type checking not implemented",
         getLoc());
-}
-
-void
-FuncDeclaration::walk(const std::function<void(const Node &)> &fn) const {
-    Declaration::walk(fn);
-    for_each(args_.begin(), args_.end(), [&](const auto &a) { a->walk(fn); });
-    if (retType_) {
-        (*retType_)->walk(fn);
-    }
 }
 
 } // namespace AST

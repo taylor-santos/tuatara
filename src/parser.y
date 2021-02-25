@@ -158,8 +158,8 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
 
 %token<std::string>
     IDENT       "identifier"
+    OPERATOR    "operator"
     STRING      "string literal"
-    OPERATION   "operator"
 %token<int64_t>
     INT     "int literal"
 %token<double>
@@ -220,6 +220,8 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     constraint_pattern
 %type<std::string>
     ident
+    operator
+    func_name
 %start file
 
 %%
@@ -236,12 +238,14 @@ opt_expressions
 file_expressions
     : expression_line {
         $$.push_back($1);
-        std::cerr << *$$.back() << std::endl;
+        //TODO
+        //std::cout << *$$.back() << std::endl;
     }
     | file_expressions expression_line {
         $$ = $1;
         $$.push_back($2);
-        std::cerr << *$$.back() << std::endl;
+        //TODO
+        //std::cout << *$$.back() << std::endl;
     }
 
 expression_line
@@ -320,6 +324,9 @@ tuple_expression
 
 ident
     : "identifier"
+
+operator
+    : "operator"
     | "=" {
         $$ = "=";
     }
@@ -400,14 +407,23 @@ ident_expression
     | ident {
         $$ = make_unique<AST::Variable>(@$, $1);
     }
+    | operator {
+        $$ = make_unique<AST::Variable>(@$, $1);
+    }
 
 access_expression
     : primary_expression
     | ident_expression "." ident {
         $$ = make_unique<AST::Field>(@$, $1, @3, $3);
     }
+    | ident_expression "." operator {
+        $$ = make_unique<AST::Field>(@$, $1, @3, $3);
+    }
     | ident_expression ident {
         $$ = make_unique<AST::IdentAccess>(@$, $1, @2, $2);
+    }
+    | ident_expression operator {
+        $$ = make_unique<AST::Field>(@$, $1, @2, $2);
     }
     | ident_expression primary_expression {
         $$ = make_unique<AST::Call>(@$, $1, $2);
@@ -503,7 +519,7 @@ base_type
         $$ = make_unique<TypeChecker::Object>(@$, $1);
     }
     | "(" product_type_list ")" {
-        $$ = make_unique<TypeChecker::Product>(@$, $2);
+        $$ = make_unique<TypeChecker::ManagedProduct>(@$, $2);
     }
     | "(" func_type ")" {
         $$ = $2;
@@ -525,8 +541,12 @@ product_type_list
         $$.push_back($3);
     }
 
+func_name
+    : ident
+    | operator
+
 func_impl
-    : "func" ident opt_patterns opt_ret_type "line break" "indent" expressions "outdent" {
+    : "func" func_name opt_patterns opt_ret_type "line break" "indent" expressions "outdent" {
         @$ = yy::location{@1.begin, @7.end};
         auto block = make_unique<AST::Block>(@7, $7);
         $$ = make_unique<AST::FuncImpl>(@$, @2, $2, $3, move(block), $4);
@@ -569,8 +589,8 @@ pattern_list
     }
 
 pattern
-    : "var" ident {
-        $$ = make_unique<Pattern::NamedWildcard>(@$, $2);
+    : ident {
+        $$ = make_unique<Pattern::NamedWildcard>(@$, $1);
     }
     | literal {
         $$ = make_unique<Pattern::Literal>(@$, $1);
@@ -587,8 +607,8 @@ pattern
     | constraint_pattern {
         $$ = $1;
     }
-    | "var" ident constraint_pattern {
-        $$ = make_unique<Pattern::NamedConstraint>(@$, $2, $3);
+    | ident constraint_pattern {
+        $$ = make_unique<Pattern::NamedConstraint>(@$, $1, $2);
     }
 
 constraint_pattern

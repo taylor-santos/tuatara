@@ -1,28 +1,25 @@
 #include "ast/func_impl.h"
 
+#include "ast/block.h"
+
+#include "pattern/pattern.h"
+
+#include "type/type.h"
 #include "type/type_exception.h"
 
 #include "json.h"
 
-namespace TypeChecker {
-class Context;
-} // namespace TypeChecker
-namespace yy {
-class location;
-} // namespace yy
-
-using namespace TypeChecker;
 using namespace std;
 
 namespace AST {
 
 FuncImpl::FuncImpl(
-    const yy::location &  loc,
-    const yy::location &  varLoc,
-    string                variable,
-    Pattern::Pattern::Vec args,
-    Block::Ptr            body,
-    optional<Type::Ptr>   retType)
+    const yy::location &                    loc,
+    const yy::location &                    varLoc,
+    string                                  variable,
+    vector<unique_ptr<Pattern::Pattern>>    args,
+    unique_ptr<Block>                       body,
+    optional<unique_ptr<TypeChecker::Type>> retType)
     : FuncDeclaration(loc, varLoc, move(variable), move(args), move(retType))
     , body_{move(body)} {}
 
@@ -48,8 +45,10 @@ FuncImpl::getNodeName() const {
     return name;
 }
 
-Type &
-FuncImpl::getTypeImpl(TypeChecker::Context &) {
+TypeChecker::Type &
+FuncImpl::getTypeImpl(TypeChecker::Context &ctx) {
+    auto &sig = FuncDeclaration::getTypeImpl(ctx);
+    (void)sig; // TODO
     throw TypeChecker::TypeException(
         "type error: " + getNodeName() + " type checking not implemented",
         getLoc());

@@ -25,9 +25,9 @@ main(int argc, char *argv[]) {
                 for (const auto &stmt : drv.statements) {
                     stmt->getType(ctx);
                     cout << *stmt << endl;
-                    // stmt->walk([&](const AST::Node &node) -> void {
-                    //    Print::error(cout, node.getTypeName(), node.getLoc(), drv.lines);
-                    //});
+                    stmt->walk([&](const AST::Node &node) -> void {
+                        Print::error(cout, node.getNodeName(), node.getLoc(), drv.lines);
+                    });
                 }
             } catch (TypeChecker::TypeException &e) {
                 for (const auto &[msg, loc] : e.getMsgs()) {

@@ -1,7 +1,11 @@
 #ifndef PATTERN_TUPLE_H
 #define PATTERN_TUPLE_H
 
+#include <optional>
+
 #include "pattern/pattern.h"
+
+#include "type/product.h"
 
 namespace AST {
 class Node;
@@ -22,9 +26,11 @@ public: // Methods
     ~Tuple() override = default;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
+    TypeChecker::Type &              getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
-    Pattern::Vec patterns_;
+    Pattern::Vec                        patterns_;
+    std::optional<TypeChecker::Product> type_;
 
 private: // Methods
     void json(std::ostream &os) const override;

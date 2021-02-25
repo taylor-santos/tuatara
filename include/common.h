@@ -12,7 +12,6 @@
 #include "ast/if.h"
 #include "ast/if_else.h"
 #include "ast/index.h"
-#include "ast/infix_operator.h"
 #include "ast/int.h"
 #include "ast/lambda.h"
 #include "ast/match.h"

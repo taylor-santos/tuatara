@@ -8,21 +8,22 @@
 #include "driver.h"
 #include "gtest/gtest.h"
 
-#define EXPECT_JSON(INPUT, TYPE, JSON)                                                           \
-    do {                                                                                         \
-        std::istringstream iss(INPUT);                                                           \
-        std::ostringstream oss;                                                                  \
-        yy::Driver         drv;                                                                  \
-        EXPECT_EQ(drv.parse(iss, oss), 0);                                                       \
-        EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";                        \
-        ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement"; \
-        EXPECT_NO_THROW({                                                                        \
-            const auto &       node = dynamic_cast<AST::TYPE &>(*drv.statements[0]);             \
-            std::ostringstream ss;                                                               \
-            ss << node;                                                                          \
-            EXPECT_EQ(ss.str(), JSON);                                                           \
-        }) << "Expected AST node to be a "                                                       \
-           << #TYPE;                                                                             \
+#define EXPECT_JSON(INPUT, TYPE, JSON)                                                            \
+    do {                                                                                          \
+        std::istringstream iss(INPUT);                                                            \
+        std::ostringstream oss;                                                                   \
+        yy::Driver         drv;                                                                   \
+        EXPECT_EQ(drv.parse(iss, oss), 0);                                                        \
+        EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";                         \
+        ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement";  \
+        EXPECT_NO_THROW({                                                                         \
+            const auto &       node = dynamic_cast<AST::TYPE &>(*drv.statements[0]);              \
+            std::ostringstream ss;                                                                \
+            ss << node;                                                                           \
+            EXPECT_EQ(ss.str(), JSON);                                                            \
+        }) << "Expected AST node to be a \""                                                      \
+           << #TYPE << "\" but got a \"" << drv.statements[0]->getNodeName() << "\"" << std::endl \
+           << *drv.statements[0];                                                                 \
     } while (0)
 
 TEST(ParserTest, EmptyFile) {
@@ -70,13 +71,15 @@ TEST(ParserTest, Variable) {
 TEST(ParserTest, Assignment) {
     EXPECT_JSON(
         "abc = 5",
-        InfixOperator,
-        R"({"node":"infix operator",)"
-        R"("operation":"=",)"
-        R"("lhs":{)"
+        Call,
+        R"({"node":"function call",)"
+        R"("function":{)"
+        R"("node":"field",)"
+        R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"abc"},)"
-        R"("rhs":{)"
+        R"("field":"="},)"
+        R"("arg":{)"
         R"("node":"int",)"
         R"("value":5}})");
 }
@@ -216,10 +219,9 @@ TEST(ParserTest, WhileStatement) {
 TEST(ParserTest, MatchBlock) {
     EXPECT_JSON(
         "match foo\n"
-        "  case var x: int -> 5\n"
-        "  case var y= 0.5 -> 1.2\n"
-        "  case var z\n"
-        "    foo = 5\n"
+        "  case x: int -> 5\n"
+        "  case y= 0.5 -> 1.2\n"
+        "  case z\n"
         "    123",
         Match,
         R"({"node":"match",)"
@@ -255,14 +257,6 @@ TEST(ParserTest, MatchBlock) {
         R"("body":{)"
         R"("node":"block",)"
         R"("statements":[{)"
-        R"("node":"infix operator",)"
-        R"("operation":"=",)"
-        R"("lhs":{)"
-        R"("node":"variable",)"
-        R"("name":"foo"},)"
-        R"("rhs":{)"
-        R"("node":"int",)"
-        R"("value":5}},{)"
         R"("node":"int",)"
         R"("value":123}]}}]})");
 }
@@ -274,7 +268,9 @@ TEST(ParserTest, FunctionCallNoArgs) {
         R"({"node":"function call",)"
         R"("function":{)"
         R"("node":"variable",)"
-        R"("name":"foo"}})");
+        R"("name":"foo"},)"
+        R"("arg":{)"
+        R"("node":"unit"}})");
 }
 
 TEST(ParserTest, FunctionCallOneArg) {
@@ -520,93 +516,93 @@ TEST(ParserTest, TupleExpression) {
 TEST(ParserTest, InfixOperator) {
     EXPECT_JSON(
         R"(a #$% b)",
-        Operator,
-        R"({"node":"infix operator",)"
-        R"("operation":"#$%",)"
-        R"("lhs":{)"
+        IdentAccess,
+        R"({"node":"ident access",)"
+        R"("expr":{)"
+        R"("node":"field",)"
+        R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("rhs":{)"
-        R"("node":"variable",)"
-        R"("name":"b"}})");
+        R"("field":"#$%"},)"
+        R"("ident":"b"})");
 }
 
 TEST(ParserTest, PostfixOperator) {
     EXPECT_JSON(
         R"(a#$%)",
-        Operator,
-        R"({"node":"postfix operator",)"
-        R"("operation":"#$%",)"
-        R"("lhs":{)"
+        Field,
+        R"({"node":"field",)"
+        R"("expr":{)"
         R"("node":"variable",)"
-        R"("name":"a"}})");
+        R"("name":"a"},)"
+        R"("field":"#$%"})");
 }
 
 TEST(ParserTest, PrefixOperator) {
     EXPECT_JSON(
         R"(#$%b)",
-        Operator,
-        R"({"node":"prefix operator",)"
-        R"("operation":"#$%",)"
-        R"("rhs":{)"
+        IdentAccess,
+        R"({"node":"ident access",)"
+        R"("expr":{)"
         R"("node":"variable",)"
-        R"("name":"b"}})");
+        R"("name":"#$%"},)"
+        R"("ident":"b"})");
 }
 
 TEST(ParserTest, AssignOperator) {
     EXPECT_JSON(
         R"(a = b)",
-        Operator,
-        R"({"node":"infix operator",)"
-        R"("operation":"=",)"
-        R"("lhs":{)"
+        IdentAccess,
+        R"({"node":"ident access",)"
+        R"("expr":{)"
+        R"("node":"field",)"
+        R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("rhs":{)"
-        R"("node":"variable",)"
-        R"("name":"b"}})");
+        R"("field":"="},)"
+        R"("ident":"b"})");
 }
 
 TEST(ParserTest, LessThanOperator) {
     EXPECT_JSON(
         R"(a < b)",
-        Operator,
-        R"({"node":"infix operator",)"
-        R"("operation":"<",)"
-        R"("lhs":{)"
+        IdentAccess,
+        R"({"node":"ident access",)"
+        R"("expr":{)"
+        R"("node":"field",)"
+        R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("rhs":{)"
-        R"("node":"variable",)"
-        R"("name":"b"}})");
+        R"("field":"<"},)"
+        R"("ident":"b"})");
 }
 
 TEST(ParserTest, GreaterThanOperator) {
     EXPECT_JSON(
         R"(a > b)",
-        Operator,
-        R"({"node":"infix operator",)"
-        R"("operation":">",)"
-        R"("lhs":{)"
+        IdentAccess,
+        R"({"node":"ident access",)"
+        R"("expr":{)"
+        R"("node":"field",)"
+        R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("rhs":{)"
-        R"("node":"variable",)"
-        R"("name":"b"}})");
+        R"("field":">"},)"
+        R"("ident":"b"})");
 }
 
 TEST(ParserTest, BitOrOperator) {
     EXPECT_JSON(
         R"(a | b)",
-        Operator,
-        R"({"node":"infix operator",)"
-        R"("operation":"|",)"
-        R"("lhs":{)"
+        IdentAccess,
+        R"({"node":"ident access",)"
+        R"("expr":{)"
+        R"("node":"field",)"
+        R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("rhs":{)"
-        R"("node":"variable",)"
-        R"("name":"b"}})");
+        R"("field":"|"},)"
+        R"("ident":"b"})");
 }
 
 TEST(ParserTest, FuncImpl) {
@@ -786,17 +782,15 @@ TEST(ParserTest, BlockExpression) {
 }
 
 TEST(ParserTest, SyntaxError) {
-    std::istringstream iss("foo bar");
+    std::istringstream iss("func\n");
     std::ostringstream oss;
     yy::Driver         drv;
     EXPECT_NE(drv.parse(iss, oss), 0) << "Expected Bison to return an error code";
     EXPECT_EQ(
         oss.str(),
-        "* 1:5 - 1:8: syntax error: unexpected identifier\n"
-        "1 | foo bar\n"
-        "  |     ^~~\n"
-        R"(expected: "line break", ";", "=", "(", "[", "<", ">", ",", "|", "?", or "operator")"
-        "\n")
+        "* 2:1 - 2:1: syntax error: unexpected line break\n"
+        "expected: \"->\", \":\", \"(\", \"=\", \"|\", \"?\", \"<\", \">\", \"identifier\", or "
+        "\"operator\"\n")
         << "Expected Bison to output a syntax error message";
 }
 

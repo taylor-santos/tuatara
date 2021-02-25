@@ -35,4 +35,15 @@ Tuple::getNodeName() const {
     return name;
 }
 
+TypeChecker::Type &
+Tuple::getTypeImpl(TypeChecker::Context &ctx) {
+    vector<reference_wrapper<TypeChecker::Type>> types;
+    types.reserve(patterns_.size());
+    for (const auto &pattern : patterns_) {
+        types.emplace_back(pattern->getType(ctx));
+    }
+    type_.emplace(getLoc(), move(types));
+    return *type_;
+}
+
 } // namespace Pattern

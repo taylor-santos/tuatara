@@ -33,4 +33,9 @@ Literal::getNodeName() const {
     return name;
 }
 
+TypeChecker::Type &
+Literal::getTypeImpl(TypeChecker::Context &ctx) {
+    return literal_->getType(ctx);
+}
+
 } // namespace Pattern

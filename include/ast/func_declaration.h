@@ -5,17 +5,15 @@
 
 #include "ast/declaration.h"
 
-#include "pattern/pattern.h"
-
-#include "type/type.h"
-
 namespace yy {
 class location;
 } // namespace yy
-
 namespace TypeChecker {
 class Context;
-}
+} // namespace TypeChecker
+namespace Pattern {
+class Pattern;
+} // namespace Pattern
 
 namespace AST {
 class Node;
@@ -32,20 +30,23 @@ public: // Methods
         std::string                                       variable,
         std::vector<std::unique_ptr<Pattern::Pattern>>    args,
         std::optional<std::unique_ptr<TypeChecker::Type>> retType = {});
+    ~FuncDeclaration() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 protected: // Methods
     [[nodiscard]] const std::vector<std::unique_ptr<Pattern::Pattern>> &   getArgs() const;
     [[nodiscard]] const std::optional<std::unique_ptr<TypeChecker::Type>> &getRetType() const;
+    TypeChecker::Type &   getTypeImpl(TypeChecker::Context &ctx) override;
+    TypeChecker::Context &calculateContext(TypeChecker::Context &outerCtx);
 
 private: // Fields
     std::vector<std::unique_ptr<Pattern::Pattern>>    args_;
     std::optional<std::unique_ptr<TypeChecker::Type>> retType_;
+    std::unique_ptr<TypeChecker::Context>             implCtx_;
 
 private: // Methods
-    void               json(std::ostream &os) const override;
-    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
+    void json(std::ostream &os) const override;
 };
 
 } // namespace AST

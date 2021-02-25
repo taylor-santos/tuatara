@@ -1,7 +1,6 @@
 #ifndef AST_FUNC_IMPL_H
 #define AST_FUNC_IMPL_H
 
-#include "ast/block.h"
 #include "ast/func_declaration.h"
 
 namespace Pattern {
@@ -12,12 +11,14 @@ class location;
 } // namespace yy
 
 namespace TypeChecker {
+class Type;
 class Context;
-}
+} // namespace TypeChecker
 
 namespace AST {
 
 class Node;
+class Block;
 
 class FuncImpl final : public FuncDeclaration {
 public: // Aliases

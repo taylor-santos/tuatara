@@ -1,6 +1,7 @@
 #include "type/product.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "json.h"
 
@@ -12,7 +13,7 @@ using namespace std;
 
 namespace TypeChecker {
 
-Product::Product(yy::location loc, vector<Type::Ptr> types)
+Product::Product(yy::location loc, vector<reference_wrapper<Type>> types)
     : Type(loc)
     , types_{move(types)} {}
 
@@ -26,7 +27,7 @@ Product::json(ostream &os) const {
 void
 Product::walk(const std::function<void(const Node &)> &fn) const {
     Type::walk(fn);
-    for_each(types_.begin(), types_.end(), [&](const auto &t) { t->walk(fn); });
+    for_each(types_.begin(), types_.end(), [&](const auto &t) { t.get().walk(fn); });
 }
 
 const string &
@@ -37,7 +38,7 @@ Product::getNodeName() const {
 
 void
 Product::verifyImpl(Context &ctx) {
-    for_each(types_.begin(), types_.end(), [&](const auto &t) { t->verify(ctx); });
+    for_each(types_.begin(), types_.end(), [&](const auto &t) { t.get().verify(ctx); });
 }
 void
 Product::pretty(ostream &out, bool mod) const {
@@ -47,7 +48,7 @@ Product::pretty(ostream &out, bool mod) const {
     string sep;
     for (const auto &t : types_) {
         out << sep;
-        t->pretty(out, false);
+        t.get().pretty(out, false);
         sep = ",";
     }
     if (mod) {
@@ -68,8 +69,22 @@ Product::operator>=(const Product &other) const {
         types_.end(),
         other.types_.begin(),
         other.types_.end(),
-        [](const auto &a, const auto &b) { return (*b) <= (*a); });
+        [](const auto &a, const auto &b) { return (b.get()) <= (a.get()); });
     return firstDiff.first == types_.end();
 }
+
+static vector<reference_wrapper<Type>>
+makeTypeWrappers(vector<Type::Ptr> &types) {
+    vector<reference_wrapper<Type>> out;
+    out.reserve(types.size());
+    transform(types.begin(), types.end(), back_inserter(out), [](auto &type) {
+        return ref(*type);
+    });
+    return out;
+}
+
+ManagedProduct::ManagedProduct(yy::location loc, vector<Type::Ptr> types)
+    : Product(loc, makeTypeWrappers(types))
+    , types_{move(types)} {}
 
 } // namespace TypeChecker

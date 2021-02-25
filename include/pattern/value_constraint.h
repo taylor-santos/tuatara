@@ -25,6 +25,7 @@ public: // Methods
     ~ValueConstraint() override = default;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
+    TypeChecker::Type &              getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
     std::unique_ptr<AST::Expression> value_;

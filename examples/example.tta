@@ -1,9 +1,13 @@
+func foo(this: int, double = this * 2)
+    a
 
+var a = 1
 
+++ a
 
-5 + 6 + 7. + 8
+if true then
+    5 + 6 + 7. + 8
 
-/*
 var a = 1.
 var b: float = a
 var c = "Hello, world!"
@@ -30,9 +34,8 @@ var block = {
 match foo
     case 0 -> zero()
     case (_, :int) -> one()
-    case var x: double
+    case x: double
         two()
         x
-    case var y = 10
+    case y = 10
         foo()
-*/

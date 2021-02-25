@@ -33,4 +33,9 @@ ValueConstraint::getNodeName() const {
     return name;
 }
 
+TypeChecker::Type &
+ValueConstraint::getTypeImpl(TypeChecker::Context &ctx) {
+    return value_->getType(ctx);
+}
+
 } // namespace Pattern

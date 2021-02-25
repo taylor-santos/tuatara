@@ -48,8 +48,8 @@ TEST(TypeTest, ProductNode) {
     types.reserve(2);
     types.emplace_back(make_unique<TypeChecker::Object>(loc, "S"));
     types.emplace_back(make_unique<TypeChecker::Object>(loc, "T"));
-    TypeChecker::Product node(loc, move(types));
-    std::stringstream    ss;
+    TypeChecker::ManagedProduct node(loc, move(types));
+    std::stringstream           ss;
     ss << node;
     EXPECT_EQ(
         ss.str(),

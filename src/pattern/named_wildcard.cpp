@@ -27,4 +27,9 @@ NamedWildcard::getNodeName() const {
     return name;
 }
 
+const string *
+NamedWildcard::getName() {
+    return &name_;
+}
+
 } // namespace Pattern
