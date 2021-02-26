@@ -4,6 +4,7 @@
 #include <utility>
 
 #include "json.h"
+#include "toRefs.h"
 
 using std::function, std::ostream, std::ref, std::reference_wrapper, std::string, std::unique_ptr,
     std::vector;
@@ -15,6 +16,13 @@ class Context;
 Product::Product(yy::location loc, vector<reference_wrapper<Type>> types)
     : Type(loc)
     , types_{move(types)} {}
+
+Product::Product(yy::location loc, vector<unique_ptr<Type>> types)
+    : Type(loc)
+    , ownedTypes_{move(types)}
+    , types_{toRefs(ownedTypes_)} {}
+
+Product::~Product() = default;
 
 void
 Product::json(ostream &os) const {
@@ -71,23 +79,5 @@ Product::isSuperImpl(const class Product &other, Context &ctx) const {
         [&](const auto &a, const auto &b) { return b.get().isSubtype(a.get(), ctx); });
     return firstDiff.first == types_.end();
 }
-
-static vector<reference_wrapper<Type>>
-makeTypeWrappers(vector<unique_ptr<Type>> &types) {
-    vector<reference_wrapper<Type>> out;
-    out.reserve(types.size());
-    transform(types.begin(), types.end(), back_inserter(out), [](auto &type) {
-        return ref(*type);
-    });
-    return out;
-}
-
-ManagedProduct::ManagedProduct(yy::location loc, vector<unique_ptr<Type>> types)
-    : Product(loc, makeTypeWrappers(types))
-    , types_{move(types)} {}
-
-ManagedProduct::~ManagedProduct() = default;
-
-Product::~Product() = default;
 
 } // namespace TypeChecker

@@ -1,6 +1,10 @@
 #ifndef AST_H
 #define AST_H
 
+#define STRINGIFY_(X) #X
+#define STRINGIFY(X)  STRINGIFY_(X)
+#define LOC_STR       __FILE__ ":" STRINGIFY(__LINE__)
+
 #include <functional>
 #include <memory>
 

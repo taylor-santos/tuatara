@@ -45,9 +45,15 @@ If::getNodeName() const {
 }
 
 TypeChecker::Type &
-If::getTypeImpl(TypeChecker::Context &) {
+If::getTrueType(TypeChecker::Context &ctx) {
+    return block_->getType(ctx);
+}
+
+TypeChecker::Type &
+If::getTypeImpl(TypeChecker::Context &ctx) {
+    auto &trueType = getTrueType(ctx);
     throw TypeChecker::TypeException(
-        "type error: " + getNodeName() + " type checking not implemented",
+        "type error: " + getNodeName() + " type checking not implemented (" LOC_STR ")",
         getLoc());
 }
 

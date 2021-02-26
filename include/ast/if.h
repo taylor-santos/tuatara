@@ -23,6 +23,7 @@ public: // Methods
 protected: // Methods
     [[nodiscard]] const Expression &getCond() const;
     [[nodiscard]] const Expression &getBlock() const;
+    TypeChecker::Type &             getTrueType(TypeChecker::Context &ctx);
 
 private: // Fields
     std::unique_ptr<Expression> cond_;

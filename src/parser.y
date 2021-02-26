@@ -499,7 +499,7 @@ base_type
         $$ = make_unique<TypeChecker::Object>(@$, $1);
     }
     | "(" product_type_list ")" {
-        $$ = make_unique<TypeChecker::ManagedProduct>(@$, $2);
+        $$ = make_unique<TypeChecker::Product>(@$, $2);
     }
     | "(" func_type ")" {
         $$ = $2;

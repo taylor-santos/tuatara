@@ -5,16 +5,23 @@
 #include <algorithm>
 
 #include "json.h"
+#include "toRefs.h"
 
-using std::function, std::ostream, std::string, std::unique_ptr, std::vector;
+using std::function, std::ostream, std::ref, std::reference_wrapper, std::string, std::unique_ptr,
+    std::vector;
 
 namespace TypeChecker {
 
 class Context;
 
-Sum::Sum(yy::location loc, vector<unique_ptr<Type>> types)
+Sum::Sum(yy::location loc, vector<reference_wrapper<Type>> types)
     : Type(loc)
     , types_{move(types)} {}
+
+Sum::Sum(yy::location loc, std::vector<std::unique_ptr<Type>> types)
+    : Type(loc)
+    , ownedTypes_{move(types)}
+    , types_{toRefs(ownedTypes_)} {}
 
 Sum::~Sum() = default;
 
@@ -28,7 +35,7 @@ Sum::json(ostream &os) const {
 void
 Sum::walk(const function<void(const Node &)> &fn) const {
     Type::walk(fn);
-    for_each(types_.begin(), types_.end(), [&](const auto &t) { t->walk(fn); });
+    for_each(types_.begin(), types_.end(), [&](const auto &t) { t.get().walk(fn); });
 }
 
 const string &
@@ -39,7 +46,7 @@ Sum::getNodeName() const {
 
 void
 Sum::verifyImpl(Context &ctx) {
-    for_each(types_.begin(), types_.end(), [&](const auto &t) { t->verify(ctx); });
+    for_each(types_.begin(), types_.end(), [&](const auto &t) { t.get().verify(ctx); });
 }
 
 void
@@ -50,7 +57,7 @@ Sum::pretty(ostream &out, bool mod) const {
     string sep;
     for (auto &t : types_) {
         out << sep;
-        t->pretty(out, false);
+        t.get().pretty(out, false);
         sep = "|";
     }
     if (mod) {
@@ -66,7 +73,7 @@ Sum::isSubtype(const Type &other, Context &ctx) const {
 bool
 Sum::isSuper(const Type &other, Context &ctx) const {
     return any_of(types_.begin(), types_.end(), [&](const auto &type) {
-        return other.isSubtype(*type, ctx);
+        return other.isSubtype(type.get(), ctx);
     });
 }
 

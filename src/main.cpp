@@ -26,7 +26,7 @@ main(int argc, char *argv[]) {
             try {
                 for (const auto &stmt : drv.statements) {
                     stmt->getType(ctx);
-                    cout << *stmt << endl;
+                    // cout << *stmt << endl;
                     stmt->walk([&](const AST::Node &node) -> void {
                         Print::error(cout, node.getNodeName(), node.getLoc(), drv.lines);
                     });
@@ -37,6 +37,8 @@ main(int argc, char *argv[]) {
                                          return s1.second.name.length() < s2.second.name.length();
                                      })
                                      ->second.name.length();
+                    string label = "Name";
+                    maxLen       = max<int>(maxLen, label.length());
                     cout << setw(maxLen) << left << "Name"
                          << " | "
                          << "Type" << endl;

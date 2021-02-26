@@ -18,7 +18,7 @@ TEST(TypeTest, ProductJSON) {
     types.reserve(2);
     types.emplace_back(make_unique<Object>(loc, "S"));
     types.emplace_back(make_unique<Object>(loc, "T"));
-    ManagedProduct    node(loc, move(types));
+    Product      node(loc, move(types));
     stringstream ss;
     ss << node;
     EXPECT_EQ(
@@ -30,13 +30,13 @@ TEST(TypeTest, ProductJSON) {
 }
 
 TEST(TypeTest, ProductWalk) {
-    stringstream        ss;
+    stringstream             ss;
     yy::location             loc;
     vector<unique_ptr<Type>> types;
     types.reserve(2);
     types.emplace_back(make_unique<Object>(loc, "S"));
     types.emplace_back(make_unique<Object>(loc, "T"));
-    ManagedProduct node(loc, move(types));
+    Product node(loc, move(types));
     node.walk([&ss](const AST::Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Product Type\nObject Type\nObject Type\n");
 }

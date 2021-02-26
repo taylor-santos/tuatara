@@ -3,9 +3,6 @@ var sum: int|float = 5
 var a = 1
 var foobar = 12.34
 
-
-foo a
-
 if true then
     5 + 6 + 7. + 8
 

@@ -47,7 +47,7 @@ Index::getNodeName() const {
 TypeChecker::Type &
 Index::getTypeImpl(TypeChecker::Context &) {
     throw TypeChecker::TypeException(
-        "type error: " + getNodeName() + " type checking not implemented",
+        "type error: " + getNodeName() + " type checking not implemented (" LOC_STR ")",
         getLoc());
 }
 

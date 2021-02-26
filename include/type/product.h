@@ -15,6 +15,7 @@ class Context;
 class Product : public Type {
 public: // Methods
     Product(yy::location loc, std::vector<std::reference_wrapper<Type>> types);
+    Product(yy::location loc, std::vector<std::unique_ptr<Type>> types);
     ~Product() override;
 
     void                             walk(const std::function<void(const Node &)> &fn) const final;
@@ -23,21 +24,13 @@ public: // Methods
     bool                             isSubtype(const Type &other, Context &ctx) const final;
 
 private: // Fields
+    std::vector<std::unique_ptr<Type>>        ownedTypes_;
     std::vector<std::reference_wrapper<Type>> types_;
 
 private: // Methods
     void json(std::ostream &os) const final;
     void verifyImpl(Context &ctx) final;
     bool isSuperImpl(const class Product &other, Context &ctx) const final;
-};
-
-class ManagedProduct final : public Product {
-public: // Methods
-    ManagedProduct(yy::location loc, std::vector<std::unique_ptr<Type>> types);
-    ~ManagedProduct() override;
-
-private: // Fields
-    std::vector<std::unique_ptr<Type>> types_;
 };
 
 } // namespace TypeChecker
