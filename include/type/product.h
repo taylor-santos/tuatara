@@ -17,21 +17,18 @@ public: // Methods
     Product(yy::location loc, std::vector<std::reference_wrapper<Type>> types);
     ~Product() override;
 
-    void walk(const std::function<void(const Node &)> &fn) const override;
-    [[nodiscard]] const std::string &getNodeName() const override;
-    void                             pretty(std::ostream &out, bool mod) const override;
-    bool                             isSubtype(const Type &other, Context &ctx) const override;
-    bool                             isSupertype(const Type &other, Context &ctx) const override;
-
-protected: // Methods
-    bool isSupertype(const class Product &other, Context &ctx) const override;
+    void                             walk(const std::function<void(const Node &)> &fn) const final;
+    [[nodiscard]] const std::string &getNodeName() const final;
+    void                             pretty(std::ostream &out, bool mod) const final;
+    bool                             isSubtype(const Type &other, Context &ctx) const final;
 
 private: // Fields
     std::vector<std::reference_wrapper<Type>> types_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
-    void verifyImpl(Context &ctx) override;
+    void json(std::ostream &os) const final;
+    void verifyImpl(Context &ctx) final;
+    bool isSuperImpl(const class Product &other, Context &ctx) const final;
 };
 
 class ManagedProduct final : public Product {

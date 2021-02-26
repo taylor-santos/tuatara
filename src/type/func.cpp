@@ -89,16 +89,11 @@ Func::callAsFunc(Context &ctx, AST::Expression &arg) {
 
 bool
 Func::isSubtype(const Type &other, Context &ctx) const {
-    return other.isSupertype(*this, ctx);
+    return other.isSuperImpl(*this, ctx);
 }
 
 bool
-Func::isSupertype(const Type &other, Context &ctx) const {
-    return other.isSubtype(*this, ctx);
-}
-
-bool
-Func::isSupertype(const class Func &other, Context &ctx) const {
+Func::isSuperImpl(const class Func &other, Context &ctx) const {
     return argType_->isSubtype(*other.argType_, ctx) && other.retType_->isSubtype(*retType_, ctx);
 }
 

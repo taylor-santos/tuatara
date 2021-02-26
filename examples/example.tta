@@ -1,7 +1,7 @@
 var sum: int|float = 5
 
 var a = 1
-var b: float = a
+var foobar = 12.34
 
 
 foo a

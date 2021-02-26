@@ -18,18 +18,15 @@ public: // Methods
     ~Class() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
-    bool                             isSubtype(const Type &other, Context &ctx) const override;
-    bool                             isSupertype(const Type &other, Context &ctx) const override;
     Type *                           getField(const std::string &name) const;
     [[nodiscard]] bool               addField(const std::string &name, std::unique_ptr<Type> type);
     const std::string &              getClassName() const;
     void                             addSubType(Class *cl);
     void                             addSuperType(Class *cl);
+    bool                             isSubtype(const Type &other, Context &ctx) const override;
 
     static std::unordered_map<std::string, std::unique_ptr<Class>> generateBuiltins();
 
-protected: // Methods
-    bool isSupertype(const class Class &other, Context &ctx) const override;
 
 private: // Fields
     std::string                                            name_;
@@ -42,6 +39,7 @@ private: // Methods
     void verifyImpl(Context &ctx) override;
     void addSubTypeImpl(Class *cl);
     void addSuperTypeImpl(Class *cl);
+    bool isSuperImpl(const class Class &other, Context &ctx) const override;
 };
 
 } // namespace TypeChecker

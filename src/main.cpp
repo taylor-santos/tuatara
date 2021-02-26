@@ -1,3 +1,5 @@
+#include <iomanip>
+
 #include "type/type_context.h"
 #include "type/type_exception.h"
 
@@ -28,6 +30,21 @@ main(int argc, char *argv[]) {
                     stmt->walk([&](const AST::Node &node) -> void {
                         Print::error(cout, node.getNodeName(), node.getLoc(), drv.lines);
                     });
+                    int maxLen = max_element(
+                                     ctx.getSymbols().begin(),
+                                     ctx.getSymbols().end(),
+                                     [](const auto &s1, const auto &s2) -> bool {
+                                         return s1.second.name.length() < s2.second.name.length();
+                                     })
+                                     ->second.name.length();
+                    cout << setw(maxLen) << left << "Name"
+                         << " | "
+                         << "Type" << endl;
+                    for (const auto &[name, symbol] : ctx.getSymbols()) {
+                        cout << setw(maxLen) << left << name << " : ";
+                        symbol.type.pretty(cout);
+                        cout << endl;
+                    }
                 }
             } catch (TypeChecker::TypeException &e) {
                 for (const auto &[msg, loc] : e.getMsgs()) {

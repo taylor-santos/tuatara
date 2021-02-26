@@ -19,10 +19,6 @@ public: // Methods
     [[nodiscard]] const std::string &getNodeName() const override;
     void                             pretty(std::ostream &out, bool mod) const override;
     bool                             isSubtype(const Type &other, Context &ctx) const override;
-    bool                             isSupertype(const Type &other, Context &ctx) const override;
-
-protected: // Methods
-    bool isSupertype(const class Maybe &other, Context &ctx) const override;
 
 private: // Fields
     std::unique_ptr<Type> type_;
@@ -30,6 +26,7 @@ private: // Fields
 private: // Methods
     void json(std::ostream &os) const override;
     void verifyImpl(Context &ctx) override;
+    bool isSuperImpl(const class Maybe &other, Context &ctx) const override;
 };
 
 } // namespace TypeChecker

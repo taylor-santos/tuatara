@@ -98,16 +98,11 @@ Class::addField(const string &name, unique_ptr<Type> type) {
 
 bool
 Class::isSubtype(const Type &other, Context &ctx) const {
-    return other.isSupertype(*this, ctx);
+    return other.isSuperImpl(*this, ctx);
 }
 
 bool
-Class::isSupertype(const Type &other, Context &ctx) const {
-    return other.isSubtype(*this, ctx);
-}
-
-bool
-Class::isSupertype(const Class &other, Context &) const {
+Class::isSuperImpl(const Class &other, Context &) const {
     if (this == &other) {
         return true;
     }

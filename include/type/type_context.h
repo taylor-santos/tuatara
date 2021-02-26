@@ -24,13 +24,14 @@ public: // Methods
     Context();
     Context(const Context &other) = default;
     ~Context();
-    auto                                operator=(const Context &) = delete;
-    [[nodiscard]] std::optional<Symbol> getSymbol(const std::string &name) const;
-    void                                setSymbol(const Symbol &symbol);
-    Func *                              getFuncSignature() const;
-    void                                setFuncSignature(Func *funcSignature);
-    void                                addClass(const std::string &name, Class &cl);
-    [[nodiscard]] Class *               getClass(const std::string &name) const;
+    auto                                           operator=(const Context &) = delete;
+    [[nodiscard]] std::optional<Symbol>            getSymbol(const std::string &name) const;
+    void                                           setSymbol(const Symbol &symbol);
+    Func *                                         getFuncSignature() const;
+    void                                           setFuncSignature(Func *funcSignature);
+    void                                           addClass(const std::string &name, Class &cl);
+    [[nodiscard]] Class *                          getClass(const std::string &name) const;
+    const std::unordered_map<std::string, Symbol> &getSymbols() const;
     const std::unordered_map<std::string, std::reference_wrapper<Class>> &getClasses() const;
 
 private: // Fields

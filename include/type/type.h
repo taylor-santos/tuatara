@@ -28,7 +28,7 @@ public: // Methods
     virtual void  pretty(std::ostream &out, bool mod) const = 0;
     virtual Type &callAsFunc(Context &ctx, AST::Expression &arg);
     virtual bool  isSubtype(const Type &other, Context &ctx) const = 0;
-    virtual bool  isSupertype(const Type &other, Context &ctx) const;
+    bool          isSupertype(const Type &other, Context &ctx) const;
     Type &        operator=(const Type &) = delete;
 
 protected: // Enum Classes
@@ -38,21 +38,21 @@ protected: // Methods
     virtual void verifyImpl(Context &ctx) = 0;
     void         setVerifyState(VerifyState verifyState);
     friend class Array;
-    virtual bool isSupertype(const class Array &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Array &other, Context &ctx) const;
     friend class Class;
-    virtual bool isSupertype(const class Class &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Class &other, Context &ctx) const;
     friend class Func;
-    virtual bool isSupertype(const class Func &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Func &other, Context &ctx) const;
     friend class Maybe;
-    virtual bool isSupertype(const class Maybe &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Maybe &other, Context &ctx) const;
     friend class Object;
-    virtual bool isSupertype(const class Object &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Object &other, Context &ctx) const;
     friend class Product;
-    virtual bool isSupertype(const class Product &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Product &other, Context &ctx) const;
     friend class Sum;
-    virtual bool isSupertype(const class Sum &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Sum &other, Context &ctx) const;
     friend class Unit;
-    virtual bool isSupertype(const class Unit &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Unit &other, Context &ctx) const;
 
 private: // Fields
     VerifyState verifyState_ = VerifyState::NONE;

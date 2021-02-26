@@ -61,6 +61,11 @@ Context::getClass(const string &name) const {
     return &it->second.get();
 }
 
+const unordered_map<std::string, Context::Symbol> &
+Context::getSymbols() const {
+    return symbols_;
+}
+
 const std::unordered_map<std::string, std::reference_wrapper<Class>> &
 Context::getClasses() const {
     return classes_;
