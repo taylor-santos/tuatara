@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "type/product.h"
 #include "type/type_exception.h"
 
 #include "json.h"
@@ -14,7 +15,8 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::ostream, std::string, std::unique_ptr, std::vector;
+using std::function, std::make_unique, std::ostream, std::reference_wrapper, std::string,
+    std::unique_ptr, std::vector;
 
 namespace AST {
 
@@ -44,10 +46,14 @@ Tuple::getNodeName() const {
 }
 
 TypeChecker::Type &
-Tuple::getTypeImpl(TypeChecker::Context &) {
-    throw TypeChecker::TypeException(
-        "type error: " + getNodeName() + " type checking not implemented",
-        getLoc());
+Tuple::getTypeImpl(TypeChecker::Context &ctx) {
+    vector<reference_wrapper<TypeChecker::Type>> types;
+    types.reserve(exprs_.size());
+    for (auto &expr : exprs_) {
+        types.emplace_back(expr->getType(ctx));
+    }
+    type_ = make_unique<TypeChecker::Product>(getLoc(), move(types));
+    return *type_;
 }
 
 } // namespace AST

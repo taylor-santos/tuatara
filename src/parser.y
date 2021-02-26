@@ -152,6 +152,7 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     LBRACE      "{"
     RBRACE      "}"
     COMMA       ","
+    PERIOD      "."
     WILDCARD    "_"
 // Valid ids that are used in other grammar rules:
     ASSIGN      "="
@@ -187,11 +188,9 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     value_pattern
 %type<std::vector<std::unique_ptr<AST::Expression>>>
     opt_expressions
-    file_expressions
     expressions
     tuple_expression
     multi_expression
-    multi_semi_expression
 %type<std::unique_ptr<AST::Literal>>
     literal
 %type<std::unique_ptr<AST::Block>>
@@ -237,20 +236,7 @@ file
 
 opt_expressions
     : %empty {}
-    | file_expressions
-
-file_expressions
-    : expression_line {
-        $$.push_back($1);
-        //TODO
-        //std::cout << *$$.back() << std::endl;
-    }
-    | file_expressions expression_line {
-        $$ = $1;
-        $$.push_back($2);
-        //TODO
-        //std::cout << *$$.back() << std::endl;
-    }
+    | expressions
 
 expression_line
     : expression "line break" {
@@ -282,24 +268,14 @@ expression
         $$ = make_unique<AST::Tuple>(@$, $1);
     }
 
-semicolons
-    : ";"
-    | semicolons ";"
-
-multi_semi_expression
-    : ident_expression semicolons {
-        $$.push_back($1);
-    }
-    | multi_semi_expression ident_expression semicolons {
-        $$ = $1;
-        $$.push_back($2);
-    }
-
 multi_expression
-    : multi_semi_expression
-    | multi_semi_expression ident_expression {
+    : ident_expression ";" ident_expression {
+        $$.push_back($1);
+        $$.push_back($3);
+    }
+    | multi_expression ";" ident_expression {
         $$ = $1;
-        $$.push_back($2);
+        $$.push_back($3);
     }
 
 declaration

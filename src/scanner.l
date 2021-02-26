@@ -196,27 +196,39 @@ inf       (?i:inf)
     LINE();
 }
 
-"/*"        yy_push_state(COMMENT);
+[[:blank:]]*"/*" {
+    STEP();
+    yy_push_state(COMMENT);
+}
 "*/"        throw yy::Parser::syntax_error(LOC, "unexpected */ outside of block comment");
 <COMMENT>{
-    "/*"                        yy_push_state(COMMENT);
-    "*/"[[:blank:]]*/[^\n\r \t] {
+    "/*"  {
+        STEP();
+        yy_push_state(COMMENT);
+    }
+    "*/"[[:blank:]]*[\n\r] {
+        LINE();
+        yy_pop_state();
+    }
+    "*/"[[:blank:]]*/[^ \t] {
+        STEP();
         if (yy_top_state() != COMMENT) {
+            // "*/" can only have non-whitespace characters trailing it if it's inside another block comment.
             throw yy::Parser::syntax_error(LOC, "block comment */ must be followed by a line break");
-        } else {
-            yy_pop_state();
         }
-    }
-    "*/"[[:blank:]]*[\n\r]* {
         yy_pop_state();
     }
-    "*/"[[:blank:]]* {
+    "*/"[[:blank:]\n\r]* {
+        // Handle the case where "*/" is followed by EOF
+        STEP();
         yy_pop_state();
     }
-    [\n\r]+ {
+    [^*/]+ {
         LINE();
     }
-    [^\n\r\*\\\/]
+    . {
+        STEP();
+    }
     <<EOF>> {
         throw yy::Parser::syntax_error(LOC, "unexpected EOF in block comment");
     }
@@ -275,7 +287,10 @@ inf       (?i:inf)
 }
 
 
-"//".*      // Ignore comments
+"//".* {
+    // Ignore comments
+    STEP();
+}
 
 "var"       PUSH_TOKEN_AND_POP(VAR);
 "func"      PUSH_TOKEN_AND_POP(FUNC);
@@ -296,8 +311,8 @@ inf       (?i:inf)
 "{"         PUSH_TOKEN_AND_POP(LBRACE);
 "}"         PUSH_TOKEN_AND_POP(RBRACE);
 ","         PUSH_TOKEN_AND_POP(COMMA);
+"."         PUSH_TOKEN_AND_POP(PERIOD);
 "_"         PUSH_TOKEN_AND_POP(WILDCARD);
-
 %{ /* Reserved operator symbols */ %}
 "="         PUSH_TOKEN_AND_POP(ASSIGN);
 "|"         PUSH_TOKEN_AND_POP(OR);
@@ -320,7 +335,10 @@ inf       (?i:inf)
 {op}({op}|{reserved})*       PUSH_VALUE_AND_POP(OPERATOR, yytext);
 {reserved}({op}|{reserved})+ PUSH_VALUE_AND_POP(OPERATOR, yytext);
 
-[[:blank:]]+  // Ignore non-leading whitespace
+[[:blank:]]+ {
+    // Ignore non-leading whitespace
+    STEP();
+}
 
 "(" {
     yy_push_state(PAREN);
@@ -330,7 +348,10 @@ inf       (?i:inf)
     PUSH_TOKEN_AND_POP(RPAREN);
 }
 
-";"[[:blank:]]*/[\n\r;]  // Ignore ';'s that are immediately followed by a line break or another ';'
+";"[[:blank:]]*/[\n\r;] {
+    // Ignore ';'s that are immediately followed by a line break or another ';'
+    STEP();
+}
 ";"[[:blank:]]* {
     PUSH_TOKEN_AND_POP(SEMICOLON);
 }
@@ -371,14 +392,7 @@ inf       (?i:inf)
             case '\a': ss << R"('\a')"; break;
             case '\b': ss << R"('\b')"; break;
             case '\f': ss << R"('\f')"; break;
-            case '\n': ss << R"('\n')"; break;
-            case '\r': ss << R"('\r')"; break;
-            case '\t': ss << R"('\t')"; break;
             case '\v': ss << R"('\v')"; break;
-            case '\\': ss << R"('\\')"; break;
-            case '\'': ss << R"('\'')"; break;
-            case '\"': ss << R"('\"')"; break;
-            case '\?': ss << R"('\?')"; break;
             default:
                 ss << "'0x" << std::hex << std::uppercase;
                 if (c < 0) {

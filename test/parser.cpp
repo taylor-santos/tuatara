@@ -607,6 +607,39 @@ TEST(ParserTest, BitOrOperator) {
         R"("ident":"b"})");
 }
 
+TEST(ParserTest, QuestionOperator) {
+    EXPECT_JSON(
+        R"(a ?)",
+        Field,
+        R"({"node":"field",)"
+        R"("expr":{)"
+        R"("node":"variable",)"
+        R"("name":"a"},)"
+        R"("field":"?"})");
+}
+
+TEST(ParserTest, FieldAccess) {
+    EXPECT_JSON(
+        R"(foo.bar)",
+        Field,
+        R"({"node":"field",)"
+        R"("expr":{)"
+        R"("node":"variable",)"
+        R"("name":"foo"},)"
+        R"("field":"bar"})");
+}
+
+TEST(ParserTest, OperatorAccess) {
+    EXPECT_JSON(
+        R"(foo.++)",
+        Field,
+        R"({"node":"field",)"
+        R"("expr":{)"
+        R"("node":"variable",)"
+        R"("name":"foo"},)"
+        R"("field":"++"})");
+}
+
 TEST(ParserTest, FuncImpl) {
     EXPECT_JSON(
         "func foo(x: int): int\n"
@@ -762,6 +795,18 @@ TEST(ParserTest, SemicolonBetweenThreeStmts) {
 
 TEST(ParserTest, TrailingSemicolon) {
     EXPECT_JSON("foo;\n", Variable, R"({"node":"variable","name":"foo"})");
+}
+
+TEST(ParserTest, TrailingSemicolonTwoStmts) {
+    EXPECT_JSON(
+        "foo;bar;\n",
+        Block,
+        R"({"node":"block",)"
+        R"("statements":[{)"
+        R"("node":"variable",)"
+        R"("name":"foo"},{)"
+        R"("node":"variable",)"
+        R"("name":"bar"}]})");
 }
 
 TEST(ParserTest, ParenExpression) {

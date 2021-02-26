@@ -1,4 +1,4 @@
-var foo: int;
+var sum: int|float = 5
 
 var a = 1
 var b: float = a

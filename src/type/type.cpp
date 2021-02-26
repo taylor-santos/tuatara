@@ -38,6 +38,11 @@ Type::callAsFunc(Context &, AST::Expression &) {
 }
 
 bool
+Type::isSupertype(const Type &, Context &) const {
+    return false;
+}
+
+bool
 Type::isSupertype(const class Array &, Context &) const {
     return false;
 }

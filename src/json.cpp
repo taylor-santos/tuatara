@@ -57,6 +57,9 @@ Object::~Object() {
 
 static string
 escapeChar(char c) {
+    if (isprint(static_cast<unsigned char>(c))) {
+        return {c};
+    }
     switch (c) {
         case '\a': return "\\a";
         case '\b': return "\\b";
@@ -70,18 +73,14 @@ escapeChar(char c) {
         case '\"': return "\\\"";
         case '\?': return "\\?";
         default:
-            if (isprint(static_cast<unsigned char>(c))) {
-                return {c};
+            stringstream ss;
+            ss << "\\x" << hex << uppercase;
+            if (c < 0) {
+                ss << c + 256;
             } else {
-                stringstream ss;
-                ss << "\\x" << hex << uppercase;
-                if (c < 0) {
-                    ss << c + 256;
-                } else {
-                    ss << c;
-                }
-                return ss.str();
+                ss << c;
             }
+            return ss.str();
     }
 }
 

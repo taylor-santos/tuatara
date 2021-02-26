@@ -8,6 +8,7 @@
 namespace TypeChecker {
 class Context;
 class Type;
+class Product;
 } // namespace TypeChecker
 namespace yy {
 class location;
@@ -25,6 +26,7 @@ public: // Methods
 
 private: // Fields
     std::vector<std::unique_ptr<Expression>> exprs_;
+    std::unique_ptr<TypeChecker::Product>    type_;
 
 private: // Methods
     void               json(std::ostream &os) const override;

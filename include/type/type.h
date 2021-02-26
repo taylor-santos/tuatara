@@ -27,8 +27,8 @@ public: // Methods
     void          pretty(std::ostream &out) const;
     virtual void  pretty(std::ostream &out, bool mod) const = 0;
     virtual Type &callAsFunc(Context &ctx, AST::Expression &arg);
-    virtual bool  isSubtype(const Type &other, Context &ctx) const   = 0;
-    virtual bool  isSupertype(const Type &other, Context &ctx) const = 0;
+    virtual bool  isSubtype(const Type &other, Context &ctx) const = 0;
+    virtual bool  isSupertype(const Type &other, Context &ctx) const;
     Type &        operator=(const Type &) = delete;
 
 protected: // Enum Classes

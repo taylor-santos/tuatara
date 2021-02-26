@@ -184,7 +184,8 @@ TEST(ScannerTest, Comment) {
 TEST(ScannerTest, BlockComment) {
     yy::Scanner   scanner;
     istringstream iss(R"(/* Block comments can span
-                                 multiple lines. */)");
+                          * multiple lines.
+                          */ )");
     ostringstream oss;
     scanner.switch_streams(iss, oss);
     yy::Driver drv;
