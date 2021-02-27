@@ -47,12 +47,12 @@ Object::pretty(ostream &out, bool) const {
 }
 
 bool
-Object::isSubtype(const Type &other, Context &ctx) const {
+Object::isSubtype(const Type &other, const Context &ctx) const {
     return other.isSuperImpl(*this, ctx);
 }
 
 bool
-Object::isSuperImpl(const class Object &other, Context &ctx) const {
+Object::isSuperImpl(const class Object &other, const Context &ctx) const {
     return other.ofClass_->get().isSubtype(ofClass_->get(), ctx);
 }
 

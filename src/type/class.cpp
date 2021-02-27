@@ -105,12 +105,12 @@ Class::addField(const string &name, shared_ptr<Type> type) {
 }
 
 bool
-Class::isSubtype(const Type &other, Context &ctx) const {
+Class::isSubtype(const Type &other, const Context &ctx) const {
     return other.isSuperImpl(*this, ctx);
 }
 
 bool
-Class::isSuperImpl(const Class &other, Context &) const {
+Class::isSuperImpl(const Class &other, const Context &) const {
     if (this == &other) {
         return true;
     }

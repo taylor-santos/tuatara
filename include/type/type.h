@@ -29,8 +29,8 @@ public: // Methods
     void                          pretty(std::ostream &out) const;
     virtual void                  pretty(std::ostream &out, bool mod) const = 0;
     virtual std::shared_ptr<Type> callAsFunc(Context &ctx, AST::Expression &arg);
-    virtual bool                  isSubtype(const Type &other, Context &ctx) const = 0;
-    bool                          isSupertype(const Type &other, Context &ctx) const;
+    virtual bool                  isSubtype(const Type &other, const Context &ctx) const = 0;
+    bool                          isSupertype(const Type &other, const Context &ctx) const;
     bool                          isEqual(const Type &other, Context &ctx) const;
     Type &                        operator=(const Type &) = delete;
     [[nodiscard]] bool            isInitialized() const;
@@ -48,21 +48,21 @@ private: // Methods
     virtual std::shared_ptr<Type> simplify(Context &ctx);
     void                          setVerifyState(VerifyState verifyState);
     friend class Array;
-    virtual bool isSuperImpl(const class Array &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Array &other, const Context &ctx) const;
     friend class Class;
-    virtual bool isSuperImpl(const class Class &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Class &other, const Context &ctx) const;
     friend class Func;
-    virtual bool isSuperImpl(const class Func &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Func &other, const Context &ctx) const;
     friend class Maybe;
-    virtual bool isSuperImpl(const class Maybe &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Maybe &other, const Context &ctx) const;
     friend class Object;
-    virtual bool isSuperImpl(const class Object &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Object &other, const Context &ctx) const;
     friend class Product;
-    virtual bool isSuperImpl(const class Product &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Product &other, const Context &ctx) const;
     friend class Sum;
-    virtual bool isSuperImpl(const class Sum &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Sum &other, const Context &ctx) const;
     friend class Unit;
-    virtual bool isSuperImpl(const class Unit &other, Context &ctx) const;
+    virtual bool isSuperImpl(const class Unit &other, const Context &ctx) const;
 };
 
 } // namespace TypeChecker

@@ -42,7 +42,7 @@ Type::callAsFunc(Context &, AST::Expression &) {
 }
 
 bool
-Type::isSupertype(const Type &other, Context &ctx) const {
+Type::isSupertype(const Type &other, const Context &ctx) const {
     return other.isSubtype(*this, ctx);
 }
 
@@ -60,42 +60,42 @@ Type::simplify(Context &) {
 }
 
 bool
-Type::isSuperImpl(const class Array &, Context &) const {
+Type::isSuperImpl(const class Array &other, const Context &ctx) const {
     return false;
 }
 
 bool
-Type::isSuperImpl(const class Class &, Context &) const {
+Type::isSuperImpl(const class Class &, const Context &) const {
     return false;
 }
 
 bool
-Type::isSuperImpl(const class Func &, Context &) const {
+Type::isSuperImpl(const class Func &other, const Context &ctx) const {
     return false;
 }
 
 bool
-Type::isSuperImpl(const class Maybe &, Context &) const {
+Type::isSuperImpl(const class Maybe &, const Context &) const {
     return false;
 }
 
 bool
-Type::isSuperImpl(const class Object &, Context &) const {
+Type::isSuperImpl(const class Object &other, const Context &ctx) const {
     return false;
 }
 
 bool
-Type::isSuperImpl(const class Product &, Context &) const {
+Type::isSuperImpl(const class Product &, const Context &) const {
     return false;
 }
 
 bool
-Type::isSuperImpl(const class Sum &, Context &) const {
+Type::isSuperImpl(const class Sum &, const Context &) const {
     return false;
 }
 
 bool
-Type::isSuperImpl(const class Unit &, Context &) const {
+Type::isSuperImpl(const class Unit &other, const Context &ctx) const {
     return false;
 }
 

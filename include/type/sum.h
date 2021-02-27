@@ -19,7 +19,7 @@ public: // Fields
     [[nodiscard]] const std::string &getNodeName() const override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     void pretty(std::ostream &out, bool mod) const override;
-    bool isSubtype(const Type &other, Context &ctx) const override;
+    bool isSubtype(const Type &other, const Context &ctx) const override;
 
 private: // Fields
     std::vector<std::shared_ptr<Type>> types_;
@@ -28,14 +28,14 @@ private: // Methods
     void                  json(std::ostream &os) const override;
     void                  verifyImpl(Context &ctx) override;
     std::shared_ptr<Type> simplify(Context &ctx) override;
-    bool                  isSuper(const Type &other, Context &ctx) const;
-    bool                  isSuperImpl(const Array &other, Context &ctx) const override;
-    bool                  isSuperImpl(const Func &other, Context &ctx) const override;
-    bool                  isSuperImpl(const Maybe &other, Context &ctx) const override;
-    bool                  isSuperImpl(const Object &other, Context &ctx) const override;
-    bool                  isSuperImpl(const Product &other, Context &ctx) const override;
-    bool                  isSuperImpl(const Sum &other, Context &ctx) const override;
-    bool                  isSuperImpl(const Unit &other, Context &ctx) const override;
+    bool                  isSuper(const Type &other, const Context &ctx) const;
+    bool                  isSuperImpl(const Array &other, const Context &ctx) const override;
+    bool                  isSuperImpl(const Func &other, const Context &ctx) const override;
+    bool                  isSuperImpl(const Maybe &other, const Context &ctx) const override;
+    bool                  isSuperImpl(const Object &other, const Context &ctx) const override;
+    bool                  isSuperImpl(const Product &other, const Context &ctx) const override;
+    bool                  isSuperImpl(const Sum &other, const Context &ctx) const override;
+    bool                  isSuperImpl(const Unit &other, const Context &ctx) const override;
 };
 
 } // namespace TypeChecker

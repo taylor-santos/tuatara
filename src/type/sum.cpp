@@ -7,6 +7,7 @@
 #include "json.h"
 #include "toRefs.h"
 
+using std::all_of;
 using std::function;
 using std::ostream;
 using std::ref;
@@ -82,44 +83,53 @@ Sum::simplify(Context &ctx) {
 }
 
 bool
-Sum::isSubtype(const Type &other, Context &ctx) const {
+Sum::isSubtype(const Type &other, const Context &ctx) const {
     return other.isSuperImpl(*this, ctx);
 }
 
 bool
-Sum::isSuper(const Type &other, Context &ctx) const {
+Sum::isSuper(const Type &other, const Context &ctx) const {
+    // A <= (A|B) iif A <= A
     return any_of(types_.begin(), types_.end(), [&](const auto &type) {
         return other.isSubtype(*type, ctx);
     });
 }
 
 bool
-Sum::isSuperImpl(const TypeChecker::Array &other, Context &ctx) const {
+Sum::isSuperImpl(const Sum &other, const Context &ctx) const {
+    // (A|B) <= (X|Y|Z) iif A <= (X|Y|Z) && B <= (X|Y|Z)
+    return all_of(other.types_.begin(), other.types_.end(), [&](const auto &type) {
+        return isSuper(*type, ctx);
+    });
+}
+
+bool
+Sum::isSuperImpl(const Array &other, const Context &ctx) const {
     return isSuper(other, ctx);
 }
 
 bool
-Sum::isSuperImpl(const TypeChecker::Func &other, Context &ctx) const {
+Sum::isSuperImpl(const Func &other, const Context &ctx) const {
     return isSuper(other, ctx);
 }
+
 bool
-Sum::isSuperImpl(const TypeChecker::Maybe &other, Context &ctx) const {
+Sum::isSuperImpl(const Maybe &other, const Context &ctx) const {
     return isSuper(other, ctx);
 }
+
 bool
-Sum::isSuperImpl(const TypeChecker::Object &other, Context &ctx) const {
+Sum::isSuperImpl(const Object &other, const Context &ctx) const {
     return isSuper(other, ctx);
 }
+
 bool
-Sum::isSuperImpl(const TypeChecker::Product &other, Context &ctx) const {
+Sum::isSuperImpl(const Product &other, const Context &ctx) const {
     return isSuper(other, ctx);
 }
+
 bool
-Sum::isSuperImpl(const Sum &other, Context &ctx) const {
-    return isSuper(other, ctx);
-}
-bool
-Sum::isSuperImpl(const TypeChecker::Unit &other, Context &ctx) const {
+Sum::isSuperImpl(const Unit &other, const Context &ctx) const {
     return isSuper(other, ctx);
 }
 

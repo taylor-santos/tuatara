@@ -73,12 +73,12 @@ Product::simplify(Context &ctx) {
 }
 
 bool
-Product::isSubtype(const Type &other, Context &ctx) const {
+Product::isSubtype(const Type &other, const Context &ctx) const {
     return other.isSuperImpl(*this, ctx);
 }
 
 bool
-Product::isSuperImpl(const class Product &other, Context &ctx) const {
+Product::isSuperImpl(const class Product &other, const Context &ctx) const {
     // Find the first tuple element that isn't a subtype, or the end if they all match.
     auto firstDiff = mismatch(
         types_.begin(),

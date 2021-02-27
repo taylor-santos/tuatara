@@ -52,12 +52,12 @@ Array::pretty(ostream &out, bool) const {
 }
 
 bool
-Array::isSubtype(const Type &other, Context &ctx) const {
+Array::isSubtype(const Type &other, const Context &ctx) const {
     return other.isSuperImpl(*this, ctx);
 }
 
 bool
-Array::isSuperImpl(const class Array &other, Context &ctx) const {
+Array::isSuperImpl(const class Array &other, const Context &ctx) const {
     return other.type_->isSubtype(*type_, ctx);
 }
 

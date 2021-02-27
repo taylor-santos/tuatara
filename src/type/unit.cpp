@@ -39,42 +39,42 @@ Unit::pretty(ostream &out, bool) const {
 }
 
 bool
-Unit::isSubtype(const Type &other, Context &ctx) const {
+Unit::isSubtype(const Type &other, const Context &ctx) const {
     return other.isSuperImpl(*this, ctx);
 }
 
 bool
-Unit::isSuperImpl(const TypeChecker::Array &, Context &) const {
+Unit::isSuperImpl(const Array &, const Context &) const {
     return true;
 }
 
 bool
-Unit::isSuperImpl(const TypeChecker::Func &, Context &) const {
+Unit::isSuperImpl(const Func &, const Context &) const {
     return true;
 }
 
 bool
-Unit::isSuperImpl(const TypeChecker::Maybe &, Context &) const {
+Unit::isSuperImpl(const Maybe &, const Context &) const {
     return true;
 }
 
 bool
-Unit::isSuperImpl(const TypeChecker::Object &, Context &) const {
+Unit::isSuperImpl(const Object &, const Context &) const {
     return true;
 }
 
 bool
-Unit::isSuperImpl(const TypeChecker::Product &, Context &) const {
+Unit::isSuperImpl(const Product &, const Context &) const {
     return true;
 }
 
 bool
-Unit::isSuperImpl(const TypeChecker::Sum &, Context &) const {
+Unit::isSuperImpl(const Sum &, const Context &) const {
     return true;
 }
 
 bool
-Unit::isSuperImpl(const Unit &, Context &) const {
+Unit::isSuperImpl(const Unit &, const Context &) const {
     return true;
 }
 

@@ -50,12 +50,12 @@ Maybe::pretty(ostream &out, bool) const {
 }
 
 bool
-Maybe::isSubtype(const Type &other, Context &ctx) const {
+Maybe::isSubtype(const Type &other, const Context &ctx) const {
     return other.isSuperImpl(*this, ctx);
 }
 
 bool
-Maybe::isSuperImpl(const class Maybe &other, Context &ctx) const {
+Maybe::isSuperImpl(const class Maybe &other, const Context &ctx) const {
     return other.type_->isSubtype(*type_, ctx);
 }
 

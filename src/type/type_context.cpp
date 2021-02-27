@@ -17,6 +17,7 @@ using std::max;
 using std::nullopt;
 using std::optional;
 using std::reference_wrapper;
+using std::right;
 using std::setw;
 using std::shared_ptr;
 using std::string;
@@ -110,15 +111,42 @@ Context::printClasses(std::ostream &out) const {
         max_element(getClasses().begin(), getClasses().end(), [](const auto &c1, const auto &c2) {
             return c1.first.length() < c2.first.length();
         })->first.length();
-    out << string(maxLen, ' ');
-    for (const auto &[name, cl] : getClasses()) {
-        out << "|" << name;
+    maxLen = 2 * (maxLen / 2);
+    out << string(maxLen + 1, ' ');
+    string sep = "╔";
+    for (size_t i = 0; i < getClasses().size(); i++) {
+        out << sep;
+        sep = "╤";
+        for (int j = 0; j < maxLen; j++) {
+            out << "═";
+        }
     }
-    out << endl;
+    out << "╗" << endl;
+    out << string(maxLen + 1, ' ');
+    sep = "║";
+    for (const auto &[name, cl] : getClasses()) {
+        auto n = (maxLen - name.length()) / 2;
+        out << sep << string(n, ' ') << name << string(maxLen - name.length() - n, ' ');
+        sep = "│";
+    }
+    out << "║" << endl;
+    sep = "╔";
+    for (size_t i = 0; i <= getClasses().size(); i++) {
+        out << sep;
+        sep = i == 0 ? "╬" : "╪";
+        for (int j = 0; j < maxLen; j++) {
+            out << "═";
+        }
+    }
+    out << "╣" << endl;
+
     for (const auto &[n1, c1] : getClasses()) {
-        out << setw(maxLen) << left << n1;
+        out << "║" << setw(maxLen) << right << n1;
+        sep = "║";
         for (const auto &[n2, c2] : getClasses()) {
-            out << "| " << setw(n2.length() - 1);
+            auto n = (maxLen - 1) / 2;
+            out << sep << string(n, ' ');
+            sep        = "│";
             bool sub   = c1.get().isSubtype(c2.get(), *this);
             bool super = c1.get().isSupertype(c2.get(), *this);
             if (sub) {
@@ -130,11 +158,21 @@ Context::printClasses(std::ostream &out) const {
             } else if (super) {
                 out << ">";
             } else {
-                out << "";
+                out << " ";
             }
+            out << string(maxLen - n - 1, ' ');
         }
-        out << endl;
+        out << "║" << endl;
     }
+    sep = "╚";
+    for (size_t i = 0; i <= getClasses().size(); i++) {
+        out << sep;
+        sep = i == 0 ? "╩" : "╧";
+        for (int j = 0; j < maxLen; j++) {
+            out << "═";
+        }
+    }
+    out << "╝" << endl;
 }
 
 } // namespace TypeChecker

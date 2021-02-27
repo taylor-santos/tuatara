@@ -23,7 +23,7 @@ public: // Methods
     const std::string &              getClassName() const;
     void                             addSubType(Class *cl);
     void                             addSuperType(Class *cl);
-    bool                             isSubtype(const Type &other, Context &ctx) const override;
+    bool isSubtype(const Type &other, const Context &ctx) const override;
 
     static std::unordered_map<std::string, std::shared_ptr<Class>> generateBuiltins();
 
@@ -39,7 +39,7 @@ private: // Methods
     std::shared_ptr<Type> simplify(Context &ctx) override;
     void                  addSubTypeImpl(Class *cl);
     void                  addSuperTypeImpl(Class *cl);
-    bool                  isSuperImpl(const class Class &other, Context &ctx) const override;
+    bool                  isSuperImpl(const class Class &other, const Context &ctx) const override;
 };
 
 } // namespace TypeChecker
