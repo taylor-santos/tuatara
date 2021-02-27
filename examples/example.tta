@@ -1,25 +1,24 @@
 var sum: int|float = 5
-
+/*
 var a = 1
-var foobar = 12.34
+var b: int = false
 
-if true then
-    5 + 6 + 7. + 8
+var ifVal = (if true then
+    5 + 6 + 7 + 8)
 
-var a = 1.
-var b: float = a
-var c = "Hello, world!"
-var d: string = c
+var c = 1.
+var d: float = 1e-10
+var e = "Hello, world!"
+var f: string = e
 var cond = true
-while cond do
-    cond = false;
-    test
 
-var b: (int -> int)
+var g: (int -> int)
 
 func foo: (-> -> int)
-    func: (-> int) -> 5
-var foo = func: (-> -> int) -> func -> func -> 5
+    func bar: (-> int)
+        func baz: int
+            10
+var bar = -> -> x:int -> -> x
 
 var a = if b then (if c then "foo" else "bar") else "baz"
 
@@ -37,3 +36,4 @@ match foo
         x
     case y = 10
         foo()
+*/

@@ -21,17 +21,17 @@ public: // Methods
     [[nodiscard]] const std::string &getNodeName() const override;
 
 protected: // Methods
-    [[nodiscard]] const Expression &getCond() const;
-    [[nodiscard]] const Expression &getBlock() const;
-    TypeChecker::Type &             getTrueType(TypeChecker::Context &ctx);
+    [[nodiscard]] const Expression &   getCond() const;
+    [[nodiscard]] const Expression &   getBlock() const;
+    std::shared_ptr<TypeChecker::Type> getTrueType(TypeChecker::Context &ctx);
 
 private: // Fields
     std::unique_ptr<Expression> cond_;
     std::unique_ptr<Block>      block_;
 
 private: // Methods
-    void               json(std::ostream &os) const override;
-    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
+    void                               json(std::ostream &os) const override;
+    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

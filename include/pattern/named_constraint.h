@@ -18,9 +18,9 @@ public: // Methods
     ~NamedConstraint() override;
 
     void walk(const std::function<void(const Node &)> &fn) const override;
-    [[nodiscard]] const std::string &getNodeName() const override;
-    TypeChecker::Type &              getTypeImpl(TypeChecker::Context &ctx) override;
-    const std::string *              getName() override;
+    [[nodiscard]] const std::string &  getNodeName() const override;
+    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
+    const std::string *                getName() override;
 
 private: // Fields
     std::string                 name_;

@@ -21,12 +21,12 @@ public: // Methods
     ~Tuple() override;
 
     void walk(const std::function<void(const Node &)> &fn) const override;
-    [[nodiscard]] const std::string &getNodeName() const override;
-    TypeChecker::Type &              getTypeImpl(TypeChecker::Context &ctx) override;
+    [[nodiscard]] const std::string &  getNodeName() const override;
+    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
     std::vector<std::unique_ptr<Pattern>> patterns_;
-    std::unique_ptr<TypeChecker::Product> type_;
+    std::shared_ptr<TypeChecker::Product> type_;
 
 private: // Methods
     void json(std::ostream &os) const override;

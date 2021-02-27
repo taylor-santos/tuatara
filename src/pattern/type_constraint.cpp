@@ -8,11 +8,16 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::ostream, std::string, std::unique_ptr;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
 
 namespace Pattern {
 
-TypeConstraint::TypeConstraint(const yy::location &loc, unique_ptr<TypeChecker::Type> type)
+TypeConstraint::TypeConstraint(const yy::location &loc, shared_ptr<TypeChecker::Type> type)
     : Constraint(loc)
     , type_{move(type)} {}
 
@@ -37,10 +42,10 @@ TypeConstraint::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 TypeConstraint::getTypeImpl(TypeChecker::Context &ctx) {
     type_->verify(ctx);
-    return *type_;
+    return type_;
 }
 
 } // namespace Pattern

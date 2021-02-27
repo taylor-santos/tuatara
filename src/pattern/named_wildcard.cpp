@@ -6,7 +6,8 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::ostream, std::string;
+using std::ostream;
+using std::string;
 
 namespace Pattern {
 

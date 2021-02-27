@@ -21,15 +21,15 @@ public: // Methods
         const yy::location &               loc,
         const yy::location &               varLoc,
         const std::string &                variable,
-        std::unique_ptr<TypeChecker::Type> type,
+        std::shared_ptr<TypeChecker::Type> type,
         std::unique_ptr<Expression>        value);
     ~TypeValueDeclaration() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void walk(const std::function<void(const Node &)> &fn) const override;
 
 private: // Methods
-    void               json(std::ostream &os) const override;
-    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
+    void                               json(std::ostream &os) const override;
+    std::shared_ptr<TypeChecker::Type> getDeclTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

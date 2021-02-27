@@ -3,8 +3,13 @@
 #include <algorithm>
 #include <sstream>
 
-using std::boolalpha, std::endl, std::hex, std::ostream, std::string, std::stringstream,
-    std::uppercase;
+using std::boolalpha;
+using std::endl;
+using std::hex;
+using std::ostream;
+using std::string;
+using std::stringstream;
+using std::uppercase;
 
 namespace JSON {
 

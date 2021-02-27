@@ -8,8 +8,17 @@
 
 #include "json.h"
 
-using std::all_of, std::make_unique, std::ostream, std::pair, std::string, std::unique_ptr,
-    std::unordered_map, std::vector;
+using std::all_of;
+using std::logic_error;
+using std::make_shared;
+using std::make_unique;
+using std::ostream;
+using std::pair;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
+using std::unordered_map;
+using std::vector;
 
 namespace TypeChecker {
 
@@ -55,12 +64,12 @@ Class::verifyImpl(Context &ctx) {
         }
         bool fieldsAllSuper = all_of(fields_.begin(), fields_.end(), [&](auto &it) {
             auto &[name, field] = it;
-            auto *otherField    = other.getField(name);
+            auto otherField     = other.getField(name);
             return otherField && otherField->isSubtype(*field, ctx);
         });
         bool fieldsAllSub   = all_of(other.fields_.begin(), other.fields_.end(), [&](auto &it) {
             auto &[name, otherField] = it;
-            auto *field              = getField(name);
+            auto field               = getField(name);
             return field && field->isSubtype(*otherField, ctx);
         });
         if (fieldsAllSuper) {
@@ -77,23 +86,22 @@ Class::pretty(ostream &out, bool) const {
     out << "<class>";
 }
 
-Type *
+shared_ptr<Type>
 Class::getField(const string &name) const {
     auto it = fields_.find(name);
     if (it == fields_.end()) {
         return nullptr;
     }
-    return it->second.get();
+    return it->second;
 }
 
-bool
-Class::addField(const string &name, unique_ptr<Type> type) {
+void
+Class::addField(const string &name, shared_ptr<Type> type) {
     auto prev = fields_.find(name);
     if (prev != fields_.end()) {
-        return true;
+        throw logic_error("Class \"" + name_ + "\" already has a field \"" + name + "\"");
     }
     fields_.emplace(name, move(type));
-    return false;
 }
 
 bool
@@ -132,14 +140,14 @@ Class::addSuperTypeImpl(Class *cl) {
     classRltns_[cl] = ClassRelation::SUPERTYPE;
 }
 
-unordered_map<string, unique_ptr<Class>>
+unordered_map<string, shared_ptr<Class>>
 Class::generateBuiltins() {
     static auto numerics = {"int", "float"};
     static auto logics   = {"bool"};
     static auto others   = {"string"};
 
     static yy::location                      loc{nullptr, 0, 0};
-    unordered_map<string, unique_ptr<Class>> builtins;
+    unordered_map<string, shared_ptr<Class>> builtins;
     for (const auto &name : numerics) {
         static auto infixes = {
             "+",
@@ -151,35 +159,42 @@ Class::generateBuiltins() {
             "*=",
             "/=",
             "=",
-            "+",
         };
-        auto  clptr = make_unique<Class>(loc, name);
+        auto  clptr = make_shared<Class>(loc, name);
         auto &cl    = *clptr;
         cl.setVerifyState(Type::VerifyState::VERIFIED);
         builtins.emplace(name, move(clptr));
         for (const auto &op : infixes) {
-            (void)cl.addField(
+            cl.addField(
                 op,
-                make_unique<Func>(
+                make_shared<Func>(
                     loc,
-                    make_unique<Object>(loc, name),
-                    make_unique<Object>(loc, name)));
+                    make_shared<Object>(loc, name),
+                    make_shared<Object>(loc, name)));
         }
     }
     for (const auto &name : logics) {
-        auto  clptr = make_unique<Class>(loc, name);
+        auto  clptr = make_shared<Class>(loc, name);
         auto &cl    = *clptr;
         cl.setVerifyState(Type::VerifyState::VERIFIED);
         builtins.emplace(name, move(clptr));
     }
     for (const auto &name : others) {
-        auto  clptr = make_unique<Class>(loc, name);
+        auto  clptr = make_shared<Class>(loc, name);
         auto &cl    = *clptr;
         cl.setVerifyState(Type::VerifyState::VERIFIED);
         builtins.emplace(name, move(clptr));
     }
-    builtins["int"]->addSubType(&*builtins["bool"]);
+    builtins["int"]->addSuperType(builtins["bool"].get());
     return builtins;
+}
+
+shared_ptr<Type>
+Class::simplify(Context &ctx) {
+    for (auto &[name, type] : fields_) {
+        type = type->simplify(ctx);
+    }
+    return shared_from_this();
 }
 
 } // namespace TypeChecker

@@ -1,17 +1,31 @@
 #include "type/type_context.h"
 
+#include <iomanip>
+#include <utility>
+
 #include "type/class.h"
 #include "type/func.h"
 #include "type/object.h"
 #include "type/product.h"
 #include "type/unit.h"
 
-using std::make_unique, std::nullopt, std::optional, std::string, std::unique_ptr,
-    std::unordered_map;
+using std::endl;
+using std::left;
+using std::make_shared;
+using std::make_unique;
+using std::max;
+using std::nullopt;
+using std::optional;
+using std::reference_wrapper;
+using std::setw;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
+using std::unordered_map;
 
 namespace TypeChecker {
 
-static unordered_map<string, unique_ptr<Class>> BUILTINS = Class::generateBuiltins();
+static unordered_map<string, shared_ptr<Class>> BUILTINS = Class::generateBuiltins();
 
 Context::~Context() = default;
 
@@ -19,23 +33,23 @@ Context::Context() {
     for (const auto &[name, type] : BUILTINS) {
         addClass(name, *type);
     }
-    for (const auto &[_, symbol] : symbols_) {
-        symbol.type.verify(*this);
+    for (const auto &[_, type] : symbols_) {
+        type->verify(*this);
     }
 }
 
-optional<Context::Symbol>
-Context::getSymbol(const string &name) const {
+std::shared_ptr<TypeChecker::Type>
+Context::getSymbol(const string &name) {
     auto it = symbols_.find(name);
     if (it == symbols_.end()) {
-        return nullopt;
+        return nullptr;
     }
     return it->second;
 }
 
 void
-Context::setSymbol(const Context::Symbol &symbol) {
-    symbols_.emplace(symbol.name, symbol);
+Context::setSymbol(const string &name, const shared_ptr<TypeChecker::Type> &type) {
+    symbols_.try_emplace(name, type);
 }
 
 Func *
@@ -48,7 +62,7 @@ Context::setFuncSignature(Func *funcSignature) {
 }
 
 void
-Context::addClass(const std::string &name, Class &cl) {
+Context::addClass(const string &name, Class &cl) {
     classes_.emplace(name, cl);
 }
 
@@ -61,14 +75,66 @@ Context::getClass(const string &name) const {
     return &it->second.get();
 }
 
-const unordered_map<std::string, Context::Symbol> &
+const std::map<string, std::shared_ptr<TypeChecker::Type>> &
 Context::getSymbols() const {
     return symbols_;
 }
 
-const std::unordered_map<std::string, std::reference_wrapper<Class>> &
+const unordered_map<string, reference_wrapper<Class>> &
 Context::getClasses() const {
     return classes_;
+}
+
+void
+Context::printSymbols(std::ostream &out) const {
+    int maxLen =
+        max_element(getSymbols().begin(), getSymbols().end(), [](const auto &s1, const auto &s2) {
+            return s1.first.length() < s2.first.length();
+        })->first.length();
+    string label = "Name";
+    maxLen       = max<int>(maxLen, label.length());
+    out << setw(maxLen) << left << "Name"
+        << " | "
+        << "Type" << endl;
+    out << "-----|-----" << endl;
+    for (const auto &[name, type] : getSymbols()) {
+        out << setw(maxLen) << left << name << " | ";
+        type->pretty(out);
+        out << endl;
+    }
+}
+
+void
+Context::printClasses(std::ostream &out) const {
+    int maxLen =
+        max_element(getClasses().begin(), getClasses().end(), [](const auto &c1, const auto &c2) {
+            return c1.first.length() < c2.first.length();
+        })->first.length();
+    out << string(maxLen, ' ');
+    for (const auto &[name, cl] : getClasses()) {
+        out << "|" << name;
+    }
+    out << endl;
+    for (const auto &[n1, c1] : getClasses()) {
+        out << setw(maxLen) << left << n1;
+        for (const auto &[n2, c2] : getClasses()) {
+            out << "| " << setw(n2.length() - 1);
+            bool sub   = c1.get().isSubtype(c2.get(), *this);
+            bool super = c1.get().isSupertype(c2.get(), *this);
+            if (sub) {
+                if (super) {
+                    out << "=";
+                } else {
+                    out << "<";
+                }
+            } else if (super) {
+                out << ">";
+            } else {
+                out << "";
+            }
+        }
+        out << endl;
+    }
 }
 
 } // namespace TypeChecker

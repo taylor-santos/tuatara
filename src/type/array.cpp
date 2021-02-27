@@ -6,11 +6,16 @@ namespace TypeChecker {
 class Context;
 } // namespace TypeChecker
 
-using std::function, std::ostream, std::string, std::unique_ptr;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
 
 namespace TypeChecker {
 
-Array::Array(yy::location loc, unique_ptr<Type> type)
+Array::Array(yy::location loc, shared_ptr<Type> type)
     : Type(loc)
     , type_{move(type)} {}
 
@@ -54,6 +59,12 @@ Array::isSubtype(const Type &other, Context &ctx) const {
 bool
 Array::isSuperImpl(const class Array &other, Context &ctx) const {
     return other.type_->isSubtype(*type_, ctx);
+}
+
+shared_ptr<Type>
+Array::simplify(Context &ctx) {
+    type_ = type_->simplify(ctx);
+    return shared_from_this();
 }
 
 } // namespace TypeChecker

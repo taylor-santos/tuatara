@@ -5,23 +5,21 @@
 namespace yy {
 class location;
 } // namespace yy
+using std::make_shared;
+using std::shared_ptr;
 
 namespace AST {
 
 Expression::Expression(const yy::location &loc)
-    : Node(loc)
-    , myType_{nullptr} {}
+    : Node(loc) {}
 
 Expression::~Expression() = default;
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 Expression::getType(TypeChecker::Context &ctx) {
-    if (myType_) {
-        return *myType_;
-    }
-    myType_ = &getTypeImpl(ctx);
-    myType_->verify(ctx);
-    return *myType_;
+    auto type = getTypeImpl(ctx);
+    type->verify(ctx);
+    return type;
 }
 
 } // namespace AST

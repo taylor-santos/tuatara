@@ -13,7 +13,12 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::ostream, std::pair, std::string, std::vector;
+using std::make_shared;
+using std::ostream;
+using std::pair;
+using std::shared_ptr;
+using std::string;
+using std::vector;
 
 namespace AST {
 
@@ -36,23 +41,23 @@ Variable::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 Variable::getTypeImpl(TypeChecker::Context &ctx) {
-    auto symbol = ctx.getSymbol(name_);
-    if (!symbol) {
+    auto type = ctx.getSymbol(name_);
+    if (!type) {
         throw TypeChecker::TypeException(
             "error: use of unidentified variable \"" + name_ + "\"",
             getLoc());
     }
-    if (!symbol->initialized) {
+    if (!type->isInitialized()) {
         vector<pair<string, yy::location>> msgs;
         msgs.emplace_back("error: use of uninitialized variable \"" + name_ + "\"", getLoc());
         msgs.emplace_back(
             "note: \"" + name_ + "\" was not initialized when it was declared",
-            symbol->type.getLoc());
+            type->getLoc());
         throw TypeChecker::TypeException(msgs);
     }
-    return symbol->type;
+    return type;
 }
 
 } // namespace AST

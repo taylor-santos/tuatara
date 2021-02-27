@@ -1,5 +1,6 @@
 #include <iomanip>
 
+#include "type/class.h"
 #include "type/type_context.h"
 #include "type/type_exception.h"
 
@@ -27,27 +28,14 @@ main(int argc, char *argv[]) {
                 for (const auto &stmt : drv.statements) {
                     stmt->getType(ctx);
                     // cout << *stmt << endl;
-                    stmt->walk([&](const AST::Node &node) -> void {
-                        Print::error(cout, node.getNodeName(), node.getLoc(), drv.lines);
-                    });
-                    int maxLen = max_element(
-                                     ctx.getSymbols().begin(),
-                                     ctx.getSymbols().end(),
-                                     [](const auto &s1, const auto &s2) -> bool {
-                                         return s1.second.name.length() < s2.second.name.length();
-                                     })
-                                     ->second.name.length();
-                    string label = "Name";
-                    maxLen       = max<int>(maxLen, label.length());
-                    cout << setw(maxLen) << left << "Name"
-                         << " | "
-                         << "Type" << endl;
-                    for (const auto &[name, symbol] : ctx.getSymbols()) {
-                        cout << setw(maxLen) << left << name << " : ";
-                        symbol.type.pretty(cout);
-                        cout << endl;
-                    }
+                    // stmt->walk([&](const AST::Node &node) -> void {
+                    //     Print::error(cout, node.getNodeName(), node.getLoc(), drv.lines);
+                    // });
                 }
+                cout << "Symbols:" << endl;
+                ctx.printSymbols(cout);
+                cout << "Classes:" << endl;
+                ctx.printClasses(cout);
             } catch (TypeChecker::TypeException &e) {
                 for (const auto &[msg, loc] : e.getMsgs()) {
                     Print::error(cerr, msg, loc, drv.lines);

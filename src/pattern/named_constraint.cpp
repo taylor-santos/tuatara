@@ -6,7 +6,12 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::ostream, std::string, std::unique_ptr;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
 
 namespace Pattern {
 
@@ -40,7 +45,7 @@ NamedConstraint::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 NamedConstraint::getTypeImpl(TypeChecker::Context &ctx) {
     return constraint_->getType(ctx);
 }

@@ -11,7 +11,12 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::ostream, std::string, std::unique_ptr;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
 
 namespace AST {
 
@@ -19,7 +24,7 @@ TypeDeclaration::TypeDeclaration(
     const yy::location &          loc,
     const yy::location &          varLoc,
     string                        variable,
-    unique_ptr<TypeChecker::Type> declType)
+    shared_ptr<TypeChecker::Type> declType)
     : Declaration(loc, varLoc, move(variable))
     , declType_{move(declType)} {}
 
@@ -44,11 +49,10 @@ TypeDeclaration::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
-TypeDeclaration::getTypeImpl(TypeChecker::Context &ctx) {
+shared_ptr<TypeChecker::Type>
+TypeDeclaration::getDeclTypeImpl(TypeChecker::Context &ctx) {
     declType_->verify(ctx);
-    assignType(ctx, *declType_, false);
-    return *declType_;
+    return declType_;
 }
 
 void

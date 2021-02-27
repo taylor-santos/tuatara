@@ -8,7 +8,9 @@
 
 #include "json.h"
 
-using std::ostream, std::string, std::stringstream;
+using std::ostream;
+using std::string;
+using std::stringstream;
 
 namespace TypeChecker {
 

@@ -12,7 +12,14 @@ namespace TypeChecker {
 class Context;
 } // namespace TypeChecker
 
-using std::function, std::ostream, std::string, std::stringstream, std::unique_ptr;
+using std::dynamic_pointer_cast;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::stringstream;
+using std::unique_ptr;
 
 namespace AST {
 
@@ -48,30 +55,30 @@ Field::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 Field::getTypeImpl(TypeChecker::Context &ctx) {
     /* The expression "a b" can be interpreted in two different ways depending on the type of a:
      *  1) If a is an object, "a b" is equivalent to a field access expression "a.b".
      *  2) If a is a function, "a b" is equivalent to the function call "a(b)".
      */
-    auto &type = expr_->getType(ctx);
-    auto  obj  = dynamic_cast<TypeChecker::Object *>(&type);
+    auto type = expr_->getType(ctx);
+    auto obj  = dynamic_pointer_cast<TypeChecker::Object>(type);
     if (!obj) {
         stringstream ss;
         ss << "error: cannot access member of non-object type, is has type \"";
-        type.pretty(ss);
+        type->pretty(ss);
         ss << "\"";
         throw TypeChecker::TypeException(ss.str(), expr_->getLoc());
     }
     const auto &ofClass = obj->getClass();
-    auto *      field   = ofClass.getField(field_);
+    auto        field   = ofClass.getField(field_);
     if (!field) {
         stringstream ss;
         ss << "error: no member named \"" << field_ << "\" in class \"" << ofClass.getClassName()
            << "\"";
         throw TypeChecker::TypeException(ss.str(), fieldLoc_);
     }
-    return *field;
+    return field;
 }
 
 } // namespace AST

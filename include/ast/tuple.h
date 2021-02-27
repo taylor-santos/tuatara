@@ -26,11 +26,10 @@ public: // Methods
 
 private: // Fields
     std::vector<std::unique_ptr<Expression>> exprs_;
-    std::unique_ptr<TypeChecker::Product>    type_;
 
 private: // Methods
-    void               json(std::ostream &os) const override;
-    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
+    void                               json(std::ostream &os) const override;
+    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

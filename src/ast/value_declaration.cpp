@@ -10,7 +10,12 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::ostream, std::string, std::unique_ptr;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
 
 namespace AST {
 
@@ -49,11 +54,9 @@ ValueDeclaration::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
-ValueDeclaration::getTypeImpl(TypeChecker::Context &ctx) {
-    auto &type = value_->getType(ctx);
-    assignType(ctx, type, true);
-    return type;
+shared_ptr<TypeChecker::Type>
+ValueDeclaration::getDeclTypeImpl(TypeChecker::Context &ctx) {
+    return value_->getType(ctx);
 }
 
 } // namespace AST

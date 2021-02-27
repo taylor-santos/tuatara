@@ -11,7 +11,12 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::ostream, std::unique_ptr, std::string;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
 
 namespace AST {
 
@@ -43,10 +48,10 @@ Call::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 Call::getTypeImpl(TypeChecker::Context &ctx) {
-    auto &type = func_->getType(ctx);
-    auto &ret  = type.callAsFunc(ctx, *arg_);
+    auto type = func_->getType(ctx);
+    auto ret  = type->callAsFunc(ctx, *arg_);
     return ret;
 }
 

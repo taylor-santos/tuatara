@@ -14,7 +14,13 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::ostream, std::string, std::unique_ptr, std::vector;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
+using std::vector;
 
 namespace AST {
 
@@ -43,11 +49,11 @@ Block::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
-Block::getTypeImpl(TypeChecker::Context &) {
-    throw TypeChecker::TypeException(
-        "type error: " + getNodeName() + " type checking not implemented (" LOC_STR ")",
-        getLoc());
+shared_ptr<TypeChecker::Type>
+Block::getTypeImpl(TypeChecker::Context &ctx) {
+    shared_ptr<TypeChecker::Type> type;
+    for_each(stmts_.begin(), stmts_.end(), [&](auto &s) { type = s->getType(ctx); });
+    return type;
 }
 
 } // namespace AST

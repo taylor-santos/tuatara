@@ -29,7 +29,7 @@ public: // Methods
         std::string                                       variable,
         std::vector<std::unique_ptr<Pattern::Pattern>>    args,
         std::unique_ptr<Block>                            body,
-        std::optional<std::unique_ptr<TypeChecker::Type>> retType = {});
+        std::optional<std::shared_ptr<TypeChecker::Type>> retType = {});
     ~FuncImpl() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
@@ -38,8 +38,8 @@ private: // Fields
     std::unique_ptr<Block> body_;
 
 private: // Methods
-    void               json(std::ostream &os) const override;
-    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
+    void                               json(std::ostream &os) const override;
+    std::shared_ptr<TypeChecker::Type> getDeclTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

@@ -16,7 +16,7 @@ using namespace std;
 TEST(ASTTest, TypeValueDeclJSON) {
     ostringstream        ss;
     yy::location         loc;
-    auto                 type = make_unique<TypeChecker::Object>(loc, "class_name");
+    auto                 type = make_shared<TypeChecker::Object>(loc, "class_name");
     auto                 val  = make_unique<Int>(loc, 123);
     TypeValueDeclaration node(loc, loc, "var", move(type), move(val));
     ss << node;
@@ -35,7 +35,7 @@ TEST(ASTTest, TypeValueDeclJSON) {
 TEST(ASTTest, TypeValueDeclWalk) {
     ostringstream        ss;
     yy::location         loc;
-    auto                 type = make_unique<TypeChecker::Object>(loc, "class_name");
+    auto                 type = make_shared<TypeChecker::Object>(loc, "class_name");
     auto                 val  = make_unique<Int>(loc, 123);
     TypeValueDeclaration node(loc, loc, "var", move(type), move(val));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });

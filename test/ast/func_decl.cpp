@@ -20,10 +20,10 @@ TEST(ASTTest, FuncDeclJSON) {
     yy::location                         loc;
     string                               name = "foo";
     vector<unique_ptr<Pattern::Pattern>> args;
-    auto                                 argType = make_unique<TypeChecker::Object>(loc, "S");
+    auto                                 argType = make_shared<TypeChecker::Object>(loc, "S");
     auto typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
     args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
-    auto            ret = make_unique<TypeChecker::Object>(loc, "T");
+    auto            ret = make_shared<TypeChecker::Object>(loc, "T");
     FuncDeclaration node(loc, loc, name, move(args), move(ret));
     ss << node;
     EXPECT_EQ(
@@ -48,10 +48,10 @@ TEST(ASTTest, FuncDeclarationNode) {
     yy::location                         loc;
     string                               name = "foo";
     vector<unique_ptr<Pattern::Pattern>> args;
-    auto                                 argType = make_unique<TypeChecker::Object>(loc, "S");
+    auto                                 argType = make_shared<TypeChecker::Object>(loc, "S");
     auto typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
     args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
-    auto            ret = make_unique<TypeChecker::Object>(loc, "T");
+    auto            ret = make_shared<TypeChecker::Object>(loc, "T");
     FuncDeclaration node(loc, loc, name, move(args), move(ret));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(

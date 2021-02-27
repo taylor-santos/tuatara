@@ -36,7 +36,11 @@ public:
     template<class T>
     void printKeyValue(const std::string &key, const std::unique_ptr<T> &value);
     template<class T>
+    void printKeyValue(const std::string &key, const std::shared_ptr<T> &value);
+    template<class T>
     void printKeyValue(const std::string &key, const std::optional<T> &value);
+    template<class T>
+    void printKeyValue(const std::string &key, const std::vector<std::pair<std::string, T>> &value);
     template<class T>
     void printKeyValue(const std::string &key, const std::vector<T> &value);
     void printKeyValue(const std::string &key, const std::string &value);
@@ -53,6 +57,8 @@ public:
     void printValue(const T &value);
     template<class T>
     void printValue(const std::unique_ptr<T> &value);
+    template<class T>
+    void printValue(const std::shared_ptr<T> &value);
     void printValue(const std::string &str);
     void printValue(const char *value);
 };
@@ -67,6 +73,12 @@ Object::printKeyValue(const std::string &key, const T &value) {
 template<class T>
 void
 Object::printKeyValue(const std::string &key, const std::unique_ptr<T> &value) {
+    printKeyValue(key, *value);
+}
+
+template<class T>
+void
+Object::printKeyValue(const std::string &key, const std::shared_ptr<T> &value) {
     printKeyValue(key, *value);
 }
 
@@ -90,6 +102,16 @@ Object::printKeyValue(const std::string &key, const std::vector<T> &value) {
 
 template<class T>
 void
+Object::printKeyValue(const std::string &key, const std::vector<std::pair<std::string, T>> &value) {
+    printKey(key);
+    Object obj(out_);
+    for (const auto &[k, v] : value) {
+        obj.printKeyValue(k, v);
+    }
+}
+
+template<class T>
+void
 Array::printValue(const T &value) {
     next();
     out_ << value;
@@ -98,6 +120,12 @@ Array::printValue(const T &value) {
 template<class T>
 void
 Array::printValue(const std::unique_ptr<T> &value) {
+    printValue(*value);
+}
+
+template<class T>
+void
+Array::printValue(const std::shared_ptr<T> &value) {
     printValue(*value);
 }
 

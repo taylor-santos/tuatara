@@ -2,7 +2,9 @@
 
 #include "location.hh"
 
-using std::pair, std::string, std::vector;
+using std::pair;
+using std::string;
+using std::vector;
 
 namespace TypeChecker {
 

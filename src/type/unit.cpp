@@ -8,7 +8,8 @@ namespace TypeChecker {
 class Context;
 } // namespace TypeChecker
 
-using std::ostream, std::string;
+using std::ostream;
+using std::string;
 
 namespace TypeChecker {
 

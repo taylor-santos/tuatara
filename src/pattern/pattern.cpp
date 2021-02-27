@@ -6,6 +6,8 @@ namespace yy {
 class location;
 } // namespace yy
 
+using std::make_shared;
+using std::shared_ptr;
 using std::string;
 
 namespace Pattern {
@@ -20,11 +22,11 @@ Pattern::getName() {
     return nullptr;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 Pattern::getType(TypeChecker::Context &ctx) {
-    auto &type = getTypeImpl(ctx);
+    auto type = getTypeImpl(ctx);
     if (auto *name = getName()) {
-        ctx.setSymbol({*name, type, true});
+        ctx.setSymbol(*name, type);
     }
     return type;
 }

@@ -13,12 +13,12 @@ using namespace TypeChecker;
 using namespace std;
 
 TEST(TypeTest, SumJSON) {
-    stringstream        ss;
+    stringstream             ss;
     yy::location             loc;
-    vector<unique_ptr<Type>> types;
+    vector<shared_ptr<Type>> types;
     types.reserve(2);
-    types.emplace_back(make_unique<Object>(loc, "S"));
-    types.emplace_back(make_unique<Object>(loc, "T"));
+    types.emplace_back(make_shared<Object>(loc, "S"));
+    types.emplace_back(make_shared<Object>(loc, "T"));
     Sum node(loc, move(types));
     ss << node;
     EXPECT_EQ(
@@ -30,12 +30,12 @@ TEST(TypeTest, SumJSON) {
 }
 
 TEST(TypeTest, SumWalk) {
-    stringstream        ss;
+    stringstream             ss;
     yy::location             loc;
-    vector<unique_ptr<Type>> types;
+    vector<shared_ptr<Type>> types;
     types.reserve(2);
-    types.emplace_back(make_unique<Object>(loc, "S"));
-    types.emplace_back(make_unique<Object>(loc, "T"));
+    types.emplace_back(make_shared<Object>(loc, "S"));
+    types.emplace_back(make_shared<Object>(loc, "T"));
     Sum node(loc, move(types));
     node.walk([&ss](const AST::Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Sum Type\nObject Type\nObject Type\n");

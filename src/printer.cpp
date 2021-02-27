@@ -5,7 +5,13 @@
 
 #include "location.hh"
 
-using std::endl, std::ostream, std::right, std::setw, std::string, std::to_string, std::vector;
+using std::endl;
+using std::ostream;
+using std::right;
+using std::setw;
+using std::string;
+using std::to_string;
+using std::vector;
 
 namespace Print {
 

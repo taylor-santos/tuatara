@@ -21,8 +21,7 @@ public: // Methods
 
 private: // Methods
     void                               json(std::ostream &os) const override;
-    TypeChecker::Type &                getTypeImpl(TypeChecker::Context &ctx) override;
-    std::unique_ptr<TypeChecker::Unit> myType_;
+    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

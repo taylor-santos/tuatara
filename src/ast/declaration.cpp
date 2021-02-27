@@ -6,7 +6,11 @@
 #include "type/type_context.h"
 #include "type/type_exception.h"
 
-using std::pair, std::string, std::stringstream, std::vector;
+using std::pair;
+using std::shared_ptr;
+using std::string;
+using std::stringstream;
+using std::vector;
 
 namespace AST {
 
@@ -22,28 +26,36 @@ Declaration::getVariable() const {
     return variable_;
 }
 
-void
-Declaration::assignType(TypeChecker::Context &ctx, TypeChecker::Type &type, bool init) const {
-    auto symbol = ctx.getSymbol(getVariable());
-    if (symbol) {
-        if (type.isSubtype(symbol->type, ctx)) {
-            symbol->initialized = init;
-            return;
+std::shared_ptr<TypeChecker::Type>
+Declaration::assignType(const std::shared_ptr<TypeChecker::Type> &type, TypeChecker::Context &ctx) {
+    auto prevType = ctx.getSymbol(getVariable());
+    if (prevType) {
+        if (type->isSubtype(*prevType, ctx)) {
+            prevType->setInitialized(type->isInitialized());
+            return prevType;
         }
         vector<pair<string, yy::location>> msgs;
         stringstream                       ss;
         ss << "error: redefining variable \"" << getVariable() << "\" to have type \"";
-        type.pretty(ss);
+        type->pretty(ss);
         ss << "\"";
-        msgs.emplace_back(ss.str(), varLoc_);
+        msgs.emplace_back(ss.str(), type->getLoc());
         stringstream ss2;
         ss2 << "note: \"" << getVariable() << "\" defined to have type \"";
-        symbol->type.pretty(ss2);
+        prevType->pretty(ss2);
         ss2 << "\"";
-        msgs.emplace_back(ss2.str(), symbol->type.getLoc());
+        msgs.emplace_back(ss2.str(), prevType->getLoc());
         throw TypeChecker::TypeException(msgs);
     }
-    ctx.setSymbol({getVariable(), type, init});
+    ctx.setSymbol(getVariable(), type);
+    return type;
+}
+
+std::shared_ptr<TypeChecker::Type>
+Declaration::getTypeImpl(TypeChecker::Context &ctx) {
+    auto type = getDeclTypeImpl(ctx);
+    assignType(type, ctx);
+    return type;
 }
 
 } // namespace AST

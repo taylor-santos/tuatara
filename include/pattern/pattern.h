@@ -17,11 +17,11 @@ class Pattern : public AST::Node {
 public: // Methods
     explicit Pattern(const yy::location &loc);
     ~Pattern() override;
-    TypeChecker::Type &        getType(TypeChecker::Context &ctx);
-    virtual const std::string *getName();
+    std::shared_ptr<TypeChecker::Type> getType(TypeChecker::Context &ctx);
+    virtual const std::string *        getName();
 
 private: // Methods
-    virtual TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) = 0;
+    virtual std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) = 0;
 };
 
 } // namespace Pattern

@@ -23,10 +23,10 @@ TEST(ASTTest, FuncImplJSON) {
     yy::location                         loc;
     string                               name = "foo";
     vector<unique_ptr<Pattern::Pattern>> args;
-    auto                                 argType = make_unique<TypeChecker::Object>(loc, "S");
+    auto                                 argType = make_shared<TypeChecker::Object>(loc, "S");
     auto typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
     args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
-    auto                           ret = make_unique<TypeChecker::Object>(loc, "T");
+    auto                           ret = make_shared<TypeChecker::Object>(loc, "T");
     vector<unique_ptr<Expression>> stmts;
     stmts.emplace_back(make_unique<Variable>(loc, "b"));
     auto     block = make_unique<Block>(loc, move(stmts));
@@ -59,10 +59,10 @@ TEST(ASTTest, FuncImplWalk) {
     yy::location                         loc;
     string                               name = "foo";
     vector<unique_ptr<Pattern::Pattern>> args;
-    auto                                 argType = make_unique<TypeChecker::Object>(loc, "S");
+    auto                                 argType = make_shared<TypeChecker::Object>(loc, "S");
     auto typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
     args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
-    auto                           ret = make_unique<TypeChecker::Object>(loc, "T");
+    auto                           ret = make_shared<TypeChecker::Object>(loc, "T");
     vector<unique_ptr<Expression>> stmts;
     stmts.emplace_back(make_unique<Variable>(loc, "b"));
     auto     block = make_unique<Block>(loc, move(stmts));

@@ -11,7 +11,10 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::ostream, std::string;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
 
 namespace AST {
 
@@ -32,13 +35,6 @@ const string &
 Int::getNodeName() const {
     const static string name = "Int";
     return name;
-}
-
-TypeChecker::Type &
-Int::getTypeImpl(TypeChecker::Context &ctx) {
-    auto &type = getMyType();
-    type.verify(ctx);
-    return type;
 }
 
 } // namespace AST

@@ -2,13 +2,18 @@
 
 #include "json.h"
 
-using std::function, std::ostream, std::string, std::unique_ptr;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
 
 namespace TypeChecker {
 
 class Context;
 
-Maybe::Maybe(yy::location loc, unique_ptr<Type> type)
+Maybe::Maybe(yy::location loc, shared_ptr<Type> type)
     : Type(loc)
     , type_{move(type)} {}
 
@@ -52,6 +57,12 @@ Maybe::isSubtype(const Type &other, Context &ctx) const {
 bool
 Maybe::isSuperImpl(const class Maybe &other, Context &ctx) const {
     return other.type_->isSubtype(*type_, ctx);
+}
+
+shared_ptr<Type>
+Maybe::simplify(Context &ctx) {
+    type_ = type_->simplify(ctx);
+    return shared_from_this();
 }
 
 } // namespace TypeChecker

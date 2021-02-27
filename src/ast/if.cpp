@@ -1,6 +1,9 @@
 #include "ast/if.h"
 
+#include "type/sum.h"
+#include "type/type_context.h"
 #include "type/type_exception.h"
+#include "type/unit.h"
 
 #include "json.h"
 
@@ -12,7 +15,13 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::ostream, std::string, std::unique_ptr;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
+using std::vector;
 
 namespace AST {
 
@@ -44,17 +53,21 @@ If::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 If::getTrueType(TypeChecker::Context &ctx) {
     return block_->getType(ctx);
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 If::getTypeImpl(TypeChecker::Context &ctx) {
-    auto &trueType = getTrueType(ctx);
-    throw TypeChecker::TypeException(
-        "type error: " + getNodeName() + " type checking not implemented (" LOC_STR ")",
-        getLoc());
+    auto condType = cond_->getType(ctx);
+    // TODO: check if condType is convertible to bool
+    TypeChecker::Context                  newCtx   = ctx;
+    auto                                  trueType = getTrueType(newCtx);
+    vector<shared_ptr<TypeChecker::Type>> retType{
+        trueType,
+        make_shared<TypeChecker::Unit>(getLoc())};
+    return make_shared<TypeChecker::Sum>(getLoc(), move(retType));
 }
 
 const Expression &

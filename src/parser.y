@@ -13,7 +13,7 @@
 %define parse.assert
 %define parse.trace
 %define parse.error custom
-%define parse.lac full
+%define parse.lac none
 %define api.token.prefix {TOK_}
 
 %{
@@ -68,7 +68,9 @@
 #define STRINGIFY(X) STRINGIFY_(X)
 #define LOC_STR __FILE__ ":" STRINGIFY(__LINE__)
 
-using std::make_unique, std::make_pair;
+using std::make_pair;
+using std::make_shared;
+using std::make_unique;
 
 namespace yy {
 
@@ -199,7 +201,7 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     case
 %type<std::vector<std::pair<std::unique_ptr<Pattern::Pattern>,std::unique_ptr<AST::Expression>>>>
     cases
-%type<std::unique_ptr<TypeChecker::Type>>
+%type<std::shared_ptr<TypeChecker::Type>>
     type
     sum_type
     post_type
@@ -208,10 +210,10 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     type_pattern
     opt_type
     opt_sum_type
-%type<std::vector<std::unique_ptr<TypeChecker::Type>>>
+%type<std::vector<std::shared_ptr<TypeChecker::Type>>>
     sum_type_list
     product_type_list
-%type<std::optional<std::unique_ptr<TypeChecker::Type>>>
+%type<std::optional<std::shared_ptr<TypeChecker::Type>>>
     opt_ret_type
 %type<std::unique_ptr<Pattern::Pattern>>
     pattern
@@ -225,6 +227,11 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     ident
     operator
     func_name
+%type<std::pair<std::string, std::shared_ptr<TypeChecker::Type>>>
+    arg_type
+%type<std::vector<std::pair<std::string, std::shared_ptr<TypeChecker::Type>>>>
+    opt_arg_types
+    arg_types
 %start file
 
 %%
@@ -442,7 +449,7 @@ literal
 
 opt_type
     : %empty {
-        $$ = make_unique<TypeChecker::Unit>(@$);
+        $$ = make_shared<TypeChecker::Unit>(@$);
     }
     | type {
         $$ = $1;
@@ -456,20 +463,20 @@ sum_type
         $$ = $1;
     }
     | sum_type_list {
-        $$ = make_unique<TypeChecker::Sum>(@$, $1);
+        $$ = make_shared<TypeChecker::Sum>(@$, $1);
     }
 
 func_type
     : opt_sum_type "->" opt_type {
-        $$ = make_unique<TypeChecker::Func>(@$, $1, $3);
+        $$ = make_shared<TypeChecker::Func>(@$, $1, $3);
     }
     | opt_sum_type "->" func_type {
-        $$ = make_unique<TypeChecker::Func>(@$, $1, $3);
+        $$ = make_shared<TypeChecker::Func>(@$, $1, $3);
     }
 
 opt_sum_type
     : %empty {
-        $$ = make_unique<TypeChecker::Unit>(@$);
+        $$ = make_shared<TypeChecker::Unit>(@$);
     }
     | sum_type {
         $$ = $1;
@@ -488,18 +495,18 @@ sum_type_list
 post_type
     : base_type
     | post_type "[" "]" {
-        $$ = make_unique<TypeChecker::Array>(@$, $1);
+        $$ = make_shared<TypeChecker::Array>(@$, $1);
     }
     | post_type "?" {
-        $$ = make_unique<TypeChecker::Maybe>(@$, $1);
+        $$ = make_shared<TypeChecker::Maybe>(@$, $1);
     }
 
 base_type
     : ident {
-        $$ = make_unique<TypeChecker::Object>(@$, $1);
+        $$ = make_shared<TypeChecker::Object>(@$, $1);
     }
     | "(" product_type_list ")" {
-        $$ = make_unique<TypeChecker::Product>(@$, $2);
+        $$ = make_shared<TypeChecker::Product>(@$, $2);
     }
     | "(" func_type ")" {
         $$ = $2;
@@ -508,7 +515,7 @@ base_type
         $$ = $2;
     }
     | "(" ")" {
-        $$ = make_unique<TypeChecker::Unit>(@$);
+        $$ = make_shared<TypeChecker::Unit>(@$);
     }
 
 product_type_list
@@ -533,8 +540,26 @@ func_impl
     }
 
 lambda
-    : "func" opt_patterns opt_ret_type "->" expression {
-        $$ = make_unique<AST::Lambda>(@$, $2, $3, $5);
+    : opt_arg_types "->" expression {
+        $$ = make_unique<AST::Lambda>(@$, $1, $3);
+    }
+
+opt_arg_types
+    : %empty {}
+    | arg_types
+
+arg_types
+    : arg_type {
+        $$.push_back($1);
+    }
+    | arg_types "," arg_type {
+        $$ = $1;
+        $$.push_back($3);
+    }
+
+arg_type
+    : ident ":" type {
+        $$ = make_pair($1, $3);
     }
 
 opt_ret_type

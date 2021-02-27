@@ -10,8 +10,15 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::make_unique, std::ostream, std::reference_wrapper, std::string,
-    std::unique_ptr, std::vector;
+using std::function;
+using std::make_shared;
+using std::make_unique;
+using std::ostream;
+using std::reference_wrapper;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
+using std::vector;
 
 namespace Pattern {
 
@@ -40,15 +47,15 @@ Tuple::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 Tuple::getTypeImpl(TypeChecker::Context &ctx) {
-    vector<reference_wrapper<TypeChecker::Type>> types;
+    vector<shared_ptr<TypeChecker::Type>> types;
     types.reserve(patterns_.size());
     for (const auto &pattern : patterns_) {
         types.emplace_back(pattern->getType(ctx));
     }
-    type_ = make_unique<TypeChecker::Product>(getLoc(), move(types));
-    return *type_;
+    type_ = make_shared<TypeChecker::Product>(getLoc(), move(types));
+    return type_;
 }
 
 } // namespace Pattern

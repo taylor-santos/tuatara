@@ -27,8 +27,8 @@ public: // Methods
     [[nodiscard]] const std::string &getNodeName() const override;
 
 protected: // Methods
-    [[nodiscard]] const Expression &getValue() const;
-    TypeChecker::Type &             getTypeImpl(TypeChecker::Context &ctx) override;
+    [[nodiscard]] const Expression &   getValue() const;
+    std::shared_ptr<TypeChecker::Type> getDeclTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
     std::unique_ptr<Expression> value_;

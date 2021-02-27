@@ -7,21 +7,22 @@
 #include "json.h"
 #include "toRefs.h"
 
-using std::function, std::ostream, std::ref, std::reference_wrapper, std::string, std::unique_ptr,
-    std::vector;
+using std::function;
+using std::ostream;
+using std::ref;
+using std::reference_wrapper;
+using std::string;
+using std::unique;
+using std::unique_ptr;
+using std::vector;
 
 namespace TypeChecker {
 
 class Context;
 
-Sum::Sum(yy::location loc, vector<reference_wrapper<Type>> types)
+Sum::Sum(yy::location loc, vector<std::shared_ptr<Type>> types)
     : Type(loc)
     , types_{move(types)} {}
-
-Sum::Sum(yy::location loc, std::vector<std::unique_ptr<Type>> types)
-    : Type(loc)
-    , ownedTypes_{move(types)}
-    , types_{toRefs(ownedTypes_)} {}
 
 Sum::~Sum() = default;
 
@@ -35,7 +36,7 @@ Sum::json(ostream &os) const {
 void
 Sum::walk(const function<void(const Node &)> &fn) const {
     Type::walk(fn);
-    for_each(types_.begin(), types_.end(), [&](const auto &t) { t.get().walk(fn); });
+    for_each(types_.begin(), types_.end(), [&](const auto &t) { t->walk(fn); });
 }
 
 const string &
@@ -46,7 +47,7 @@ Sum::getNodeName() const {
 
 void
 Sum::verifyImpl(Context &ctx) {
-    for_each(types_.begin(), types_.end(), [&](const auto &t) { t.get().verify(ctx); });
+    for_each(types_.begin(), types_.end(), [&](const auto &t) { t->verify(ctx); });
 }
 
 void
@@ -57,12 +58,27 @@ Sum::pretty(ostream &out, bool mod) const {
     string sep;
     for (auto &t : types_) {
         out << sep;
-        t.get().pretty(out, false);
+        t->pretty(out, false);
         sep = "|";
     }
     if (mod) {
         out << ")";
     }
+}
+
+std::shared_ptr<Type>
+Sum::simplify(Context &ctx) {
+    for_each(types_.begin(), types_.end(), [&](auto &type) { type = type->simplify(ctx); });
+    types_.erase(
+        unique(
+            types_.begin(),
+            types_.end(),
+            [&](const auto &a, const auto &b) { return a->isEqual(*b, ctx); }),
+        types_.end());
+    if (types_.size() == 1) {
+        return types_[0];
+    }
+    return shared_from_this();
 }
 
 bool
@@ -73,7 +89,7 @@ Sum::isSubtype(const Type &other, Context &ctx) const {
 bool
 Sum::isSuper(const Type &other, Context &ctx) const {
     return any_of(types_.begin(), types_.end(), [&](const auto &type) {
-        return other.isSubtype(type.get(), ctx);
+        return other.isSubtype(*type, ctx);
     });
 }
 

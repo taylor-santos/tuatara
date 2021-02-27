@@ -1,5 +1,7 @@
 #include "ast/if_else.h"
 
+#include "type/sum.h"
+#include "type/type_context.h"
 #include "type/type_exception.h"
 
 #include "json.h"
@@ -12,7 +14,13 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::ostream, std::string, std::unique_ptr;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
+using std::vector;
 
 namespace AST {
 
@@ -47,11 +55,13 @@ IfElse::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
-IfElse::getTypeImpl(TypeChecker::Context &) {
-    throw TypeChecker::TypeException(
-        "type error: " + getNodeName() + " type checking not implemented (" LOC_STR ")",
-        getLoc());
+shared_ptr<TypeChecker::Type>
+IfElse::getTypeImpl(TypeChecker::Context &ctx) {
+    auto                                  trueType  = getTrueType(ctx);
+    TypeChecker::Context                  newCtx    = ctx;
+    auto                                  falseType = elseBlock_->getType(newCtx);
+    vector<shared_ptr<TypeChecker::Type>> retType{trueType, falseType};
+    return make_shared<TypeChecker::Sum>(getLoc(), retType);
 }
 
 } // namespace AST

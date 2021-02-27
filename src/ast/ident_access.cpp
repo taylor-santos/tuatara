@@ -12,7 +12,14 @@ namespace TypeChecker {
 class Context;
 } // namespace TypeChecker
 
-using std::function, std::make_unique, std::ostream, std::string, std::unique_ptr;
+using std::dynamic_pointer_cast;
+using std::function;
+using std::make_shared;
+using std::make_unique;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
 
 namespace AST {
 
@@ -56,7 +63,7 @@ IdentAccess::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 IdentAccess::getTypeImpl(TypeChecker::Context &ctx) {
     /* The expression "a b" can be interpreted in two different ways depending on the type of a:
      *  1) If a is an object, "a b" is equivalent to a member access expression "a.b".
@@ -65,8 +72,8 @@ IdentAccess::getTypeImpl(TypeChecker::Context &ctx) {
     if (state_) {
         return (*state_)->getType(ctx);
     }
-    auto &type = expr_->getType(ctx);
-    auto  obj  = dynamic_cast<TypeChecker::Object *>(&type);
+    auto type = expr_->getType(ctx);
+    auto obj  = dynamic_pointer_cast<TypeChecker::Object>(type);
     if (obj) {
         state_ = make_unique<Field>(getLoc(), move(expr_), idLoc_, ident_);
         return (*state_)->getType(ctx);

@@ -25,20 +25,20 @@ public: // Methods
         const yy::location &                              varLoc,
         std::string                                       variable,
         std::vector<std::unique_ptr<Pattern::Pattern>>    args,
-        std::optional<std::unique_ptr<TypeChecker::Type>> retType = {});
+        std::optional<std::shared_ptr<TypeChecker::Type>> retType = {});
     ~FuncDeclaration() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 protected: // Methods
     [[nodiscard]] const std::vector<std::unique_ptr<Pattern::Pattern>> &   getArgs() const;
-    [[nodiscard]] const std::optional<std::unique_ptr<TypeChecker::Type>> &getRetType() const;
-    TypeChecker::Type &   getTypeImpl(TypeChecker::Context &ctx) override;
-    TypeChecker::Context &calculateContext(TypeChecker::Context &outerCtx);
+    [[nodiscard]] const std::optional<std::shared_ptr<TypeChecker::Type>> &getRetType() const;
+    std::shared_ptr<TypeChecker::Type> getDeclTypeImpl(TypeChecker::Context &ctx) override;
+    TypeChecker::Context &             calculateContext(TypeChecker::Context &outerCtx);
 
 private: // Fields
     std::vector<std::unique_ptr<Pattern::Pattern>>    args_;
-    std::optional<std::unique_ptr<TypeChecker::Type>> retType_;
+    std::optional<std::shared_ptr<TypeChecker::Type>> retType_;
     std::unique_ptr<TypeChecker::Context>             implCtx_;
 
 private: // Methods

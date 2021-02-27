@@ -23,8 +23,7 @@ private: // Fields
     int64_t value_;
 
 private: // Methods
-    void               json(std::ostream &os) const override;
-    TypeChecker::Type &getTypeImpl(TypeChecker::Context &ctx) override;
+    void json(std::ostream &os) const override;
 };
 
 } // namespace AST

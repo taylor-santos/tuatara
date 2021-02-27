@@ -4,7 +4,11 @@
 
 #include "scanner.h"
 
-using std::cerr, std::ifstream, std::istream, std::make_unique, std::ostream;
+using std::cerr;
+using std::ifstream;
+using std::istream;
+using std::make_unique;
+using std::ostream;
 
 namespace yy {
 

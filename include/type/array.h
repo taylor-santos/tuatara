@@ -12,22 +12,21 @@ class Context;
 
 class Array final : public Type {
 public: // Methods
-    Array(yy::location loc, std::unique_ptr<Type> type);
+    Array(yy::location loc, std::shared_ptr<Type> type);
     ~Array() override;
-
-    void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
-    void                             pretty(std::ostream &out, bool mod) const override;
-    bool                             isSubtype(const Type &other, Context &ctx) const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    void pretty(std::ostream &out, bool mod) const override;
+    bool isSubtype(const Type &other, Context &ctx) const override;
 
-protected: // Methods
-private:   // Fields
-    std::unique_ptr<Type> type_;
+private: // Fields
+    std::shared_ptr<Type> type_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
-    void verifyImpl(Context &ctx) override;
-    bool isSuperImpl(const class Array &other, Context &ctx) const override;
+    void                  json(std::ostream &os) const override;
+    void                  verifyImpl(Context &ctx) override;
+    std::shared_ptr<Type> simplify(Context &ctx) override;
+    bool                  isSuperImpl(const class Array &other, Context &ctx) const override;
 };
 
 } // namespace TypeChecker

@@ -4,7 +4,10 @@
 
 #include "type/type_exception.h"
 
-using std::ostream, std::stringstream;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::stringstream;
 
 namespace TypeChecker {
 
@@ -20,6 +23,7 @@ Type::verify(Context &ctx) {
     }
     verifyState_ = VerifyState::FAILED;
     verifyImpl(ctx); // Throws on failure
+    simplify(ctx);
     verifyState_ = VerifyState::VERIFIED;
 }
 
@@ -28,7 +32,7 @@ Type::pretty(ostream &out) const {
     pretty(out, false);
 }
 
-Type &
+shared_ptr<Type>
 Type::callAsFunc(Context &, AST::Expression &) {
     stringstream ss;
     ss << "error: \"";
@@ -40,6 +44,19 @@ Type::callAsFunc(Context &, AST::Expression &) {
 bool
 Type::isSupertype(const Type &other, Context &ctx) const {
     return other.isSubtype(*this, ctx);
+}
+
+bool
+Type::isEqual(const Type &other, Context &ctx) const {
+    if (this == &other) {
+        return true;
+    }
+    return this->isSupertype(other, ctx) && this->isSubtype(other, ctx);
+}
+
+std::shared_ptr<Type>
+Type::simplify(Context &) {
+    return shared_from_this();
 }
 
 bool
@@ -85,6 +102,16 @@ Type::isSuperImpl(const class Unit &, Context &) const {
 void
 Type::setVerifyState(Type::VerifyState verifyState) {
     verifyState_ = verifyState;
+}
+
+bool
+Type::isInitialized() const {
+    return initialized_;
+}
+
+void
+Type::setInitialized(bool initialized) {
+    initialized_ = initialized;
 }
 
 } // namespace TypeChecker

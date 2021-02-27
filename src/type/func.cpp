@@ -8,12 +8,19 @@
 
 #include "json.h"
 
-using std::function, std::ostream, std::pair, std::string, std::stringstream, std::unique_ptr,
-    std::vector;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::pair;
+using std::shared_ptr;
+using std::string;
+using std::stringstream;
+using std::unique_ptr;
+using std::vector;
 
 namespace TypeChecker {
 
-Func::Func(yy::location loc, unique_ptr<Type> argType, unique_ptr<Type> retType)
+Func::Func(yy::location loc, shared_ptr<Type> argType, shared_ptr<Type> retType)
     : Type(loc)
     , argType_{move(argType)}
     , retType_{move(retType)} {}
@@ -52,20 +59,26 @@ Func::pretty(ostream &out, bool mod) const {
     if (mod) {
         out << "(";
     }
-    out << "func(";
     argType_->pretty(out, false);
-    out << "):";
+    out << "->";
     retType_->pretty(out, false);
     if (mod) {
         out << ")";
     }
 }
 
-Type &
+shared_ptr<Type>
+Func::simplify(Context &ctx) {
+    argType_ = argType_->simplify(ctx);
+    retType_ = retType_->simplify(ctx);
+    return shared_from_this();
+}
+
+shared_ptr<Type>
 Func::callAsFunc(Context &ctx, AST::Expression &arg) {
-    auto &type = arg.getType(ctx);
-    if (type.isSubtype(*argType_, ctx)) {
-        return *retType_;
+    auto type = arg.getType(ctx);
+    if (type->isSubtype(*argType_, ctx)) {
+        return retType_;
     }
     vector<pair<string, yy::location>> msgs;
     {
@@ -73,7 +86,7 @@ Func::callAsFunc(Context &ctx, AST::Expression &arg) {
         ss << "error: function expecting an argument with type \"";
         argType_->pretty(ss);
         ss << "\" cannot be called with type \"";
-        type.pretty(ss);
+        type->pretty(ss);
         ss << "\"";
         msgs.emplace_back(ss.str(), arg.getLoc());
     }

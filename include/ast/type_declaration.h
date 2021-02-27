@@ -24,19 +24,19 @@ public: // Methods
         const yy::location &               loc,
         const yy::location &               varLoc,
         std::string                        variable,
-        std::unique_ptr<TypeChecker::Type> declType);
+        std::shared_ptr<TypeChecker::Type> declType);
     ~TypeDeclaration() override;
     [[nodiscard]] const std::string &getNodeName() const override;
     void walk(const std::function<void(const Node &)> &fn) const override;
 
 protected: // Methods
     // Constructor for virtual inheritance when Declaration has already been initialized
-    TypeDeclaration(std::unique_ptr<TypeChecker::Type> declType);
+    TypeDeclaration(std::shared_ptr<TypeChecker::Type> declType);
     [[nodiscard]] const TypeChecker::Type &getDeclType() const;
-    TypeChecker::Type &                    getTypeImpl(TypeChecker::Context &ctx) override;
+    std::shared_ptr<TypeChecker::Type>     getDeclTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
-    std::unique_ptr<TypeChecker::Type> declType_;
+    std::shared_ptr<TypeChecker::Type> declType_;
 
 private: // Methods
     void json(std::ostream &os) const override;

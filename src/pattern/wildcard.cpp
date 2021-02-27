@@ -8,13 +8,17 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::make_unique, std::ostream, std::string;
+using std::make_shared;
+using std::make_unique;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
 
 namespace Pattern {
 
 Wildcard::Wildcard(const yy::location &loc)
     : Pattern(loc)
-    , type_{make_unique<TypeChecker::Unit>(loc)} {}
+    , type_{make_shared<TypeChecker::Unit>(loc)} {}
 
 Wildcard::~Wildcard() = default;
 
@@ -30,9 +34,9 @@ Wildcard::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 Wildcard::getTypeImpl(TypeChecker::Context &) {
-    return *type_;
+    return type_;
 }
 
 } // namespace Pattern

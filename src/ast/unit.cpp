@@ -11,13 +11,16 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::make_unique, std::ostream, std::string;
+using std::make_shared;
+using std::make_unique;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
 
 namespace AST {
 
 Unit::Unit(const yy::location &loc)
-    : LValue(loc)
-    , myType_{make_unique<TypeChecker::Unit>(loc)} {}
+    : LValue(loc) {}
 
 Unit::~Unit() = default;
 
@@ -33,9 +36,9 @@ Unit::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 Unit::getTypeImpl(TypeChecker::Context &) {
-    return *myType_;
+    return make_shared<TypeChecker::Unit>(getLoc());
 }
 
 } // namespace AST

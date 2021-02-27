@@ -18,8 +18,18 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::make_unique, std::optional, std::ostream, std::reference_wrapper,
-    std::string, std::unique_ptr, std::vector;
+using std::back_inserter;
+using std::function;
+using std::make_shared;
+using std::make_unique;
+using std::optional;
+using std::ostream;
+using std::reference_wrapper;
+using std::shared_ptr;
+using std::string;
+using std::transform;
+using std::unique_ptr;
+using std::vector;
 
 namespace AST {
 
@@ -28,7 +38,7 @@ FuncDeclaration::FuncDeclaration(
     const yy::location &                    varLoc,
     string                                  variable,
     vector<unique_ptr<Pattern::Pattern>>    args,
-    optional<unique_ptr<TypeChecker::Type>> retType)
+    optional<shared_ptr<TypeChecker::Type>> retType)
     : Declaration(loc, varLoc, move(variable))
     , args_{move(args)}
     , retType_{move(retType)} {}
@@ -49,7 +59,7 @@ FuncDeclaration::getArgs() const {
     return args_;
 }
 
-const optional<unique_ptr<TypeChecker::Type>> &
+const optional<shared_ptr<TypeChecker::Type>> &
 FuncDeclaration::getRetType() const {
     return retType_;
 }
@@ -74,22 +84,14 @@ FuncDeclaration::calculateContext(TypeChecker::Context &outerCtx) {
     implCtx_ = make_unique<TypeChecker::Context>(outerCtx);
     vector<reference_wrapper<TypeChecker::Type>> types;
     for (const auto &arg : args_) {
-        auto &type = arg->getType(*implCtx_);
+        auto type = arg->getType(*implCtx_);
         // TODO
-        (void)type;
     }
     return *implCtx_;
 }
 
-TypeChecker::Type &
-FuncDeclaration::getTypeImpl(TypeChecker::Context &ctx) {
-    auto                                         newContext = ctx;
-    vector<reference_wrapper<TypeChecker::Type>> types;
-    for (const auto &arg : args_) {
-        auto &type = arg->getType(newContext);
-        // TODO
-        (void)type;
-    }
+shared_ptr<TypeChecker::Type>
+FuncDeclaration::getDeclTypeImpl(TypeChecker::Context &) {
     throw TypeChecker::TypeException(
         "type error: " + getNodeName() + " type checking not implemented (" LOC_STR ")",
         getLoc());

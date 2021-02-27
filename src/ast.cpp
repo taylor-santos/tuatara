@@ -1,6 +1,7 @@
 #include "ast.h"
 
-using std::function, std::ostream;
+using std::function;
+using std::ostream;
 
 namespace AST {
 

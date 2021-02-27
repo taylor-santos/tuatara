@@ -15,7 +15,7 @@ using namespace std;
 TEST(PatternTest, TypeConstraintJSON) {
     stringstream   ss;
     yy::location   loc;
-    auto           type = make_unique<TypeChecker::Object>(loc, "T");
+    auto           type = make_shared<TypeChecker::Object>(loc, "T");
     TypeConstraint node(loc, move(type));
     ss << node;
     EXPECT_EQ(
@@ -29,7 +29,7 @@ TEST(PatternTest, TypeConstraintJSON) {
 TEST(PatternTest, TypeConstraintWalk) {
     stringstream   ss;
     yy::location   loc;
-    auto           type = make_unique<TypeChecker::Object>(loc, "T");
+    auto           type = make_shared<TypeChecker::Object>(loc, "T");
     TypeConstraint node(loc, move(type));
     node.walk([&ss](const AST::Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Type Constraint Pattern\nObject Type\n");

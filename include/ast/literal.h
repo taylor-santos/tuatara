@@ -17,11 +17,11 @@ public: // Methods
     explicit Literal(const yy::location &loc, std::string className);
     ~Literal() override;
 
-protected: // Methods
-    [[nodiscard]] TypeChecker::Object &getMyType();
-
 private: // Fields
-    std::unique_ptr<TypeChecker::Object> myType_;
+    std::string className_;
+
+private: // Methods
+    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) final;
 };
 
 } // namespace AST

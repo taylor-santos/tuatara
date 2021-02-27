@@ -12,7 +12,12 @@ namespace yy {
 class location;
 } // namespace yy
 
-using std::function, std::ostream, std::string, std::unique_ptr;
+using std::function;
+using std::make_shared;
+using std::ostream;
+using std::shared_ptr;
+using std::string;
+using std::unique_ptr;
 
 namespace AST {
 
@@ -44,7 +49,7 @@ While::getNodeName() const {
     return name;
 }
 
-TypeChecker::Type &
+shared_ptr<TypeChecker::Type>
 While::getTypeImpl(TypeChecker::Context &) {
     throw TypeChecker::TypeException(
         "type error: " + getNodeName() + " type checking not implemented (" LOC_STR ")",
