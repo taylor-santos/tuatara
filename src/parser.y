@@ -175,11 +175,12 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     BOOL    "bool literal"
 
 %type<std::unique_ptr<AST::Expression>>
-    primary_expression
     expression_line
     expression
-    access_expression
     ident_expression
+    access_expression
+    explicit_access
+    primary_expression
     declaration
     func_impl
     one_line_func
@@ -393,29 +394,36 @@ case
 
 ident_expression
     : access_expression
-    | ident {
-        $$ = make_unique<AST::Variable>(@$, $1);
+    | "(" expression ")" {
+        $$ = $2;
     }
-    | operator {
+    | "(" ")" {
+        $$ = make_unique<AST::Unit>(@$);
+    }
+    | func_name {
         $$ = make_unique<AST::Variable>(@$, $1);
     }
 
 access_expression
-    : primary_expression
-    | ident_expression "." ident {
-        $$ = make_unique<AST::Field>(@$, $1, @3, $3);
-    }
-    | ident_expression "." operator {
-        $$ = make_unique<AST::Field>(@$, $1, @3, $3);
-    }
-    | ident_expression ident {
+    : explicit_access
+    | ident_expression func_name {
         $$ = make_unique<AST::IdentAccess>(@$, $1, @2, $2);
-    }
-    | ident_expression operator {
-        $$ = make_unique<AST::Field>(@$, $1, @2, $2);
     }
     | ident_expression primary_expression {
         $$ = make_unique<AST::Call>(@$, $1, $2);
+    }
+
+explicit_access
+    : primary_expression
+    | ident_expression "." func_name {
+        $$ = make_unique<AST::Field>(@$, $1, @3, $3);
+    }
+    | ident_expression "(" expression ")" {
+        $$ = make_unique<AST::Call>(@$, $1, $3);
+    }
+    | ident_expression "(" ")" {
+        auto arg = make_unique<AST::Unit>(yy::location{@2.begin, @3.end});
+        $$ = make_unique<AST::Call>(@$, $1, move(arg));
     }
     | ident_expression "[" expression "]" {
         $$ = make_unique<AST::Index>(@$, $1, $3);
@@ -425,14 +433,8 @@ primary_expression
     : literal {
         $$ = $1;
     }
-    | "(" expression ")" {
-        $$ = $2;
-    }
     | "{" "line break" "indent" expressions "outdent" "line break" "}" {
         $$ = make_unique<AST::Block>(@$, $4);
-    }
-    | "(" ")" {
-        $$ = make_unique<AST::Unit>(@$);
     }
 
 literal
