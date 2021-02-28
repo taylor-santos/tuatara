@@ -51,7 +51,7 @@ Call::getNodeName() const {
 shared_ptr<TypeChecker::Type>
 Call::getTypeImpl(TypeChecker::Context &ctx) {
     auto type = func_->getType(ctx);
-    auto ret  = type->callAsFunc(ctx, *arg_);
+    auto ret  = type->callAsFunc(ctx, *arg_, *this);
     return ret;
 }
 

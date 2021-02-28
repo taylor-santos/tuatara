@@ -3,7 +3,7 @@
 #    pragma warning(disable : 6326)
 #endif
 
-#include "ast/func_impl.h"
+#include "ast/func.h"
 
 #include "ast/block.h"
 #include "ast/variable.h"
@@ -29,12 +29,12 @@ TEST(ASTTest, FuncImplJSON) {
     auto                           ret = make_shared<TypeChecker::Object>(loc, "T");
     vector<unique_ptr<Expression>> stmts;
     stmts.emplace_back(make_unique<Variable>(loc, "b"));
-    auto     block = make_unique<Block>(loc, move(stmts));
-    FuncImpl node(loc, loc, name, move(args), move(block), move(ret));
+    auto block = make_unique<Block>(loc, move(stmts));
+    Func node(loc, loc, name, move(args), move(block), move(ret));
     ss << node;
     EXPECT_EQ(
         ss.str(),
-        R"({"node":"function impl",)"
+        R"({"node":"function",)"
         R"("variable":"foo",)"
         R"("args":[{)"
         R"("pattern":"named constraint",)"
@@ -65,8 +65,8 @@ TEST(ASTTest, FuncImplWalk) {
     auto                           ret = make_shared<TypeChecker::Object>(loc, "T");
     vector<unique_ptr<Expression>> stmts;
     stmts.emplace_back(make_unique<Variable>(loc, "b"));
-    auto     block = make_unique<Block>(loc, move(stmts));
-    FuncImpl node(loc, loc, name, move(args), move(block), move(ret));
+    auto block = make_unique<Block>(loc, move(stmts));
+    Func node(loc, loc, name, move(args), move(block), move(ret));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(
         ss.str(),

@@ -19,12 +19,12 @@ public: // Methods
     Context();
     Context(const Context &other) = default;
     ~Context();
-    auto                                             operator=(const Context &) = delete;
-    [[nodiscard]] std::shared_ptr<TypeChecker::Type> getSymbol(const std::string &name);
-    void  setSymbol(const std::string &name, const std::shared_ptr<TypeChecker::Type> &type);
-    Func *getFuncSignature() const;
-    void  setFuncSignature(Func *funcSignature);
-    void  addClass(const std::string &name, Class &cl);
+    auto operator=(const Context &) = delete;
+    [[nodiscard]] std::optional<std::shared_ptr<TypeChecker::Type>>
+         getSymbol(const std::string &name);
+    void setSymbol(const std::string &name, const std::shared_ptr<TypeChecker::Type> &type);
+    void updateSymbol(const std::string &name, const std::shared_ptr<TypeChecker::Type> &type);
+    void addClass(const std::string &name, Class &cl);
     [[nodiscard]] Class *getClass(const std::string &name) const;
     const std::map<std::string, std::shared_ptr<TypeChecker::Type>> &     getSymbols() const;
     const std::unordered_map<std::string, std::reference_wrapper<Class>> &getClasses() const;
@@ -34,8 +34,6 @@ public: // Methods
 private: // Fields
     std::map<std::string, std::shared_ptr<TypeChecker::Type>>      symbols_;
     std::unordered_map<std::string, std::reference_wrapper<Class>> classes_;
-    // Points to the context signature if inside the body of a function, nullptr otherwise.
-    Func *funcSignature_ = nullptr;
 };
 
 } // namespace TypeChecker

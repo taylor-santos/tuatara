@@ -1,12 +1,14 @@
 #include "type/type_context.h"
 
 #include <iomanip>
+#include <sstream>
 #include <utility>
 
 #include "type/class.h"
 #include "type/func.h"
 #include "type/object.h"
 #include "type/product.h"
+#include "type/type_exception.h"
 #include "type/unit.h"
 
 using std::endl;
@@ -16,13 +18,16 @@ using std::make_unique;
 using std::max;
 using std::nullopt;
 using std::optional;
+using std::pair;
 using std::reference_wrapper;
 using std::right;
 using std::setw;
 using std::shared_ptr;
 using std::string;
+using std::stringstream;
 using std::unique_ptr;
 using std::unordered_map;
+using std::vector;
 
 namespace TypeChecker {
 
@@ -39,27 +44,46 @@ Context::Context() {
     }
 }
 
-std::shared_ptr<TypeChecker::Type>
+optional<shared_ptr<TypeChecker::Type>>
 Context::getSymbol(const string &name) {
     auto it = symbols_.find(name);
     if (it == symbols_.end()) {
-        return nullptr;
+        return nullopt;
     }
     return it->second;
 }
 
 void
 Context::setSymbol(const string &name, const shared_ptr<TypeChecker::Type> &type) {
-    symbols_.try_emplace(name, type);
+    symbols_[name] = type;
 }
 
-Func *
-Context::getFuncSignature() const {
-    return funcSignature_;
-}
 void
-Context::setFuncSignature(Func *funcSignature) {
-    funcSignature_ = funcSignature;
+Context::updateSymbol(const std::string &name, const std::shared_ptr<TypeChecker::Type> &type) {
+    const auto [prev, added] = symbols_.try_emplace(name, type);
+    if (!added) {
+        const auto &[n, prevType] = *prev;
+        if (type->isSubtype(*prevType, *this)) {
+            prevType->setInitialized(type->isInitialized());
+            return;
+        }
+        vector<pair<string, yy::location>> msgs;
+        {
+            stringstream ss;
+            ss << "error: redefining variable \"" << name << "\" to have type \"";
+            type->pretty(ss);
+            ss << "\"";
+            msgs.emplace_back(ss.str(), type->getLoc());
+        }
+        {
+            stringstream ss;
+            ss << "note: \"" << name << "\" defined to have type \"";
+            prevType->pretty(ss);
+            ss << "\"";
+            msgs.emplace_back(ss.str(), prevType->getLoc());
+        }
+        throw TypeChecker::TypeException(msgs);
+    }
 }
 
 void

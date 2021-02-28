@@ -1,5 +1,6 @@
 #include "pattern/pattern.h"
 
+#include "type/type.h"
 #include "type/type_context.h"
 
 namespace yy {
@@ -25,6 +26,7 @@ Pattern::getName() {
 shared_ptr<TypeChecker::Type>
 Pattern::getType(TypeChecker::Context &ctx) {
     auto type = getTypeImpl(ctx);
+    type->setInitialized(true);
     if (auto *name = getName()) {
         ctx.setSymbol(*name, type);
     }

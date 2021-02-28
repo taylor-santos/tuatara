@@ -1,8 +1,11 @@
+
 var x: int|float = 5
 var y: int|float = x
-/*
+var z: (int,int,float) = 1,2,3.
 var a = 1
 var b: int = false
+
+var lambda = f:int -> g:int -> f * g, 5
 
 var ifVal = (if true then
     5 + 6 + 7 + 8)
@@ -21,14 +24,22 @@ func foo: (-> -> int)
             10
 var bar = -> -> x:int -> -> x
 
-var a = if b then (if c then "foo" else "bar") else "baz"
+var str = if b then (if c then "foo" else "bar") else "baz"
 
 var block = {
-    foo
-    bar
-    baz
+    1
+    2
+    3
 }
 
+func fib(0) -> 0
+func fib(1) -> 1
+func fib(x: int) -> fib(x-1) + fib(x-2)
+
+
+a (b) c d (e)
+
+/*
 match foo
     case 0 -> zero()
     case (_, :int) -> one()

@@ -46,7 +46,16 @@ void
 Lambda::json(ostream &os) const {
     JSON::Object obj(os);
     obj.printKeyValue("node", "lambda");
-    obj.printKeyValue("args", args_);
+    obj.printKey("args");
+    {
+        JSON::Array arr(os);
+        for (const auto &[name, type] : args_) {
+            arr.next();
+            JSON::Object arg(os);
+            arg.printKeyValue("name", name);
+            arg.printKeyValue("type", type);
+        }
+    }
     obj.printKeyValue("body", body_);
 }
 

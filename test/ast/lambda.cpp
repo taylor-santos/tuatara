@@ -19,32 +19,24 @@ using namespace AST;
 using namespace std;
 
 TEST(ASTTest, LambdaJSON) {
-    ostringstream                        ss;
-    yy::location                         loc;
-    vector<unique_ptr<Pattern::Pattern>> args;
-    auto                                 argType = make_shared<TypeChecker::Object>(loc, "S");
-    auto typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
-    args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
-    auto                           ret = make_shared<TypeChecker::Object>(loc, "T");
+    ostringstream                                       ss;
+    yy::location                                        loc;
+    vector<pair<string, shared_ptr<TypeChecker::Type>>> args;
+    auto argType = make_shared<TypeChecker::Object>(loc, "S");
+    args.emplace_back("arg", move(argType));
     vector<unique_ptr<Expression>> stmts;
     stmts.emplace_back(make_unique<Variable>(loc, "b"));
     auto   block = make_unique<Block>(loc, move(stmts));
-    Lambda node(loc, move(args), move(ret), move(block));
+    Lambda node(loc, move(args), move(block));
     ss << node;
     EXPECT_EQ(
         ss.str(),
         R"({"node":"lambda",)"
         R"("args":[{)"
-        R"("pattern":"named constraint",)"
         R"("name":"arg",)"
-        R"("constraint":{)"
-        R"("pattern":"type constraint",)"
         R"("type":{)"
         R"("kind":"object",)"
-        R"("class":"S"}}}],)"
-        R"("return type":{)"
-        R"("kind":"object",)"
-        R"("class":"T"},)"
+        R"("class":"S"}}],)"
         R"("body":{)"
         R"("node":"block",)"
         R"("statements":[{)"
@@ -53,22 +45,17 @@ TEST(ASTTest, LambdaJSON) {
 }
 
 TEST(ASTTest, LambdaWalk) {
-    ostringstream                        ss;
-    yy::location                         loc;
-    vector<unique_ptr<Pattern::Pattern>> args;
-    auto                                 argType = make_shared<TypeChecker::Object>(loc, "S");
-    auto typeConstraint = make_unique<Pattern::TypeConstraint>(loc, move(argType));
-    args.emplace_back(make_unique<Pattern::NamedConstraint>(loc, "arg", move(typeConstraint)));
-    auto                           ret = make_shared<TypeChecker::Object>(loc, "T");
+    ostringstream                                       ss;
+    yy::location                                        loc;
+    vector<pair<string, shared_ptr<TypeChecker::Type>>> args;
+    auto argType = make_shared<TypeChecker::Object>(loc, "S");
+    args.emplace_back("arg", move(argType));
     vector<unique_ptr<Expression>> stmts;
     stmts.emplace_back(make_unique<Variable>(loc, "b"));
     auto   block = make_unique<Block>(loc, move(stmts));
-    Lambda node(loc, move(args), move(ret), move(block));
+    Lambda node(loc, move(args), move(block));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
-    EXPECT_EQ(
-        ss.str(),
-        "Lambda\nNamed Constraint Pattern\nType Constraint Pattern\nObject Type\n"
-        "Object Type\nBlock\nVariable\n");
+    EXPECT_EQ(ss.str(), "Lambda\nObject Type\nBlock\nVariable\n");
 }
 
 #ifdef _MSC_VER

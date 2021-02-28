@@ -70,15 +70,15 @@ Field::getTypeImpl(TypeChecker::Context &ctx) {
         ss << "\"";
         throw TypeChecker::TypeException(ss.str(), expr_->getLoc());
     }
-    const auto &ofClass = obj->getClass();
-    auto        field   = ofClass.getField(field_);
-    if (!field) {
+    const auto &ofClass  = obj->getClass();
+    auto        optField = ofClass.getField(field_);
+    if (!optField) {
         stringstream ss;
         ss << "error: no member named \"" << field_ << "\" in class \"" << ofClass.getClassName()
            << "\"";
         throw TypeChecker::TypeException(ss.str(), fieldLoc_);
     }
-    return field;
+    return *optField;
 }
 
 } // namespace AST

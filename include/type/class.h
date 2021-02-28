@@ -16,14 +16,14 @@ class Class final : public Type {
 public: // Methods
     Class(yy::location loc, std::string name);
     ~Class() override;
-    [[nodiscard]] const std::string &getNodeName() const override;
-    void                             pretty(std::ostream &out, bool mod) const override;
-    std::shared_ptr<Type>            getField(const std::string &name) const;
-    void                             addField(const std::string &name, std::shared_ptr<Type> type);
-    const std::string &              getClassName() const;
-    void                             addSubType(Class *cl);
-    void                             addSuperType(Class *cl);
-    bool isSubtype(const Type &other, const Context &ctx) const override;
+    [[nodiscard]] const std::string &    getNodeName() const override;
+    void                                 pretty(std::ostream &out, bool mod) const override;
+    std::optional<std::shared_ptr<Type>> getField(const std::string &name) const;
+    void               addField(const std::string &name, std::shared_ptr<Type> type);
+    const std::string &getClassName() const;
+    void               addSubType(Class *cl);
+    void               addSuperType(Class *cl);
+    bool               isSubtype(const Type &other, const Context &ctx) const override;
 
     static std::unordered_map<std::string, std::shared_ptr<Class>> generateBuiltins();
 

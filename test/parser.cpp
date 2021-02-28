@@ -640,12 +640,12 @@ TEST(ParserTest, OperatorAccess) {
         R"("field":"++"})");
 }
 
-TEST(ParserTest, FuncImpl) {
+TEST(ParserTest, Func) {
     EXPECT_JSON(
         "func foo(x: int): int\n"
         "  x\n",
-        FuncImpl,
-        R"({"node":"function impl",)"
+        Func,
+        R"({"node":"function",)"
         R"("variable":"foo",)"
         R"("args":[{)"
         R"("pattern":"named constraint",)"
@@ -667,25 +667,18 @@ TEST(ParserTest, FuncImpl) {
 
 TEST(ParserTest, Lambda) {
     EXPECT_JSON(
-        "func(x: int, _, =10): T -> 123\n",
+        "x:int, y:float -> 123\n",
         Lambda,
         R"({"node":"lambda",)"
         R"("args":[{)"
-        R"("pattern":"named constraint",)"
         R"("name":"x",)"
-        R"("constraint":{)"
-        R"("pattern":"type constraint",)"
         R"("type":{)"
         R"("kind":"object",)"
-        R"("class":"int"}}},{)"
-        R"("pattern":"wildcard"},{)"
-        R"("pattern":"value constraint",)"
-        R"("value":{)"
-        R"("node":"int",)"
-        R"("value":10}}],)"
-        R"("return type":{)"
+        R"("class":"int"}},{)"
+        R"("name":"y",)"
+        R"("type":{)"
         R"("kind":"object",)"
-        R"("class":"T"},)"
+        R"("class":"float"}}],)"
         R"("body":{)"
         R"("node":"int",)"
         R"("value":123}})");
@@ -693,50 +686,60 @@ TEST(ParserTest, Lambda) {
 
 TEST(ParserTest, NamedWildcard) {
     EXPECT_JSON(
-        "func(foo) -> 5\n",
-        Lambda,
-        R"({"node":"lambda",)"
+        "func fn(foo) -> 5\n",
+        Func,
+        R"({"node":"function",)"
+        R"("variable":"fn",)"
         R"("args":[{)"
         R"("pattern":"named wildcard",)"
         R"("name":"foo"}],)"
         R"("body":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
         R"("node":"int",)"
-        R"("value":5}})");
+        R"("value":5}]}})");
 }
 
 TEST(ParserTest, LiteralPattern) {
     EXPECT_JSON(
-        "func(5) -> 5\n",
-        Lambda,
-        R"({"node":"lambda",)"
+        "func fn(5) -> 5\n",
+        Func,
+        R"({"node":"function",)"
+        R"("variable":"fn",)"
         R"("args":[{)"
         R"("pattern":"literal",)"
         R"("literal":{)"
         R"("node":"int",)"
         R"("value":5}}],)"
         R"("body":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
         R"("node":"int",)"
-        R"("value":5}})");
+        R"("value":5}]}})");
 }
 
 TEST(ParserTest, ParenPattern) {
     EXPECT_JSON(
-        "func((foo)) -> 5\n",
-        Lambda,
-        R"({"node":"lambda",)"
+        "func fn((foo)) -> 5\n",
+        Func,
+        R"({"node":"function",)"
+        R"("variable":"fn",)"
         R"("args":[{)"
         R"("pattern":"named wildcard",)"
         R"("name":"foo"}],)"
         R"("body":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
         R"("node":"int",)"
-        R"("value":5}})");
+        R"("value":5}]}})");
 }
 
 TEST(ParserTest, TuplePattern) {
     EXPECT_JSON(
-        "func(a: int, (_, b:int, c=2)) -> 5\n",
-        Lambda,
-        R"({"node":"lambda",)"
+        "func fn(a: int, (_, b:int, c=2)) -> 5\n",
+        Func,
+        R"({"node":"function",)"
+        R"("variable":"fn",)"
         R"("args":[{)"
         R"("pattern":"named constraint",)"
         R"("name":"a",)"
@@ -763,8 +766,10 @@ TEST(ParserTest, TuplePattern) {
         R"("node":"int",)"
         R"("value":2}}}]}],)"
         R"("body":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
         R"("node":"int",)"
-        R"("value":5}})");
+        R"("value":5}]}})");
 }
 
 TEST(ParserTest, SemicolonBetweenTwoStmts) {
@@ -836,8 +841,7 @@ TEST(ParserTest, SyntaxError) {
     EXPECT_EQ(
         oss.str(),
         "  <2:1>: syntax error: unexpected line break\n"
-        "expected: \"->\", \":\", \"(\", \"=\", \"|\", \"?\", \"<\", \">\", \"identifier\", or "
-        "\"operator\"\n")
+        "expected: \"=\", \"|\", \"?\", \"<\", \">\", \"identifier\", or \"operator\"\n")
         << "Expected Bison to output a syntax error message";
 }
 

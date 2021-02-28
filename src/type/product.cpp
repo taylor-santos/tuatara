@@ -4,7 +4,6 @@
 #include <utility>
 
 #include "json.h"
-#include "toRefs.h"
 
 using std::for_each;
 using std::function;
@@ -58,7 +57,7 @@ Product::pretty(ostream &out, bool mod) const {
     string sep;
     for (const auto &t : types_) {
         out << sep;
-        t->pretty(out, false);
+        t->pretty(out, true);
         sep = ",";
     }
     if (mod) {

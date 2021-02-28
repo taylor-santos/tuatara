@@ -12,6 +12,8 @@ using std::all_of;
 using std::logic_error;
 using std::make_shared;
 using std::make_unique;
+using std::nullopt;
+using std::optional;
 using std::ostream;
 using std::pair;
 using std::shared_ptr;
@@ -64,13 +66,13 @@ Class::verifyImpl(Context &ctx) {
         }
         bool fieldsAllSuper = all_of(fields_.begin(), fields_.end(), [&](auto &it) {
             auto &[name, field] = it;
-            auto otherField     = other.getField(name);
-            return otherField && otherField->isSubtype(*field, ctx);
+            auto optField       = other.getField(name);
+            return optField && (*optField)->isSubtype(*field, ctx);
         });
         bool fieldsAllSub   = all_of(other.fields_.begin(), other.fields_.end(), [&](auto &it) {
             auto &[name, otherField] = it;
-            auto field               = getField(name);
-            return field && field->isSubtype(*otherField, ctx);
+            auto optField            = getField(name);
+            return optField && (*optField)->isSubtype(*otherField, ctx);
         });
         if (fieldsAllSuper) {
             addSuperType(&other);
@@ -86,11 +88,11 @@ Class::pretty(ostream &out, bool) const {
     out << "<class>";
 }
 
-shared_ptr<Type>
+optional<shared_ptr<Type>>
 Class::getField(const string &name) const {
     auto it = fields_.find(name);
     if (it == fields_.end()) {
-        return nullptr;
+        return nullopt;
     }
     return it->second;
 }

@@ -1,5 +1,7 @@
 #include "type/type.h"
 
+#include <common.h>
+
 #include <sstream>
 
 #include "type/type_exception.h"
@@ -32,8 +34,8 @@ Type::pretty(ostream &out) const {
     pretty(out, false);
 }
 
-shared_ptr<Type>
-Type::callAsFunc(Context &, AST::Expression &) {
+std::shared_ptr<Type>
+Type::callAsFunc(Context &, AST::Expression &, const AST::Call &) {
     stringstream ss;
     ss << "error: \"";
     pretty(ss);
@@ -60,7 +62,7 @@ Type::simplify(Context &) {
 }
 
 bool
-Type::isSuperImpl(const class Array &other, const Context &ctx) const {
+Type::isSuperImpl(const class Array &, const Context &) const {
     return false;
 }
 
@@ -70,7 +72,7 @@ Type::isSuperImpl(const class Class &, const Context &) const {
 }
 
 bool
-Type::isSuperImpl(const class Func &other, const Context &ctx) const {
+Type::isSuperImpl(const class Func &, const Context &) const {
     return false;
 }
 
@@ -80,7 +82,7 @@ Type::isSuperImpl(const class Maybe &, const Context &) const {
 }
 
 bool
-Type::isSuperImpl(const class Object &other, const Context &ctx) const {
+Type::isSuperImpl(const class Object &, const Context &) const {
     return false;
 }
 
@@ -95,7 +97,7 @@ Type::isSuperImpl(const class Sum &, const Context &) const {
 }
 
 bool
-Type::isSuperImpl(const class Unit &other, const Context &ctx) const {
+Type::isSuperImpl(const class Unit &, const Context &) const {
     return false;
 }
 

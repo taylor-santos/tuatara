@@ -31,7 +31,7 @@
 #include "ast/call.h"
 #include "ast/field.h"
 #include "ast/float.h"
-#include "ast/func_impl.h"
+#include "ast/func.h"
 #include "ast/ident_access.h"
 #include "ast/if.h"
 #include "ast/if_else.h"
@@ -182,6 +182,7 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     ident_expression
     declaration
     func_impl
+    one_line_func
     while_expression
     if_expression
     match_expression
@@ -266,6 +267,7 @@ expressions
 expression
     : ident_expression
     | declaration
+    | one_line_func
     | lambda
     | ternary
     | multi_expression {
@@ -536,7 +538,16 @@ func_impl
     : "func" func_name opt_patterns opt_ret_type "line break" "indent" expressions "outdent" {
         @$ = yy::location{@1.begin, @7.end};
         auto block = make_unique<AST::Block>(@7, $7);
-        $$ = make_unique<AST::FuncImpl>(@$, @2, $2, $3, move(block), $4);
+        $$ = make_unique<AST::Func>(@$, @2, $2, $3, move(block), $4);
+    }
+
+one_line_func
+    : "func" func_name opt_patterns opt_ret_type "->" expression {
+        @$ = yy::location{@1.begin, @6.end};
+        std::vector<std::unique_ptr<AST::Expression>> stmts;
+        stmts.emplace_back($6);
+        auto block = make_unique<AST::Block>(@6, move(stmts));
+        $$ = make_unique<AST::Func>(@$, @2, $2, $3, move(block), $4);
     }
 
 lambda

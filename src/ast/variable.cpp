@@ -43,12 +43,13 @@ Variable::getNodeName() const {
 
 shared_ptr<TypeChecker::Type>
 Variable::getTypeImpl(TypeChecker::Context &ctx) {
-    auto type = ctx.getSymbol(name_);
-    if (!type) {
+    auto optType = ctx.getSymbol(name_);
+    if (!optType) {
         throw TypeChecker::TypeException(
             "error: use of unidentified variable \"" + name_ + "\"",
             getLoc());
     }
+    auto type = *optType;
     if (!type->isInitialized()) {
         vector<pair<string, yy::location>> msgs;
         msgs.emplace_back("error: use of uninitialized variable \"" + name_ + "\"", getLoc());

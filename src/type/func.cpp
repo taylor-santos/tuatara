@@ -1,7 +1,10 @@
 #include "type/func.h"
 
+#include <common.h>
+
 #include <sstream>
 
+#include "ast/call.h"
 #include "ast/expression.h"
 
 #include "type/type_exception.h"
@@ -74,8 +77,8 @@ Func::simplify(Context &ctx) {
     return shared_from_this();
 }
 
-shared_ptr<Type>
-Func::callAsFunc(Context &ctx, AST::Expression &arg) {
+std::shared_ptr<Type>
+Func::callAsFunc(Context &ctx, AST::Expression &arg, const AST::Call &call) {
     auto type = arg.getType(ctx);
     if (type->isSubtype(*argType_, ctx)) {
         return retType_;
@@ -90,6 +93,7 @@ Func::callAsFunc(Context &ctx, AST::Expression &arg) {
         ss << "\"";
         msgs.emplace_back(ss.str(), arg.getLoc());
     }
+    msgs.emplace_back("note: function invoked here", call.getLoc());
     {
         stringstream ss;
         ss << "note: function has signature \"";

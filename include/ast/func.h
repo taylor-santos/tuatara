@@ -1,9 +1,9 @@
-#ifndef AST_FUNC_IMPL_H
-#define AST_FUNC_IMPL_H
+#ifndef AST_FUNC_H
+#define AST_FUNC_H
 
 #include <vector>
 
-#include "ast/func_declaration.h"
+#include "ast/declaration.h"
 
 namespace Pattern {
 class Pattern;
@@ -21,21 +21,24 @@ namespace AST {
 
 class Block;
 
-class FuncImpl final : public FuncDeclaration {
+class Func final : public Declaration {
 public: // Methods
-    FuncImpl(
+    Func(
         const yy::location &                              loc,
         const yy::location &                              varLoc,
         std::string                                       variable,
         std::vector<std::unique_ptr<Pattern::Pattern>>    args,
         std::unique_ptr<Block>                            body,
         std::optional<std::shared_ptr<TypeChecker::Type>> retType = {});
-    ~FuncImpl() override;
+    ~Func() override;
     void walk(const std::function<void(const Node &)> &fn) const override;
     [[nodiscard]] const std::string &getNodeName() const override;
 
 private: // Fields
-    std::unique_ptr<Block> body_;
+    std::vector<std::unique_ptr<Pattern::Pattern>>       args_;
+    std::optional<std::shared_ptr<TypeChecker::Type>>    retType_;
+    std::unique_ptr<Block>                               body_;
+    std::optional<std::unique_ptr<TypeChecker::Context>> implCtx_;
 
 private: // Methods
     void                               json(std::ostream &os) const override;
@@ -44,4 +47,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // AST_FUNC_IMPL_H
+#endif // AST_FUNC_H

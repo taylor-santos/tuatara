@@ -26,8 +26,8 @@ main(int argc, char *argv[]) {
             TypeChecker::Context ctx;
             try {
                 for (const auto &stmt : drv.statements) {
+                    cout << *stmt << endl;
                     stmt->getType(ctx);
-                    // cout << *stmt << endl;
                     // stmt->walk([&](const AST::Node &node) -> void {
                     //     Print::error(cout, node.getNodeName(), node.getLoc(), drv.lines);
                     // });

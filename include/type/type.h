@@ -10,7 +10,8 @@ class location;
 // Forward declaration
 namespace AST {
 class Expression;
-}
+class Call;
+} // namespace AST
 
 namespace TypeChecker {
 
@@ -25,16 +26,17 @@ public: // Methods
     /// Verify that this type definition is valid in the given context,
     /// and update any needed fields in response.
     /// \param ctx The type checker context
-    void                          verify(Context &ctx);
-    void                          pretty(std::ostream &out) const;
-    virtual void                  pretty(std::ostream &out, bool mod) const = 0;
-    virtual std::shared_ptr<Type> callAsFunc(Context &ctx, AST::Expression &arg);
-    virtual bool                  isSubtype(const Type &other, const Context &ctx) const = 0;
-    bool                          isSupertype(const Type &other, const Context &ctx) const;
-    bool                          isEqual(const Type &other, Context &ctx) const;
-    Type &                        operator=(const Type &) = delete;
-    [[nodiscard]] bool            isInitialized() const;
-    void                          setInitialized(bool initialized);
+    void         verify(Context &ctx);
+    void         pretty(std::ostream &out) const;
+    virtual void pretty(std::ostream &out, bool mod) const = 0;
+    virtual std::shared_ptr<Type>
+                       callAsFunc(Context &ctx, AST::Expression &arg, const AST::Call &call);
+    virtual bool       isSubtype(const Type &other, const Context &ctx) const = 0;
+    bool               isSupertype(const Type &other, const Context &ctx) const;
+    bool               isEqual(const Type &other, Context &ctx) const;
+    Type &             operator=(const Type &) = delete;
+    [[nodiscard]] bool isInitialized() const;
+    void               setInitialized(bool initialized);
 
 protected: // Enum Classes
     enum class VerifyState { NONE, FAILED, VERIFIED };

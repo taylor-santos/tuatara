@@ -40,8 +40,6 @@ public:
     template<class T>
     void printKeyValue(const std::string &key, const std::optional<T> &value);
     template<class T>
-    void printKeyValue(const std::string &key, const std::vector<std::pair<std::string, T>> &value);
-    template<class T>
     void printKeyValue(const std::string &key, const std::vector<T> &value);
     void printKeyValue(const std::string &key, const std::string &value);
     void printKeyValue(const std::string &key, const char *value);
@@ -97,16 +95,6 @@ Object::printKeyValue(const std::string &key, const std::vector<T> &value) {
     Array arr(out_);
     for (const T &x : value) {
         arr.printValue(x);
-    }
-}
-
-template<class T>
-void
-Object::printKeyValue(const std::string &key, const std::vector<std::pair<std::string, T>> &value) {
-    printKey(key);
-    Object obj(out_);
-    for (const auto &[k, v] : value) {
-        obj.printKeyValue(k, v);
     }
 }
 

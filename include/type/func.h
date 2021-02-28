@@ -1,6 +1,8 @@
 #ifndef TYPE_FUNC_H
 #define TYPE_FUNC_H
 
+#include <common.h>
+
 #include "type/type.h"
 
 namespace AST {
@@ -19,10 +21,11 @@ public: // Methods
     Func(yy::location loc, std::shared_ptr<Type> argType, std::shared_ptr<Type> retType);
     ~Func() override;
     [[nodiscard]] const std::string &getNodeName() const override;
-    void                  walk(const std::function<void(const Node &)> &fn) const override;
-    void                  pretty(std::ostream &out, bool mod) const override;
-    std::shared_ptr<Type> callAsFunc(Context &ctx, AST::Expression &arg) override;
-    bool                  isSubtype(const Type &other, const Context &ctx) const override;
+    void walk(const std::function<void(const Node &)> &fn) const override;
+    void pretty(std::ostream &out, bool mod) const override;
+    std::shared_ptr<Type>
+         callAsFunc(Context &ctx, AST::Expression &arg, const AST::Call &call) override;
+    bool isSubtype(const Type &other, const Context &ctx) const override;
 
 private: // Fields
     std::shared_ptr<Type> argType_;
