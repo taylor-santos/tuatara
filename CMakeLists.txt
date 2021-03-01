@@ -10,12 +10,13 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(BISON 3.6.1 REQUIRED)
 find_package(FLEX 2.6 REQUIRED)
+find_package(PythonInterp 3 REQUIRED)
 
 bison_target(
         PARSER ${CMAKE_SOURCE_DIR}/src/parser.y
         ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.cc
-        VERBOSE grammar.output
-        COMPILE_FLAGS "-Wall"
+        VERBOSE
+        COMPILE_FLAGS "-Wall --report=all --xml"
 )
 flex_target(
         SCANNER ${CMAKE_SOURCE_DIR}/src/scanner.l
@@ -35,6 +36,16 @@ add_executable(${PROJECT_NAME}
 set(CMAKE_CONFIGURATION_TYPES Debug Analysis Coverage Release CACHE STRING "" FORCE)
 set(CMAKE_EXE_LINKER_FLAGS_ANALYSIS "" CACHE STRING "" FORCE)
 set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "" CACHE STRING "" FORCE)
+
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/grammar.h
+        COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/parse_grammar.py ${CMAKE_CURRENT_BINARY_DIR}/parser.xml ${CMAKE_CURRENT_BINARY_DIR}/grammar.h
+        MAIN_DEPENDENCY ${CMAKE_CURRENT_BINARY_DIR}/parser.output
+        DEPENDS ${BISON_PARSER_OUTPUTS} ${CMAKE_SOURCE_DIR}/src/parse_grammar.py
+        BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/grammar.h
+        COMMENT "Generating grammar"
+)
+
 
 # Tests
 # Download and unpack googletest at configure time

@@ -1,4 +1,5 @@
-
+a.b c 5 d.e(f)
+/*
 var x: int|float = 5
 var y: int|float = x
 var z: (int,int,float) = 1,2,3.
@@ -48,4 +49,5 @@ match foo
         x
     case y = 10
         foo()
+*/
 */
