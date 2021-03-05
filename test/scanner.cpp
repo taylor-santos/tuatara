@@ -510,7 +510,7 @@ TEST(ScannerTest, InconsistentSpaces) {
     EXPECT_EQ(oss.str(), "") << "Expected Flex to output no errors";
 }
 
-TEST(ScanerTest, EOFLineBreak) {
+TEST(ScannerTest, EOFLineBreak) {
     yy::Scanner   scanner;
     istringstream iss("foo\n");
     ostringstream oss;
@@ -520,7 +520,7 @@ TEST(ScanerTest, EOFLineBreak) {
     EXPECT_EOF(scanner, drv);
 }
 
-TEST(ScanerTest, EOFNoLineBreak) {
+TEST(ScannerTest, EOFNoLineBreak) {
     yy::Scanner   scanner;
     istringstream iss("foo");
     ostringstream oss;
@@ -530,7 +530,7 @@ TEST(ScanerTest, EOFNoLineBreak) {
     EXPECT_EOF(scanner, drv);
 }
 
-TEST(ScanerTest, EOFLineBreakTrailingWhitespace) {
+TEST(ScannerTest, EOFLineBreakTrailingWhitespace) {
     yy::Scanner   scanner;
     istringstream iss("foo\n    ");
     ostringstream oss;
@@ -540,7 +540,7 @@ TEST(ScanerTest, EOFLineBreakTrailingWhitespace) {
     EXPECT_EOF(scanner, drv);
 }
 
-TEST(ScanerTest, EOFNoLineBreakTrailingWhitespace) {
+TEST(ScannerTest, EOFNoLineBreakTrailingWhitespace) {
     yy::Scanner   scanner;
     istringstream iss("foo    ");
     ostringstream oss;

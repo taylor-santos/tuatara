@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 find_package(BISON 3.6.1 REQUIRED)
 find_package(FLEX 2.6 REQUIRED)
-find_package(PythonInterp 3 REQUIRED)
+find_package(Python3 REQUIRED)
 
 bison_target(
         PARSER ${CMAKE_SOURCE_DIR}/src/parser.y

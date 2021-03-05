@@ -4,31 +4,43 @@ dist: focal
 jobs:
   include:
     - os: linux
+      name: "Coverage"
       compiler: gcc
-      addons:
-        apt:
-          packages:
-            - clang-format-11
       before_install:
         - pip install --user cpp-coveralls
+      script:
+        - mkdir -p build
+        - cd build
+        - cmake -DCMAKE_BUILD_TYPE=Coverage ..
+        - make all_tests
+        - cd ..
+        - ./build/all_tests
       after_success:
         - coveralls -i src -e src/main.cpp --gcov-options '\-lp'
     - os: linux
+      name: "GCC"
+      compiler: gcc
+    - os: linux
+      name: "Clang"
       compiler: clang
     - os: linux
+      name: "GCC Arm"
       dist: focal
       compiler: gcc
       arch: arm64
     - os: osx
+      name: "OSX"
       osx_image: xcode12.2
       compiler: clang
       before_install:
         - brew install flex
         - export PATH="/usr/local/opt/flex/bin:$PATH"
     - os: windows
+      name: "Windows"
       compiler: "msvc2017"
       install:
         - choco install winflexbison3
+        - choco install python3
       script:
         - mkdir -p build
         - cd build

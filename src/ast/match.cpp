@@ -1,5 +1,6 @@
 #include "ast/match.h"
 
+#include <algorithm>
 #include <cassert>
 
 #include "pattern/pattern.h"
@@ -16,6 +17,7 @@ namespace yy {
 class location;
 } // namespace yy
 
+using std::all_of;
 using std::function;
 using std::make_shared;
 using std::ostream;

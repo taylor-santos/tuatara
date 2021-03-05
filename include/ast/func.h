@@ -1,6 +1,7 @@
 #ifndef AST_FUNC_H
 #define AST_FUNC_H
 
+#include <optional>
 #include <vector>
 
 #include "ast/declaration.h"

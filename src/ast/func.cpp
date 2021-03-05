@@ -1,5 +1,6 @@
 #include "ast/func.h"
 
+#include <algorithm>
 #include <cassert>
 #include <sstream>
 
@@ -16,6 +17,8 @@
 
 #include "json.h"
 
+using std::all_of;
+using std::for_each;
 using std::function;
 using std::make_shared;
 using std::make_unique;
@@ -26,6 +29,7 @@ using std::reference_wrapper;
 using std::shared_ptr;
 using std::string;
 using std::stringstream;
+using std::transform;
 using std::unique_ptr;
 using std::vector;
 

@@ -1,5 +1,6 @@
 #include "type/type_context.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <sstream>
 #include <utility>
@@ -16,6 +17,7 @@ using std::left;
 using std::make_shared;
 using std::make_unique;
 using std::max;
+using std::max_element;
 using std::nullopt;
 using std::optional;
 using std::pair;
@@ -112,12 +114,12 @@ Context::getClasses() const {
 
 void
 Context::printSymbols(std::ostream &out) const {
-    int maxLen =
+    size_t maxLen =
         max_element(getSymbols().begin(), getSymbols().end(), [](const auto &s1, const auto &s2) {
             return s1.first.length() < s2.first.length();
         })->first.length();
     string label = "Name";
-    maxLen       = max<int>(maxLen, label.length());
+    maxLen       = max(maxLen, label.length());
     out << setw(maxLen) << left << "Name"
         << " | "
         << "Type" << endl;
@@ -131,7 +133,7 @@ Context::printSymbols(std::ostream &out) const {
 
 void
 Context::printClasses(std::ostream &out) const {
-    int maxLen =
+    size_t maxLen =
         max_element(getClasses().begin(), getClasses().end(), [](const auto &c1, const auto &c2) {
             return c1.first.length() < c2.first.length();
         })->first.length();
@@ -141,7 +143,7 @@ Context::printClasses(std::ostream &out) const {
     for (size_t i = 0; i < getClasses().size(); i++) {
         out << sep;
         sep = "╤";
-        for (int j = 0; j < maxLen; j++) {
+        for (size_t j = 0; j < maxLen; j++) {
             out << "═";
         }
     }
@@ -158,7 +160,7 @@ Context::printClasses(std::ostream &out) const {
     for (size_t i = 0; i <= getClasses().size(); i++) {
         out << sep;
         sep = i == 0 ? "╬" : "╪";
-        for (int j = 0; j < maxLen; j++) {
+        for (size_t j = 0; j < maxLen; j++) {
             out << "═";
         }
     }
@@ -192,7 +194,7 @@ Context::printClasses(std::ostream &out) const {
     for (size_t i = 0; i <= getClasses().size(); i++) {
         out << sep;
         sep = i == 0 ? "╩" : "╧";
-        for (int j = 0; j < maxLen; j++) {
+        for (size_t j = 0; j < maxLen; j++) {
             out << "═";
         }
     }
