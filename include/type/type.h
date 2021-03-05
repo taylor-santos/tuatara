@@ -37,6 +37,13 @@ public: // Methods
     Type &             operator=(const Type &) = delete;
     [[nodiscard]] bool isInitialized() const;
     void               setInitialized(bool initialized);
+    /// Check if the type has been created within user code, and if it is add a new message to the
+    /// vector. The message points to the original declared location of the type instance.
+    /// \param msgs Vector of string-loc pairs representing individual type error messages.
+    /// \return true if a new message was added, false otherwise.
+    bool addTypeLocMessage(
+        std::vector<std::pair<std::string, yy::location>> &msgs,
+        const std::string &                                name = "") const;
 
 protected: // Enum Classes
     enum class VerifyState { NONE, FAILED, VERIFIED };

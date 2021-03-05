@@ -1,5 +1,7 @@
 #include "ast/ident_access.h"
 
+#include <cassert>
+
 #include "ast/call.h"
 #include "ast/field.h"
 #include "ast/variable.h"
@@ -31,7 +33,9 @@ IdentAccess::IdentAccess(
     : LValue(loc)
     , expr_{move(expr)}
     , idLoc_{idLoc}
-    , ident_{move(ident)} {}
+    , ident_{move(ident)} {
+    assert(expr_);
+}
 
 IdentAccess::~IdentAccess() = default;
 

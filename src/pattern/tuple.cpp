@@ -1,6 +1,7 @@
 #include "pattern/tuple.h"
 
 #include <algorithm>
+#include <cassert>
 
 #include "type/product.h"
 
@@ -24,7 +25,9 @@ namespace Pattern {
 
 Tuple::Tuple(const yy::location &loc, vector<unique_ptr<Pattern>> patterns)
     : Pattern(loc)
-    , patterns_{move(patterns)} {}
+    , patterns_{move(patterns)} {
+    assert(all_of(patterns_.begin(), patterns_.end(), [](const auto &p) -> bool { return !!p; }));
+}
 
 Tuple::~Tuple() = default;
 

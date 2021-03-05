@@ -1,5 +1,6 @@
 #include "ast/func.h"
 
+#include <cassert>
 #include <sstream>
 
 #include "ast/block.h"
@@ -40,7 +41,10 @@ Func::Func(
     : Declaration(loc, varLoc, move(variable))
     , args_{move(args)}
     , retType_{move(retType)}
-    , body_{move(body)} {}
+    , body_{move(body)} {
+    assert(all_of(args_.begin(), args_.end(), [](const auto &a) -> bool { return !!a; }));
+    assert(body_);
+}
 
 Func::~Func() = default;
 
@@ -94,6 +98,7 @@ Func::getDeclTypeImpl(TypeChecker::Context &ctx) {
             (*retType_)->pretty(ss);
             ss << "\"";
             msgs.emplace_back(ss.str(), bodyRet->getLoc());
+            (*retType_)->addTypeLocMessage(msgs, "function");
             throw TypeChecker::TypeException(msgs);
         }
     }

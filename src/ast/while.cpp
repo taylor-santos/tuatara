@@ -1,5 +1,7 @@
 #include "ast/while.h"
 
+#include <cassert>
+
 #include "type/type_exception.h"
 
 #include "json.h"
@@ -24,7 +26,10 @@ namespace AST {
 While::While(const yy::location &loc, unique_ptr<Expression> cond, unique_ptr<Block> block)
     : Expression(loc)
     , cond_{move(cond)}
-    , block_{move(block)} {}
+    , block_{move(block)} {
+    assert(cond_);
+    assert(block_);
+}
 
 While::~While() = default;
 

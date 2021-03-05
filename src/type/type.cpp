@@ -1,15 +1,18 @@
 #include "type/type.h"
 
-#include <common.h>
-
 #include <sstream>
+
+#include "ast/call.h"
 
 #include "type/type_exception.h"
 
 using std::make_shared;
 using std::ostream;
+using std::pair;
 using std::shared_ptr;
+using std::string;
 using std::stringstream;
+using std::vector;
 
 namespace TypeChecker {
 
@@ -35,12 +38,11 @@ Type::pretty(ostream &out) const {
 }
 
 std::shared_ptr<Type>
-Type::callAsFunc(Context &, AST::Expression &, const AST::Call &) {
-    stringstream ss;
-    ss << "error: \"";
-    pretty(ss);
-    ss << "\" cannot be called as a function";
-    throw TypeException(ss.str(), getLoc());
+Type::callAsFunc(Context &, AST::Expression &, const AST::Call &call) {
+    vector<pair<string, yy::location>> msgs;
+    msgs.emplace_back("error: expression is not a function", call.getLoc());
+    addTypeLocMessage(msgs, "expression");
+    throw TypeException(msgs);
 }
 
 bool
@@ -114,6 +116,24 @@ Type::isInitialized() const {
 void
 Type::setInitialized(bool initialized) {
     initialized_ = initialized;
+}
+
+bool
+Type::addTypeLocMessage(vector<pair<string, yy::location>> &msgs, const string &name) const {
+    auto loc = getLoc();
+    if (loc.begin.line == 0) {
+        return false;
+    }
+    stringstream ss;
+    if (name.empty()) {
+        ss << "node: given type \"";
+    } else {
+        ss << "note: " << name << " given type \"";
+    }
+    pretty(ss);
+    ss << "\" here:";
+    msgs.emplace_back(ss.str(), loc);
+    return true;
 }
 
 } // namespace TypeChecker

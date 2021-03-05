@@ -76,11 +76,11 @@ TEST(ParserTest, Assignment) {
         Call,
         R"({"node":"function call",)"
         R"("function":{)"
-        R"("node":"field",)"
+        R"("node":"ident access",)"
         R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"abc"},)"
-        R"("field":"="},)"
+        R"("ident":"="},)"
         R"("arg":{)"
         R"("node":"int",)"
         R"("value":5}})");
@@ -521,23 +521,23 @@ TEST(ParserTest, InfixOperator) {
         IdentAccess,
         R"({"node":"ident access",)"
         R"("expr":{)"
-        R"("node":"field",)"
+        R"("node":"ident access",)"
         R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("field":"#$%"},)"
+        R"("ident":"#$%"},)"
         R"("ident":"b"})");
 }
 
 TEST(ParserTest, PostfixOperator) {
     EXPECT_JSON(
         R"(a#$%)",
-        Field,
-        R"({"node":"field",)"
+        IdentAccess,
+        R"({"node":"ident access",)"
         R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("field":"#$%"})");
+        R"("ident":"#$%"})");
 }
 
 TEST(ParserTest, PrefixOperator) {
@@ -557,11 +557,11 @@ TEST(ParserTest, AssignOperator) {
         IdentAccess,
         R"({"node":"ident access",)"
         R"("expr":{)"
-        R"("node":"field",)"
+        R"("node":"ident access",)"
         R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("field":"="},)"
+        R"("ident":"="},)"
         R"("ident":"b"})");
 }
 
@@ -571,11 +571,11 @@ TEST(ParserTest, LessThanOperator) {
         IdentAccess,
         R"({"node":"ident access",)"
         R"("expr":{)"
-        R"("node":"field",)"
+        R"("node":"ident access",)"
         R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("field":"<"},)"
+        R"("ident":"<"},)"
         R"("ident":"b"})");
 }
 
@@ -585,11 +585,11 @@ TEST(ParserTest, GreaterThanOperator) {
         IdentAccess,
         R"({"node":"ident access",)"
         R"("expr":{)"
-        R"("node":"field",)"
+        R"("node":"ident access",)"
         R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("field":">"},)"
+        R"("ident":">"},)"
         R"("ident":"b"})");
 }
 
@@ -599,23 +599,23 @@ TEST(ParserTest, BitOrOperator) {
         IdentAccess,
         R"({"node":"ident access",)"
         R"("expr":{)"
-        R"("node":"field",)"
+        R"("node":"ident access",)"
         R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("field":"|"},)"
+        R"("ident":"|"},)"
         R"("ident":"b"})");
 }
 
 TEST(ParserTest, QuestionOperator) {
     EXPECT_JSON(
         R"(a ?)",
-        Field,
-        R"({"node":"field",)"
+        IdentAccess,
+        R"({"node":"ident access",)"
         R"("expr":{)"
         R"("node":"variable",)"
         R"("name":"a"},)"
-        R"("field":"?"})");
+        R"("ident":"?"})");
 }
 
 TEST(ParserTest, FieldAccess) {

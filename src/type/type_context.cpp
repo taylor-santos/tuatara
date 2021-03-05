@@ -33,8 +33,6 @@ namespace TypeChecker {
 
 static unordered_map<string, shared_ptr<Class>> BUILTINS = Class::generateBuiltins();
 
-Context::~Context() = default;
-
 Context::Context() {
     for (const auto &[name, type] : BUILTINS) {
         addClass(name, *type);
@@ -43,6 +41,8 @@ Context::Context() {
         type->verify(*this);
     }
 }
+
+Context::~Context() = default;
 
 optional<shared_ptr<TypeChecker::Type>>
 Context::getSymbol(const string &name) {

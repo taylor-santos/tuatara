@@ -1,6 +1,7 @@
 #include "ast/tuple.h"
 
 #include <algorithm>
+#include <cassert>
 
 #include "type/product.h"
 #include "type/type_exception.h"
@@ -29,7 +30,9 @@ namespace AST {
 
 Tuple::Tuple(const yy::location &loc, vector<unique_ptr<Expression>> exprs)
     : LValue(loc)
-    , exprs_{move(exprs)} {}
+    , exprs_{move(exprs)} {
+    assert(all_of(exprs_.begin(), exprs_.end(), [](const auto &e) -> bool { return !!e; }));
+}
 
 Tuple::~Tuple() = default;
 

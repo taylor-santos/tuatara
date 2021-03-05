@@ -1,5 +1,7 @@
 #include "ast/if_else.h"
 
+#include <cassert>
+
 #include "type/sum.h"
 #include "type/type_context.h"
 #include "type/type_exception.h"
@@ -30,7 +32,9 @@ IfElse::IfElse(
     unique_ptr<Block>      block,
     unique_ptr<Block>      elseBlock)
     : If(loc, move(cond), move(block))
-    , elseBlock_{move(elseBlock)} {}
+    , elseBlock_{move(elseBlock)} {
+    assert(elseBlock_);
+}
 
 IfElse::~IfElse() = default;
 

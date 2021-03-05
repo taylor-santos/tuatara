@@ -31,8 +31,9 @@ class Rule:
 
 
 class StateRule:
-    def __init__(self, rule: int, point: int, lookaheads: typing.List[str]):
+    def __init__(self, rule: int, transition: int, point: int, lookaheads: typing.List[str]):
         self.rule = rule
+        self.transition = transition
         self.point = point
         self.lookaheads = [escape(s) for s in lookaheads]
 
@@ -59,19 +60,28 @@ def parse_rule(rule: ET.Element) -> Rule:
     return Rule(number, lhs.text, rhs_text)
 
 
-def parse_state(state: ET.Element) -> State:
+def parse_state(state: ET.Element, rules: typing.List[Rule]) -> State:
     number = int(state.attrib['number'])
-    rules = []
+    transitions = {}
+    for action in state.find('./actions/transitions'):
+        transitions[escape(action.attrib['symbol'])] = int(action.attrib['state'])
+    state_rules = []
     for item in state.find('./itemset'):
-        rule = int(item.attrib['rule-number'])
+        rule_id = int(item.attrib['rule-number'])
         point = int(item.attrib['point'])
         lookaheads = []
         la = item.find('./lookaheads')
         if la:
             for symbol in la.findall('./symbol'):
                 lookaheads.append(symbol.text)
-        rules.append(StateRule(rule, point, lookaheads))
-    return State(number, rules)
+        rule = rules[rule_id]
+        if point < len(rule.rhs):
+            symbol = rule.rhs[point]
+            transition = transitions[symbol] if symbol else -1
+        else:
+            transition = -1
+        state_rules.append(StateRule(rule_id, transition, point, lookaheads))
+    return State(number, state_rules)
 
 
 def process_grammar(file: typing.IO) -> Grammar:
@@ -82,9 +92,37 @@ def process_grammar(file: typing.IO) -> Grammar:
         rules.append(parse_rule(rule))
     states = []
     for state in root.find('./automaton'):
-        states.append(parse_state(state))
+        states.append(parse_state(state, rules))
     return Grammar(rules, states)
 
+
+skeleton = """\
+#ifndef GRAMMAR_H
+#define GRAMMAR_H
+
+#include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
+struct Rule {
+    std::string              lhs;
+    std::vector<std::string> rhs;
+};
+
+struct StateRule {
+    int                      rule;
+    int                      point;
+    int                      transition;
+    std::vector<std::string> lookaheads;
+};
+
+struct State {
+    int                    number;
+    std::vector<StateRule> rules;
+};
+
+"""
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
@@ -92,26 +130,7 @@ if __name__ == "__main__":
     with open(sys.argv[1]) as grammarXML:
         grammar = process_grammar(grammarXML)
     with open(sys.argv[2], 'w') as output:
-        output.writelines([
-            '#ifndef GRAMMAR_H\n',
-            '#define GRAMMAR_H\n\n',
-            '#include <string>\n',
-            '#include <utility>\n',
-            '#include <vector>\n\n',
-            'struct Rule {\n',
-            '    std::string              lhs;\n'
-            '    std::vector<std::string> rhs;\n',
-            '};\n\n'
-            'struct StateRule {\n'
-            '    int                      rule;\n'
-            '    int                      point;\n'
-            '    std::vector<std::string> lookaheads;\n'
-            '};\n\n'
-            'struct State {\n'
-            '    int                    number;\n'
-            '    std::vector<StateRule> rules;\n'
-            '};\n\n'
-        ])
+        output.writelines(skeleton)
 
         output.write('const Rule rules[] = {\n')
         sep = ''
@@ -133,7 +152,7 @@ if __name__ == "__main__":
             sep2 = ''
             output.write(f'{state.number},{{')
             for stateRule in state.rules:
-                output.write(f'{sep2}{{{stateRule.rule},{stateRule.point},{{')
+                output.write(f'{sep2}{{{stateRule.rule},{stateRule.point},{stateRule.transition},{{')
                 sep3 = ''
                 for lah in stateRule.lookaheads:
                     output.write(f'{sep3}{lah}')

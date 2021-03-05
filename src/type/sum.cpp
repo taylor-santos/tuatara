@@ -1,8 +1,14 @@
 #include "type/sum.h"
 
-#include <common.h>
-
 #include <algorithm>
+#include <cassert>
+
+#include "type/array.h"
+#include "type/func.h"
+#include "type/maybe.h"
+#include "type/object.h"
+#include "type/product.h"
+#include "type/unit.h"
 
 #include "json.h"
 
@@ -22,7 +28,9 @@ class Context;
 
 Sum::Sum(yy::location loc, vector<std::shared_ptr<Type>> types)
     : Type(loc)
-    , types_{move(types)} {}
+    , types_{move(types)} {
+    assert(all_of(types_.begin(), types_.end(), [](const auto &t) -> bool { return !!t; }));
+}
 
 Sum::~Sum() = default;
 

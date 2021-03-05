@@ -14,18 +14,18 @@ using namespace std;
 
 TEST(TypeTest, ArrayJSON) {
     ostringstream ss;
-    yy::location       loc;
-    auto               obj = make_unique<Object>(loc, "T");
-    Array              node(loc, move(obj));
+    yy::location  loc;
+    auto          obj = make_unique<Object>(loc, "T");
+    Array         node(loc, move(obj));
     ss << node;
     EXPECT_EQ(ss.str(), R"({"kind":"array","type":{"kind":"object","class":"T"}})");
 }
 
 TEST(TypeTest, ArrayWalk) {
     ostringstream ss;
-    yy::location       loc;
-    auto               obj = make_unique<Object>(loc, "T");
-    Array              node(loc, move(obj));
+    yy::location  loc;
+    auto          obj = make_unique<Object>(loc, "T");
+    Array         node(loc, move(obj));
 
     node.walk([&ss](const AST::Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Array Type\nObject Type\n");

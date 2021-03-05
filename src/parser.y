@@ -64,8 +64,6 @@
 #include "type/sum.h"
 #include "type/unit.h"
 
-#include "grammar.h"
-
 #define yylex driver.scanner->scan
 #define STRINGIFY_(X) #X
 #define STRINGIFY(X) STRINGIFY_(X)
@@ -80,69 +78,6 @@ namespace yy {
 void
 Parser::error(const location_type& l, const std::string& m) {
     Print::error(driver.output, m, l, driver.lines);
-}
-
-void
-Parser::report_syntax_error(yy::Parser::context const &ctx) const {
-    const auto &lookahead = ctx.lookahead();
-    auto location = ctx.location();
-    int num = ctx.expected_tokens(nullptr, 100);
-
-    std::string sep;
-    for (auto &s : yystack_) {
-        auto &state = states[s.state];
-        std::vector<std::tuple<int, std::string, std::string, std::string>> lines;
-        size_t maxLen = 0, ntLen = 0;
-        for (auto &[r, point, lah] : state.rules) {
-            auto &rule = rules[r];
-            std::string before, after;
-            sep = " ";
-            for (int i = 0; i < point; i++) {
-                before += sep + rule.rhs[i];
-                sep = " ";
-            }
-            maxLen = std::max(maxLen, before.length());
-            ntLen = std::max(ntLen, rule.lhs.length());
-            sep = "";
-            for (size_t i = point; i < rule.rhs.size(); i++) {
-                after += sep + rule.rhs[i];
-                sep = " ";
-            }
-
-            if (!lah.empty()) {
-                sep = " [";
-                for (auto &l : lah) {
-                    after += sep + l;
-                    sep = ", ";
-                }
-                after += "]";
-            }
-            lines.emplace_back(r, rule.lhs, before, after);
-        }
-        driver.output.get() << "State " << state.number << ":" << std::endl;
-        auto lastLine = lines.back();
-        auto lastNum = std::get<0>(lastLine);
-        auto numLen = std::to_string(lastNum).length();
-        for (auto &[num, nt, before, after] : lines) {
-            driver.output.get() << " " << std::setw(numLen) << std::right << num << " ";
-            driver.output.get() << std::setw(ntLen) << std::left << nt << ": ";
-            driver.output.get() << std::setw(maxLen) << std::right << before << " •" << after << std::endl;
-        }
-    }
-
-    std::stringstream ss;
-    ss << "syntax error: unexpected " << lookahead.name();
-    Print::error(driver.output, ss.str(), location, driver.lines);
-    std::unique_ptr<symbol_kind_type[]> expected(new symbol_kind_type[num]);
-    ctx.expected_tokens(expected.get(), num);
-    sep = "expected: ";
-    std::string end = "";
-    for (int i = 0; i < num - 1; i++) {
-        driver.output.get() << sep << "\"" << symbol_name(expected[i]) << "\"";
-        sep = ", ";
-        end = "or ";
-    }
-    driver.output.get() << sep << end << "\"" << symbol_name(expected[num-1]) << "\"" << std::endl;
 }
 
 } // namespace yy
@@ -221,12 +156,13 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     BOOL    "bool literal"
 
 %type<std::unique_ptr<AST::Expression>>
-    expression_line
+    simple_expr
+    ident_expr
+    infix_expr
+    postfix_expr
     expression
-    ident_expression
-    access_expression
-    explicit_access
-    primary_expression
+    single_expr
+    expression_line
     declaration
     func_impl
     one_line_func
@@ -237,9 +173,9 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
     lambda
     value_pattern
 %type<std::vector<std::unique_ptr<AST::Expression>>>
-    opt_expressions
-    expressions
-    tuple_expression
+    expression_lines
+    opt_expression_lines
+    tuple_expr
     multi_expression
 %type<std::unique_ptr<AST::Literal>>
     literal
@@ -279,40 +215,50 @@ Parser::report_syntax_error(yy::Parser::context const &ctx) const {
 %type<std::vector<std::pair<std::string, std::shared_ptr<TypeChecker::Type>>>>
     opt_arg_types
     arg_types
+
+%precedence "then"
+%precedence "else"
+
 %start file
 
 %%
 
 file
-    : opt_expressions {
+    : opt_expression_lines {
         driver.statements = $1;
     }
 
-opt_expressions
+opt_expression_lines
     : %empty {}
-    | expressions
+    | expression_lines
+
+expression_lines
+    : expression_line {
+        @$ = @1;
+        $$.push_back($1);
+    }
+    | expression_lines expression_line {
+        @$ = yy::location{@1.begin, @2.end};
+        $$ = $1;
+        $$.push_back($2);
+    }
 
 expression_line
     : expression "line break" {
-        @$ = @1;
         $$ = $1;
     }
     | if_expression
     | while_expression
     | match_expression
 
-expressions
-    : expression_line {
-        $$.push_back($1);
-    }
-    | expressions expression_line {
-        $$ = $1;
-        $$.push_back($2);
+expression
+    : single_expr
+    | tuple_expr {
+        $$ = make_unique<AST::Tuple>(@$, $1);
     }
 
-expression
+single_expr
     : postfix_expr
-    /*
     | declaration
     | one_line_func
     | lambda
@@ -320,48 +266,54 @@ expression
     | multi_expression {
         $$ = make_unique<AST::Block>(@$, $1);
     }
-    | tuple_expression {
-        $$ = make_unique<AST::Tuple>(@$, $1);
-    }
-    */
-
-expr1
-    : postfix_expr
 
 postfix_expr
-    : infix_expression
-    | infix_expression "identifier"
-    | infix_expression "operator"
-
-infix_expression
-    : explicit_access
-    | infix_expression identifier explicit_access
-
-
-explicit_access
-    : primary_expression
-
-primary_expression
-    : literal {
-        $$ = $1;
+    : infix_expr
+    | infix_expr identifier {
+        $$ = make_unique<AST::IdentAccess>(@$, $1, @2, $2);
     }
+
+infix_expr
+    : ident_expr
+    | infix_expr identifier simple_expr {
+        auto fn = make_unique<AST::IdentAccess>(yy::location{@1.begin, @2.end}, $1, @2, $2);
+        $$ = make_unique<AST::Call>(@$, move(fn), $3);
+    }
+    | infix_expr identifier identifier {
+        auto obj = make_unique<AST::IdentAccess>(yy::location{@1.begin, @2.end}, $1, @2, $2);
+        $$ = make_unique<AST::IdentAccess>(@$, move(obj), @3, $3);
+    }
+
+ident_expr
+    : simple_expr
     | identifier {
         $$ = make_unique<AST::Variable>(@$, $1);
     }
-    | explicit_access "." identifier {
+
+simple_expr
+    : literal {
+        $$ = $1;
+    }
+    | "(" expression ")" {
+        $$ = $2;
+    }
+    | "(" ")" {
+        $$ = make_unique<AST::Unit>(@$);
+    }
+    | ident_expr "." identifier {
         $$ = make_unique<AST::Field>(@$, $1, @3, $3);
     }
-    | explicit_access "(" expression ")" {
+    | ident_expr "(" expression ")" {
         $$ = make_unique<AST::Call>(@$, $1, $3);
     }
-    | explicit_access "(" ")" {
+    | ident_expr "(" ")" {
         auto arg = make_unique<AST::Unit>(yy::location{@2.begin, @3.end});
         $$ = make_unique<AST::Call>(@$, $1, move(arg));
     }
-    | explicit_access "[" expression "]" {
+    | ident_expr "[" expression "]" {
         $$ = make_unique<AST::Index>(@$, $1, $3);
     }
-    | "{" "line break" "indent" expressions "outdent" "line break" "}" {
+    | "{" "line break" "indent" expression_lines "outdent" "line break" "}" {
         $$ = make_unique<AST::Block>(@$, $4);
     }
 
@@ -379,64 +331,36 @@ literal
         $$ = make_unique<AST::Bool>(@$, $1);
     }
 
-
-simple_expression
-    : literal
-    | simple_expression "." identifier
-    | simple_expression "(" ")"
-    | simple_expression "(" expression ")"
-
-
-ident_expression
-    : access_expression
-    | "(" expression ")" {
-        $$ = $2;
-    }
-    | "(" ")" {
-        $$ = make_unique<AST::Unit>(@$);
-    }
-
-access_expression
-    : explicit_access
-    /*
-    | ident_expression identifier {
-        $$ = make_unique<AST::IdentAccess>(@$, $1, @2, $2);
-    }
-    | ident_expression primary_expression {
-        $$ = make_unique<AST::Call>(@$, $1, $2);
-    }
-    */
-
 multi_expression
-    : ident_expression ";" ident_expression {
+    : ident_expr ";" ident_expr {
         $$.push_back($1);
         $$.push_back($3);
     }
-    | multi_expression ";" ident_expression {
+    | multi_expression ";" ident_expr {
         $$ = $1;
         $$.push_back($3);
     }
 
 declaration
-    : "var" "identifier" "=" expression {
+    : "var" "identifier" "=" single_expr {
         $$ = make_unique<AST::ValueDeclaration>(@$, @2, $2, $4);
     }
     | "var" "identifier" ":" type {
         $$ = make_unique<AST::TypeDeclaration>(@$, @2, $2, $4);
     }
-    | "var" "identifier" ":" type "=" expression {
+    | "var" "identifier" ":" type "=" single_expr {
         $$ = make_unique<AST::TypeValueDeclaration>(@$, @2, $2, $4, $6);
     }
     | func_impl {
         $$ = $1;
     }
 
-tuple_expression
-    : ident_expression "," ident_expression {
+tuple_expr
+    : single_expr "," single_expr {
         $$.push_back($1);
         $$.push_back($3);
     }
-    | tuple_expression "," ident_expression {
+    | tuple_expr "," single_expr {
         $$ = $1;
         $$.push_back($3);
     }
@@ -460,13 +384,13 @@ operator
     }
 
 block_expression
-    : "line break" "indent" expressions "outdent" "line break" {
+    : "line break" "indent" expression_lines "outdent" "line break" {
         @$ = @3;
         $$ = make_unique<AST::Block>(@$, $3);
     }
 
 if_expression
-    : "if" expression "then" block_expression {
+    : "if" expression "then" block_expression %prec "then" {
         $$ = make_unique<AST::If>(@$, $2, $4);
     }
     | "if" expression "then" block_expression "else" block_expression {
@@ -474,12 +398,12 @@ if_expression
     }
 
 ternary
-    : "if" expression "then" ident_expression {
+    : "if" expression "then" single_expr {
         std::vector<std::unique_ptr<AST::Expression>> stmts;
         stmts.emplace_back($4);
         $$ = make_unique<AST::If>(@$, $2, make_unique<AST::Block>(@4, move(stmts)));
     }
-    | "if" expression "then" ident_expression "else" ident_expression {
+    | "if" expression "then" single_expr "else" single_expr {
         std::vector<std::unique_ptr<AST::Expression>> trueStmts, falseStmts;
         trueStmts.emplace_back($4);
         falseStmts.emplace_back($6);
@@ -604,14 +528,14 @@ identifier
     | operator
 
 func_impl
-    : "func" identifier opt_patterns opt_ret_type "line break" "indent" expressions "outdent" {
+    : "func" identifier opt_patterns opt_ret_type "line break" "indent" expression_lines "outdent" {
         @$ = yy::location{@1.begin, @7.end};
         auto block = make_unique<AST::Block>(@7, $7);
         $$ = make_unique<AST::Func>(@$, @2, $2, $3, move(block), $4);
     }
 
 one_line_func
-    : "func" identifier opt_patterns opt_ret_type "->" expression {
+    : "func" identifier opt_patterns opt_ret_type "->" single_expr {
         @$ = yy::location{@1.begin, @6.end};
         std::vector<std::unique_ptr<AST::Expression>> stmts;
         stmts.emplace_back($6);
@@ -620,7 +544,7 @@ one_line_func
     }
 
 lambda
-    : opt_arg_types "->" expression {
+    : opt_arg_types "->" single_expr {
         $$ = make_unique<AST::Lambda>(@$, $1, $3);
     }
 
@@ -710,7 +634,7 @@ type_pattern
     }
 
 value_pattern
-    : "=" ident_expression {
+    : "=" ident_expr {
         $$ = $2;
     }
 

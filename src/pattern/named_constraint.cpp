@@ -1,5 +1,7 @@
 #include "pattern/named_constraint.h"
 
+#include <cassert>
+
 #include "json.h"
 
 namespace yy {
@@ -21,7 +23,9 @@ NamedConstraint::NamedConstraint(
     unique_ptr<Constraint> constraint)
     : Pattern(loc)
     , name_{move(name)}
-    , constraint_{move(constraint)} {}
+    , constraint_{move(constraint)} {
+    assert(constraint_);
+}
 
 NamedConstraint::~NamedConstraint() = default;
 

@@ -1,8 +1,6 @@
 #ifndef TYPE_FUNC_H
 #define TYPE_FUNC_H
 
-#include <common.h>
-
 #include "type/type.h"
 
 namespace AST {

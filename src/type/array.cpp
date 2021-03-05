@@ -1,5 +1,7 @@
 #include "type/array.h"
 
+#include <cassert>
+
 #include "json.h"
 
 namespace TypeChecker {
@@ -17,7 +19,9 @@ namespace TypeChecker {
 
 Array::Array(yy::location loc, shared_ptr<Type> type)
     : Type(loc)
-    , type_{move(type)} {}
+    , type_{move(type)} {
+    assert(type_);
+}
 
 Array::~Array() = default;
 

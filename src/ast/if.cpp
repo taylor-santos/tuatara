@@ -1,5 +1,7 @@
 #include "ast/if.h"
 
+#include <cassert>
+
 #include "type/sum.h"
 #include "type/type_context.h"
 #include "type/type_exception.h"
@@ -28,7 +30,10 @@ namespace AST {
 If::If(const yy::location &loc, unique_ptr<Expression> cond, unique_ptr<Block> block)
     : Expression(loc)
     , cond_{move(cond)}
-    , block_{move(block)} {}
+    , block_{move(block)} {
+    assert(cond_);
+    assert(block_);
+}
 
 If::~If() = default;
 

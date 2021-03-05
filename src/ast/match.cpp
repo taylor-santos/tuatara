@@ -1,5 +1,7 @@
 #include "ast/match.h"
 
+#include <cassert>
+
 #include "pattern/pattern.h"
 
 #include "type/type_exception.h"
@@ -27,7 +29,12 @@ namespace AST {
 Match::Match(const yy::location &loc, unique_ptr<Expression> value, vector<Case> cases)
     : Expression(loc)
     , value_{move(value)}
-    , cases_{move(cases)} {}
+    , cases_{move(cases)} {
+    assert(value_);
+    assert(all_of(cases_.begin(), cases_.end(), [](const auto &c) -> bool {
+        return c.first && c.second;
+    }));
+}
 
 Match::~Match() = default;
 

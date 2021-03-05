@@ -1,5 +1,7 @@
 #include "pattern/value_constraint.h"
 
+#include <cassert>
+
 #include "ast/expression.h"
 
 #include "json.h"

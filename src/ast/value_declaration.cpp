@@ -1,10 +1,13 @@
 #include "ast/value_declaration.h"
 
+#include <cassert>
+
+#include "type/type.h"
+
 #include "json.h"
 
 namespace TypeChecker {
 class Context;
-class Type;
 } // namespace TypeChecker
 namespace yy {
 class location;
@@ -25,7 +28,9 @@ ValueDeclaration::ValueDeclaration(
     string                 variable,
     unique_ptr<Expression> value)
     : Declaration(loc, varLoc, move(variable))
-    , value_{move(value)} {}
+    , value_{move(value)} {
+    assert(value_);
+}
 
 ValueDeclaration::~ValueDeclaration() = default;
 
@@ -56,7 +61,9 @@ ValueDeclaration::getNodeName() const {
 
 shared_ptr<TypeChecker::Type>
 ValueDeclaration::getDeclTypeImpl(TypeChecker::Context &ctx) {
-    return value_->getType(ctx);
+    auto type = value_->getType(ctx);
+    type->setInitialized(true);
+    return type;
 }
 
 } // namespace AST

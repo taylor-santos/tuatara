@@ -1,5 +1,7 @@
 #include "type/maybe.h"
 
+#include <cassert>
+
 #include "json.h"
 
 using std::function;
@@ -15,7 +17,9 @@ class Context;
 
 Maybe::Maybe(yy::location loc, shared_ptr<Type> type)
     : Type(loc)
-    , type_{move(type)} {}
+    , type_{move(type)} {
+    assert(type_);
+}
 
 Maybe::~Maybe() = default;
 

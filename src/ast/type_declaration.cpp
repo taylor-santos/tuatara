@@ -1,5 +1,7 @@
 #include "ast/type_declaration.h"
 
+#include <cassert>
+
 #include "type/type.h"
 
 #include "json.h"
@@ -26,7 +28,9 @@ TypeDeclaration::TypeDeclaration(
     string                        variable,
     shared_ptr<TypeChecker::Type> declType)
     : Declaration(loc, varLoc, move(variable))
-    , declType_{move(declType)} {}
+    , declType_{move(declType)} {
+    assert(declType_);
+}
 
 TypeDeclaration::~TypeDeclaration() = default;
 

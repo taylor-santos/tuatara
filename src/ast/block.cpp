@@ -1,6 +1,7 @@
 #include "ast/block.h"
 
 #include <algorithm>
+#include <cassert>
 
 #include "type/type_exception.h"
 
@@ -14,6 +15,7 @@ namespace yy {
 class location;
 } // namespace yy
 
+using std::all_of;
 using std::function;
 using std::make_shared;
 using std::ostream;
@@ -26,7 +28,9 @@ namespace AST {
 
 Block::Block(const yy::location &loc, vector<unique_ptr<Expression>> stmts)
     : Expression(loc)
-    , stmts_{move(stmts)} {}
+    , stmts_{move(stmts)} {
+    assert(all_of(stmts_.begin(), stmts_.end(), [](const auto &s) -> bool { return !!s; }));
+}
 
 Block::~Block() = default;
 

@@ -1,5 +1,7 @@
 #include "ast/call.h"
 
+#include <cassert>
+
 #include "type/type.h"
 
 #include "json.h"
@@ -23,7 +25,10 @@ namespace AST {
 Call::Call(const yy::location &loc, unique_ptr<Expression> func, unique_ptr<Expression> arg)
     : LValue(loc)
     , func_{move(func)}
-    , arg_{move(arg)} {}
+    , arg_{move(arg)} {
+    assert(func_);
+    assert(arg_);
+}
 
 Call::~Call() = default;
 

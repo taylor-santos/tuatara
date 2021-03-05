@@ -1,5 +1,7 @@
 #include "pattern/type_constraint.h"
 
+#include <cassert>
+
 #include "type/type.h"
 
 #include "json.h"
@@ -19,7 +21,9 @@ namespace Pattern {
 
 TypeConstraint::TypeConstraint(const yy::location &loc, shared_ptr<TypeChecker::Type> type)
     : Constraint(loc)
-    , type_{move(type)} {}
+    , type_{move(type)} {
+    assert(type_);
+}
 
 TypeConstraint::~TypeConstraint() = default;
 

@@ -12,16 +12,16 @@ using namespace std;
 
 TEST(TypeTest, ObjectJSON) {
     stringstream ss;
-    yy::location      loc;
-    Object            node(loc, "class_name");
+    yy::location loc;
+    Object       node(loc, "class_name");
     ss << node;
     EXPECT_EQ(ss.str(), R"({"kind":"object","class":"class_name"})");
 }
 
 TEST(TypeTest, ObjectWalk) {
     stringstream ss;
-    yy::location      loc;
-    Object            node(loc, "class_name");
+    yy::location loc;
+    Object       node(loc, "class_name");
     node.walk([&ss](const AST::Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Object Type\n");
 }

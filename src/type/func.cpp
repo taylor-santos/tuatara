@@ -1,7 +1,6 @@
 #include "type/func.h"
 
-#include <common.h>
-
+#include <cassert>
 #include <sstream>
 
 #include "ast/call.h"
@@ -26,7 +25,10 @@ namespace TypeChecker {
 Func::Func(yy::location loc, shared_ptr<Type> argType, shared_ptr<Type> retType)
     : Type(loc)
     , argType_{move(argType)}
-    , retType_{move(retType)} {}
+    , retType_{move(retType)} {
+    assert(argType_);
+    assert(retType_);
+}
 
 Func::~Func() = default;
 
@@ -93,14 +95,9 @@ Func::callAsFunc(Context &ctx, AST::Expression &arg, const AST::Call &call) {
         ss << "\"";
         msgs.emplace_back(ss.str(), arg.getLoc());
     }
-    msgs.emplace_back("note: function invoked here", call.getLoc());
-    {
-        stringstream ss;
-        ss << "note: function has signature \"";
-        Type::pretty(ss);
-        ss << "\"";
-        msgs.emplace_back(ss.str(), getLoc());
-    }
+    type->addTypeLocMessage(msgs, "argument");
+    msgs.emplace_back("note: function invoked here:", call.getLoc());
+    addTypeLocMessage(msgs, "function");
     throw TypeException(msgs);
 }
 

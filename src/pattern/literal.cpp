@@ -1,5 +1,7 @@
 #include "pattern/literal.h"
 
+#include <cassert>
+
 #include "ast/literal.h"
 
 #include "json.h"
@@ -19,7 +21,9 @@ namespace Pattern {
 
 Literal::Literal(const yy::location &loc, unique_ptr<AST::Literal> literal)
     : Pattern(loc)
-    , literal_{move(literal)} {}
+    , literal_{move(literal)} {
+    assert(literal_);
+}
 
 Literal::~Literal() = default;
 

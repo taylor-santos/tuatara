@@ -1,6 +1,7 @@
 #include "ast/lambda.h"
 
 #include <algorithm>
+#include <cassert>
 
 #include "pattern/pattern.h"
 
@@ -38,7 +39,10 @@ Lambda::Lambda(
     unique_ptr<Expression>                              body)
     : Expression(loc)
     , args_{move(args)}
-    , body_{move(body)} {}
+    , body_{move(body)} {
+    assert(all_of(args_.begin(), args_.end(), [](const auto &a) -> bool { return !!a.second; }));
+    assert(body_);
+}
 
 Lambda::~Lambda() = default;
 

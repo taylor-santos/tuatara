@@ -1,7 +1,5 @@
 #include "type/unit.h"
 
-#include <common.h>
-
 #include "json.h"
 
 namespace TypeChecker {

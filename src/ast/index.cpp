@@ -1,5 +1,7 @@
 #include "ast/index.h"
 
+#include <cassert>
+
 #include "type/type_exception.h"
 
 #include "json.h"
@@ -24,7 +26,10 @@ namespace AST {
 Index::Index(const yy::location &loc, unique_ptr<Expression> expr, unique_ptr<Expression> index)
     : LValue(loc)
     , expr_{move(expr)}
-    , index_{move(index)} {}
+    , index_{move(index)} {
+    assert(expr_);
+    assert(index_);
+}
 
 Index::~Index() = default;
 

@@ -1,5 +1,6 @@
 #include "ast/field.h"
 
+#include <cassert>
 #include <sstream>
 
 #include "type/class.h"
@@ -16,10 +17,12 @@ using std::dynamic_pointer_cast;
 using std::function;
 using std::make_shared;
 using std::ostream;
+using std::pair;
 using std::shared_ptr;
 using std::string;
 using std::stringstream;
 using std::unique_ptr;
+using std::vector;
 
 namespace AST {
 
@@ -31,7 +34,9 @@ Field::Field(
     : LValue(loc)
     , expr_{move(expr)}
     , fieldLoc_{fieldLoc}
-    , field_{move(field)} {}
+    , field_{move(field)} {
+    assert(expr_);
+}
 
 Field::~Field() = default;
 
@@ -64,11 +69,12 @@ Field::getTypeImpl(TypeChecker::Context &ctx) {
     auto type = expr_->getType(ctx);
     auto obj  = dynamic_pointer_cast<TypeChecker::Object>(type);
     if (!obj) {
-        stringstream ss;
-        ss << "error: cannot access member of non-object type, is has type \"";
-        type->pretty(ss);
-        ss << "\"";
-        throw TypeChecker::TypeException(ss.str(), expr_->getLoc());
+        vector<pair<string, yy::location>> msgs;
+        stringstream                       ss;
+        ss << "error: cannot access member of non-object type";
+        msgs.emplace_back(ss.str(), expr_->getLoc());
+        type->addTypeLocMessage(msgs, "expression");
+        throw TypeChecker::TypeException(msgs);
     }
     const auto &ofClass  = obj->getClass();
     auto        optField = ofClass.getField(field_);

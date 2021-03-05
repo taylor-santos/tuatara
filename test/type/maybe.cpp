@@ -14,9 +14,9 @@ using namespace std;
 
 TEST(TypeTest, MaybeJSON) {
     stringstream ss;
-    yy::location      loc;
-    auto              obj = make_unique<Object>(loc, "T");
-    Maybe             node(loc, move(obj));
+    yy::location loc;
+    auto         obj = make_unique<Object>(loc, "T");
+    Maybe        node(loc, move(obj));
     ss << node;
     EXPECT_EQ(ss.str(), R"({"kind":"maybe","type":{"kind":"object","class":"T"}})");
 
@@ -27,9 +27,9 @@ TEST(TypeTest, MaybeJSON) {
 
 TEST(TypeTest, MaybeWalk) {
     stringstream ss;
-    yy::location      loc;
-    auto              obj = make_unique<Object>(loc, "T");
-    Maybe             node(loc, move(obj));
+    yy::location loc;
+    auto         obj = make_unique<Object>(loc, "T");
+    Maybe        node(loc, move(obj));
     node.walk([&ss](const AST::Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Maybe Type\nObject Type\n");
 }
