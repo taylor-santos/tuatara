@@ -55,7 +55,7 @@ TypeDeclaration::getNodeName() const {
 
 shared_ptr<TypeChecker::Type>
 TypeDeclaration::getDeclTypeImpl(TypeChecker::Context &ctx) {
-    declType_->verify(ctx);
+    declType_ = TypeChecker::Type::verify(declType_, ctx);
     return declType_;
 }
 

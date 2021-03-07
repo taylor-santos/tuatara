@@ -14,14 +14,17 @@ public: // Methods
     NamedWildcard(const yy::location &loc, std::string name);
     ~NamedWildcard() override;
 
-    [[nodiscard]] const std::string &getNodeName() const override;
-    const std::string *              getName() override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
+    const std::string *
+    getName() override;
 
 private: // Fields
     std::string name_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void
+    json(std::ostream &os) const override;
 };
 
 } // namespace Pattern

@@ -1,5 +1,5 @@
-#ifndef AST_TUPLE_H
-#define AST_TUPLE_H
+#ifndef AST_ARRAY_H
+#define AST_ARRAY_H
 
 #include <vector>
 
@@ -16,10 +16,10 @@ class location;
 
 namespace AST {
 
-class Tuple final : public LValue {
+class Array final : public LValue {
 public: // Methods
-    Tuple(const yy::location &loc, std::vector<std::unique_ptr<Expression>> exprs);
-    ~Tuple() override;
+    Array(const yy::location &loc, std::vector<std::unique_ptr<Expression>> exprs);
+    ~Array() override;
 
     void
     walk(const std::function<void(const Node &)> &fn) const override;
@@ -38,4 +38,4 @@ private: // Methods
 
 } // namespace AST
 
-#endif // AST_TUPLE_H
+#endif // AST_ARRAY_H

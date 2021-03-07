@@ -8,7 +8,9 @@
 #include "ast/float.h"
 #include "ast/int.h"
 
-#include "gtest/gtest.h"
+#include "type/type_context.h"
+
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -40,6 +42,16 @@ TEST(ASTTest, BlockWalk) {
     Block node(loc, move(stmts));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Block\nInt\nFloat\n");
+}
+
+TEST(ASTTest, BlockGetType) {
+    istringstream iss("var a = {\n"
+                      "  12.34\n"
+                      "  1234\n"
+                      "}");
+
+    auto target = make_shared<TypeChecker::Object>(yy::location{}, "int");
+    EXPECT_TYPE(iss, "a", target);
 }
 
 #ifdef _MSC_VER

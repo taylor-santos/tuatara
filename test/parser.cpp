@@ -5,28 +5,9 @@
 #endif
 
 #include "common.h"
-#include "driver.h"
-#include "gtest/gtest.h"
+#include "test_util.h"
 
 using namespace std;
-
-#define EXPECT_JSON(INPUT, TYPE, JSON)                                                           \
-    do {                                                                                         \
-        istringstream iss(INPUT);                                                                \
-        ostringstream oss;                                                                       \
-        yy::Driver    drv;                                                                       \
-        EXPECT_EQ(drv.parse(iss, oss), 0);                                                       \
-        EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";                        \
-        ASSERT_EQ(drv.statements.size(), 1) << "Expected statements list to have one statement"; \
-        EXPECT_NO_THROW({                                                                        \
-            const auto &  node = dynamic_cast<AST::TYPE &>(*drv.statements[0]);                  \
-            ostringstream ss;                                                                    \
-            ss << node;                                                                          \
-            EXPECT_EQ(ss.str(), JSON);                                                           \
-        }) << "Expected AST node to be a \""                                                     \
-           << #TYPE << "\" but got a \"" << drv.statements[0]->getNodeName() << "\"" << endl     \
-           << *drv.statements[0];                                                                \
-    } while (0)
 
 TEST(ParserTest, EmptyFile) {
     istringstream iss("");
@@ -711,6 +692,42 @@ TEST(ParserTest, LiteralPattern) {
         R"("literal":{)"
         R"("node":"int",)"
         R"("value":5}}],)"
+        R"("body":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"int",)"
+        R"("value":5}]}})");
+}
+
+TEST(ParserTest, ValueConstraintPattern) {
+    EXPECT_JSON(
+        "func fn(=foo) -> 5\n",
+        Func,
+        R"({"node":"function",)"
+        R"("variable":"fn",)"
+        R"("args":[{)"
+        R"("pattern":"value constraint",)"
+        R"("value":{)"
+        R"("node":"variable",)"
+        R"("name":"foo"}}],)"
+        R"("body":{)"
+        R"("node":"block",)"
+        R"("statements":[{)"
+        R"("node":"int",)"
+        R"("value":5}]}})");
+}
+
+TEST(ParserTest, TypeConstraintPattern) {
+    EXPECT_JSON(
+        "func fn(:int) -> 5\n",
+        Func,
+        R"({"node":"function",)"
+        R"("variable":"fn",)"
+        R"("args":[{)"
+        R"("pattern":"type constraint",)"
+        R"("type":{)"
+        R"("kind":"object",)"
+        R"("class":"int"}}],)"
         R"("body":{)"
         R"("node":"block",)"
         R"("statements":[{)"

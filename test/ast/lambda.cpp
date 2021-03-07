@@ -11,9 +11,10 @@
 #include "pattern/named_constraint.h"
 #include "pattern/type_constraint.h"
 
+#include "type/func.h"
 #include "type/object.h"
 
-#include "gtest/gtest.h"
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -56,6 +57,14 @@ TEST(ASTTest, LambdaWalk) {
     Lambda node(loc, move(args), move(block));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Lambda\nObject Type\nBlock\nVariable\n");
+}
+
+TEST(ASTTest, LambdaGetType) {
+    istringstream                 iss("var a = x:int -> 123");
+    shared_ptr<TypeChecker::Type> argType = make_shared<TypeChecker::Object>(yy::location{}, "int"),
+                                  retType = make_shared<TypeChecker::Object>(yy::location{}, "int");
+    auto target = make_shared<TypeChecker::Func>(yy::location{}, move(argType), move(retType));
+    EXPECT_TYPE(iss, "a", target);
 }
 
 #ifdef _MSC_VER

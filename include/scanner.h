@@ -25,9 +25,11 @@ public:
 
     ~Scanner() override;
 
-    virtual Parser::symbol_type scan(Driver &driver);
+    virtual Parser::symbol_type
+    scan(Driver &driver);
 
-    [[maybe_unused]] void setDebug(bool b);
+    [[maybe_unused]] void
+    setDebug(bool b);
 };
 
 } // namespace yy

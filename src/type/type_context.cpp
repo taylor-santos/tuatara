@@ -39,8 +39,8 @@ Context::Context() {
     for (const auto &[name, type] : BUILTINS) {
         addClass(name, *type);
     }
-    for (const auto &[_, type] : symbols_) {
-        type->verify(*this);
+    for (auto &[_, type] : symbols_) {
+        type = TypeChecker::Type::verify(type, *this);
     }
 }
 

@@ -17,13 +17,15 @@ public: // Methods
     Int(const yy::location &loc, int64_t value);
     ~Int() override;
 
-    [[nodiscard]] const std::string &getNodeName() const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
 
 private: // Fields
     int64_t value_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void
+    json(std::ostream &os) const override;
 };
 
 } // namespace AST

@@ -16,13 +16,15 @@ class Bool final : public Literal {
 public: // Methods
     Bool(const yy::location &loc, bool value);
     ~Bool() override;
-    [[nodiscard]] const std::string &getNodeName() const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
 
 private: // Fields
     bool value_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void
+    json(std::ostream &os) const override;
 };
 
 } // namespace AST

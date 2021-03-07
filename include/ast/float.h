@@ -16,13 +16,15 @@ class Float final : public Literal {
 public: // Methods
     Float(const yy::location &loc, double value);
     ~Float() override;
-    [[nodiscard]] const std::string &getNodeName() const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
 
 private: // Fields
     double value_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void
+    json(std::ostream &os) const override;
 };
 
 } // namespace AST

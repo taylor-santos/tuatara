@@ -26,16 +26,20 @@ public: // Methods
         std::vector<std::pair<std::string, std::shared_ptr<TypeChecker::Type>>> args,
         std::unique_ptr<Expression>                                             body);
     ~Lambda() override;
-    void walk(const std::function<void(const Node &)> &fn) const override;
-    [[nodiscard]] const std::string &getNodeName() const override;
+    void
+    walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
 
 private: // Fields
     std::vector<std::pair<std::string, std::shared_ptr<TypeChecker::Type>>> args_;
     std::unique_ptr<Expression>                                             body_;
 
 private: // Methods
-    void                               json(std::ostream &os) const override;
-    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
+    void
+    json(std::ostream &os) const override;
+    std::shared_ptr<TypeChecker::Type>
+    getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

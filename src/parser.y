@@ -28,6 +28,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include "ast/array.h"
 #include "ast/bool.h"
 #include "ast/call.h"
 #include "ast/field.h"
@@ -156,11 +157,12 @@ Parser::error(const location_type& l, const std::string& m) {
     BOOL    "bool literal"
 
 %type<std::unique_ptr<AST::Expression>>
+    expression
+    array_expr
     simple_expr
     ident_expr
     infix_expr
     postfix_expr
-    expression
     single_expr
     expression_line
     declaration
@@ -174,8 +176,9 @@ Parser::error(const location_type& l, const std::string& m) {
     value_pattern
 %type<std::vector<std::unique_ptr<AST::Expression>>>
     expression_lines
-    opt_expression_lines
     tuple_expr
+    expressions
+    opt_expression_lines
     multi_expression
 %type<std::unique_ptr<AST::Literal>>
     literal
@@ -252,9 +255,34 @@ expression_line
     | match_expression
 
 expression
-    : single_expr
+    : array_expr
     | tuple_expr {
         $$ = make_unique<AST::Tuple>(@$, $1);
+    }
+
+array_expr
+    : single_expr
+    | "[" expressions "]" {
+        $$ = make_unique<AST::Array>(@$, $2);
+    }
+
+tuple_expr
+    : single_expr "," single_expr {
+        $$.push_back($1);
+        $$.push_back($3);
+    }
+    | tuple_expr "," single_expr {
+        $$ = $1;
+        $$.push_back($3);
+    }
+
+expressions
+    : array_expr {
+        $$.push_back($1);
+    }
+    | expressions "," array_expr {
+        $$ = $1;
+        $$.push_back($3);
     }
 
 single_expr
@@ -342,27 +370,17 @@ multi_expression
     }
 
 declaration
-    : "var" "identifier" "=" single_expr {
+    : "var" "identifier" "=" array_expr {
         $$ = make_unique<AST::ValueDeclaration>(@$, @2, $2, $4);
     }
     | "var" "identifier" ":" type {
         $$ = make_unique<AST::TypeDeclaration>(@$, @2, $2, $4);
     }
-    | "var" "identifier" ":" type "=" single_expr {
+    | "var" "identifier" ":" type "=" array_expr {
         $$ = make_unique<AST::TypeValueDeclaration>(@$, @2, $2, $4, $6);
     }
     | func_impl {
         $$ = $1;
-    }
-
-tuple_expr
-    : single_expr "," single_expr {
-        $$.push_back($1);
-        $$.push_back($3);
-    }
-    | tuple_expr "," single_expr {
-        $$ = $1;
-        $$.push_back($3);
     }
 
 operator
@@ -398,12 +416,12 @@ if_expression
     }
 
 ternary
-    : "if" expression "then" single_expr {
+    : "if" expression "then" array_expr {
         std::vector<std::unique_ptr<AST::Expression>> stmts;
         stmts.emplace_back($4);
         $$ = make_unique<AST::If>(@$, $2, make_unique<AST::Block>(@4, move(stmts)));
     }
-    | "if" expression "then" single_expr "else" single_expr {
+    | "if" expression "then" array_expr "else" array_expr {
         std::vector<std::unique_ptr<AST::Expression>> trueStmts, falseStmts;
         trueStmts.emplace_back($4);
         falseStmts.emplace_back($6);
@@ -535,7 +553,7 @@ func_impl
     }
 
 one_line_func
-    : "func" identifier opt_patterns opt_ret_type "->" single_expr {
+    : "func" identifier opt_patterns opt_ret_type "->" array_expr {
         @$ = yy::location{@1.begin, @6.end};
         std::vector<std::unique_ptr<AST::Expression>> stmts;
         stmts.emplace_back($6);
@@ -544,13 +562,17 @@ one_line_func
     }
 
 lambda
-    : opt_arg_types "->" single_expr {
+    : opt_arg_types "->" array_expr {
         $$ = make_unique<AST::Lambda>(@$, $1, $3);
     }
 
 opt_arg_types
     : %empty {}
+    | "(" ")"  {}
     | arg_types
+    | "(" arg_types ")" {
+        $$ = $2;
+    }
 
 arg_types
     : arg_type {

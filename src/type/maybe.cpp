@@ -44,7 +44,7 @@ Maybe::getNodeName() const {
 
 void
 Maybe::verifyImpl(Context &ctx) {
-    type_->verify(ctx);
+    type_ = TypeChecker::Type::verify(type_, ctx);
 }
 
 void
@@ -67,6 +67,24 @@ shared_ptr<Type>
 Maybe::simplify(Context &ctx) {
     type_ = type_->simplify(ctx);
     return shared_from_this();
+}
+
+shared_ptr<Type>
+Maybe::callAsFunc(const Type &arg, const AST::Expression &call, Context &ctx) {
+    auto type = type_->callAsFunc(arg, call, ctx);
+    return make_shared<Maybe>(getLoc(), type);
+}
+
+shared_ptr<Type>
+Maybe::indexAsArray(AST::Expression &arg, const AST::Expression &index, Context &ctx) {
+    auto type = type_->indexAsArray(arg, index, ctx);
+    return make_shared<Maybe>(getLoc(), type);
+}
+
+shared_ptr<Type>
+Maybe::accessField(const string &field, const AST::Expression &access, Context &ctx) {
+    auto type = type_->accessField(field, access, ctx);
+    return make_shared<Maybe>(getLoc(), type);
 }
 
 } // namespace TypeChecker

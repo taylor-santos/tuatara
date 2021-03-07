@@ -14,19 +14,29 @@ class Array final : public Type {
 public: // Methods
     Array(yy::location loc, std::shared_ptr<Type> type);
     ~Array() override;
-    [[nodiscard]] const std::string &getNodeName() const override;
-    void walk(const std::function<void(const Node &)> &fn) const override;
-    void pretty(std::ostream &out, bool mod) const override;
-    bool isSubtype(const Type &other, const Context &ctx) const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
+    void
+    walk(const std::function<void(const Node &)> &fn) const override;
+    void
+    pretty(std::ostream &out, bool mod) const override;
+    bool
+    isSubtype(const Type &other, const Context &ctx) const override;
+    std::shared_ptr<Type>
+    indexAsArray(AST::Expression &arg, const AST::Expression &index, Context &ctx) override;
 
 private: // Fields
     std::shared_ptr<Type> type_;
 
 private: // Methods
-    void                  json(std::ostream &os) const override;
-    void                  verifyImpl(Context &ctx) override;
-    std::shared_ptr<Type> simplify(Context &ctx) override;
-    bool                  isSuperImpl(const class Array &other, const Context &ctx) const override;
+    void
+    json(std::ostream &os) const override;
+    void
+    verifyImpl(Context &ctx) override;
+    std::shared_ptr<Type>
+    simplify(Context &ctx) override;
+    bool
+    isSuperImpl(const class Array &other, const Context &ctx) const override;
 };
 
 } // namespace TypeChecker

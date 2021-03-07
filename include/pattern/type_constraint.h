@@ -17,15 +17,19 @@ public: // Methods
     TypeConstraint(const yy::location &loc, std::shared_ptr<TypeChecker::Type> type);
     ~TypeConstraint() override;
 
-    void walk(const std::function<void(const Node &)> &fn) const override;
-    [[nodiscard]] const std::string &  getNodeName() const override;
-    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
+    void
+    walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
+    std::shared_ptr<TypeChecker::Type>
+    getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
     std::shared_ptr<TypeChecker::Type> type_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void
+    json(std::ostream &os) const override;
 };
 
 } // namespace Pattern

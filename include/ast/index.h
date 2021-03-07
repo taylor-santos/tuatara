@@ -21,16 +21,20 @@ public: // Methods
         std::unique_ptr<Expression> index);
     ~Index() override;
 
-    void walk(const std::function<void(const Node &)> &fn) const override;
-    [[nodiscard]] const std::string &getNodeName() const override;
+    void
+    walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
 
 private: // Fields
     std::unique_ptr<Expression> expr_;
     std::unique_ptr<Expression> index_;
 
 private: // Methods
-    void                               json(std::ostream &os) const override;
-    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
+    void
+    json(std::ostream &os) const override;
+    std::shared_ptr<TypeChecker::Type>
+    getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

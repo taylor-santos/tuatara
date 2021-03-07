@@ -18,13 +18,16 @@ protected:
 protected:
     explicit JSON(std::ostream &out);
     virtual ~JSON() = default;
-    void indent();
+    void
+    indent();
 
 public:
-    static void setMinimize(bool minimize);
+    static void
+    setMinimize(bool minimize);
 
 public:
-    void printKey(const std::string &key);
+    void
+    printKey(const std::string &key);
 };
 
 class Object final : public JSON {
@@ -32,33 +35,47 @@ public:
     explicit Object(std::ostream &out = std::cout);
     ~Object() override;
     template<class T>
-    void printKeyValue(const std::string &key, const T &value);
+    void
+    printKeyValue(const std::string &key, const T &value);
     template<class T>
-    void printKeyValue(const std::string &key, const std::unique_ptr<T> &value);
+    void
+    printKeyValue(const std::string &key, const std::unique_ptr<T> &value);
     template<class T>
-    void printKeyValue(const std::string &key, const std::shared_ptr<T> &value);
+    void
+    printKeyValue(const std::string &key, const std::shared_ptr<T> &value);
     template<class T>
-    void printKeyValue(const std::string &key, const std::optional<T> &value);
+    void
+    printKeyValue(const std::string &key, const std::optional<T> &value);
     template<class T>
-    void printKeyValue(const std::string &key, const std::vector<T> &value);
-    void printKeyValue(const std::string &key, const std::string &value);
-    void printKeyValue(const std::string &key, const char *value);
-    void printKeyValue(const std::string &key, bool value);
+    void
+    printKeyValue(const std::string &key, const std::vector<T> &value);
+    void
+    printKeyValue(const std::string &key, const std::string &value);
+    void
+    printKeyValue(const std::string &key, const char *value);
+    void
+    printKeyValue(const std::string &key, bool value);
 };
 
 class Array final : public JSON {
 public:
     explicit Array(std::ostream &out = std::cout);
     ~Array() override;
-    void next();
+    void
+    next();
     template<class T>
-    void printValue(const T &value);
+    void
+    printValue(const T &value);
     template<class T>
-    void printValue(const std::unique_ptr<T> &value);
+    void
+    printValue(const std::unique_ptr<T> &value);
     template<class T>
-    void printValue(const std::shared_ptr<T> &value);
-    void printValue(const std::string &str);
-    void printValue(const char *value);
+    void
+    printValue(const std::shared_ptr<T> &value);
+    void
+    printValue(const std::string &str);
+    void
+    printValue(const char *value);
 };
 
 template<class T>

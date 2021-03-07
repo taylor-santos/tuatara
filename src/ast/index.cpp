@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+#include "type/type.h"
 #include "type/type_exception.h"
 
 #include "json.h"
@@ -55,10 +56,9 @@ Index::getNodeName() const {
 }
 
 shared_ptr<TypeChecker::Type>
-Index::getTypeImpl(TypeChecker::Context &) {
-    throw TypeChecker::TypeException(
-        "type error: " + getNodeName() + " type checking not implemented (" LOC_STR ")",
-        getLoc());
+Index::getTypeImpl(TypeChecker::Context &ctx) {
+    auto type = expr_->getType(ctx);
+    return type->indexAsArray(*index_, *this, ctx);
 }
 
 } // namespace AST

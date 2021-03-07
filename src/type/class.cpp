@@ -54,8 +54,8 @@ Class::getClassName() const {
 
 void
 Class::verifyImpl(Context &ctx) {
-    for (const auto &[name, field] : fields_) {
-        field->verify(ctx);
+    for (auto &[name, field] : fields_) {
+        field = TypeChecker::Type::verify(field, ctx);
     }
     // TODO: check if this is necessary
     setVerifyState(VerifyState::VERIFIED);

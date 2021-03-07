@@ -5,7 +5,7 @@
 
 #include "ast/float.h"
 
-#include "gtest/gtest.h"
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -24,6 +24,13 @@ TEST(ASTTest, FloatWalk) {
     Float         node(loc, 123.456);
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Float\n");
+}
+
+TEST(ASTTest, FloatGetType) {
+    istringstream iss("var a = 12.34");
+
+    auto target = make_shared<TypeChecker::Object>(yy::location{}, "float");
+    EXPECT_TYPE(iss, "a", target);
 }
 
 #ifdef _MSC_VER

@@ -14,9 +14,11 @@
 
 using std::all_of;
 using std::function;
+using std::make_shared;
 using std::ostream;
 using std::ref;
 using std::reference_wrapper;
+using std::shared_ptr;
 using std::string;
 using std::unique;
 using std::unique_ptr;
@@ -26,7 +28,7 @@ namespace TypeChecker {
 
 class Context;
 
-Sum::Sum(yy::location loc, vector<std::shared_ptr<Type>> types)
+Sum::Sum(yy::location loc, vector<shared_ptr<Type>> types)
     : Type(loc)
     , types_{move(types)} {
     assert(all_of(types_.begin(), types_.end(), [](const auto &t) -> bool { return !!t; }));
@@ -55,7 +57,7 @@ Sum::getNodeName() const {
 
 void
 Sum::verifyImpl(Context &ctx) {
-    for_each(types_.begin(), types_.end(), [&](const auto &t) { t->verify(ctx); });
+    for_each(types_.begin(), types_.end(), [&](auto &t) { t = TypeChecker::Type::verify(t, ctx); });
 }
 
 void
@@ -74,7 +76,7 @@ Sum::pretty(ostream &out, bool mod) const {
     }
 }
 
-std::shared_ptr<Type>
+shared_ptr<Type>
 Sum::simplify(Context &ctx) {
     for_each(types_.begin(), types_.end(), [&](auto &type) { type = type->simplify(ctx); });
     types_.erase(
@@ -138,6 +140,39 @@ Sum::isSuperImpl(const Product &other, const Context &ctx) const {
 bool
 Sum::isSuperImpl(const Unit &other, const Context &ctx) const {
     return isSuper(other, ctx);
+}
+
+shared_ptr<Type>
+Sum::callAsFunc(const Type &arg, const AST::Expression &call, Context &ctx) {
+    vector<shared_ptr<Type>> types;
+    types.reserve(types_.size());
+    for (const auto &type : types_) {
+        types.push_back(type->callAsFunc(arg, call, ctx));
+    }
+    auto ret = make_shared<Sum>(getLoc(), types);
+    return ret->simplify(ctx);
+}
+
+shared_ptr<Type>
+Sum::indexAsArray(AST::Expression &arg, const AST::Expression &index, Context &ctx) {
+    vector<shared_ptr<Type>> types;
+    types.reserve(types_.size());
+    for (const auto &type : types_) {
+        types.push_back(type->indexAsArray(arg, index, ctx));
+    }
+    auto ret = make_shared<Sum>(getLoc(), types);
+    return ret->simplify(ctx);
+}
+
+shared_ptr<Type>
+Sum::accessField(const string &field, const AST::Expression &access, Context &ctx) {
+    vector<shared_ptr<Type>> types;
+    types.reserve(types_.size());
+    for (const auto &type : types_) {
+        types.push_back(type->accessField(field, access, ctx));
+    }
+    auto ret = make_shared<Sum>(getLoc(), types);
+    return ret->simplify(ctx);
 }
 
 } // namespace TypeChecker

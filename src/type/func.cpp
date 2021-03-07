@@ -55,8 +55,8 @@ Func::getNodeName() const {
 
 void
 Func::verifyImpl(Context &ctx) {
-    argType_->verify(ctx);
-    retType_->verify(ctx);
+    argType_ = TypeChecker::Type::verify(argType_, ctx);
+    retType_ = TypeChecker::Type::verify(retType_, ctx);
 }
 
 void
@@ -80,9 +80,9 @@ Func::simplify(Context &ctx) {
 }
 
 std::shared_ptr<Type>
-Func::callAsFunc(Context &ctx, AST::Expression &arg, const AST::Call &call) {
-    auto type = arg.getType(ctx);
-    if (type->isSubtype(*argType_, ctx)) {
+Func::callAsFunc(const Type &arg, const AST::Expression &call, Context &ctx) {
+    if (arg.isSubtype(*argType_, ctx)) {
+        // TODO: This should point to the call site
         return retType_;
     }
     vector<pair<string, yy::location>> msgs;
@@ -91,11 +91,11 @@ Func::callAsFunc(Context &ctx, AST::Expression &arg, const AST::Call &call) {
         ss << "error: function expecting an argument with type \"";
         argType_->pretty(ss);
         ss << "\" cannot be called with type \"";
-        type->pretty(ss);
+        arg.pretty(ss);
         ss << "\"";
         msgs.emplace_back(ss.str(), arg.getLoc());
     }
-    type->addTypeLocMessage(msgs, "argument");
+    arg.addTypeLocMessage(msgs, "argument");
     msgs.emplace_back("note: function invoked here:", call.getLoc());
     addTypeLocMessage(msgs, "function");
     throw TypeException(msgs);

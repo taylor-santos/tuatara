@@ -7,7 +7,9 @@
 
 #include "ast/variable.h"
 
-#include "gtest/gtest.h"
+#include "type/object.h"
+
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -38,6 +40,14 @@ TEST(ASTTest, CallWalk) {
     Call          node(loc, move(func), move(arg));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Call\nVariable\nVariable\n");
+}
+
+TEST(ASTTest, CallGetType) {
+    istringstream iss("func fn() -> 123\n"
+                      "var a = fn()");
+
+    auto target = make_shared<TypeChecker::Object>(yy::location{}, "int");
+    EXPECT_TYPE(iss, "a", target);
 }
 
 #ifdef _MSC_VER

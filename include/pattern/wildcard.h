@@ -16,11 +16,14 @@ class Wildcard : public Pattern {
 public: // Methods
     explicit Wildcard(const yy::location &loc);
     ~Wildcard() override;
-    [[nodiscard]] const std::string &  getNodeName() const override;
-    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
+    std::shared_ptr<TypeChecker::Type>
+    getTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void
+    json(std::ostream &os) const override;
 
 private: // Fields
     std::shared_ptr<TypeChecker::Unit> type_;

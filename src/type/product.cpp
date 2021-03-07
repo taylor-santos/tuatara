@@ -50,7 +50,7 @@ Product::getNodeName() const {
 
 void
 Product::verifyImpl(Context &ctx) {
-    for_each(types_.begin(), types_.end(), [&](const auto &t) { t->verify(ctx); });
+    for_each(types_.begin(), types_.end(), [&](auto &t) { t = TypeChecker::Type::verify(t, ctx); });
 }
 void
 Product::pretty(ostream &out, bool mod) const {

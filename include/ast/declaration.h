@@ -14,7 +14,8 @@ class Declaration : public Expression {
 protected: // Methods
     Declaration(const yy::location &loc, const yy::location &varLoc, std::string variable);
     ~Declaration() override;
-    [[nodiscard]] const std::string &getVariable() const;
+    [[nodiscard]] const std::string &
+    getVariable() const;
     std::shared_ptr<TypeChecker::Type>
     assignType(const std::shared_ptr<TypeChecker::Type> &type, TypeChecker::Context &ctx);
 
@@ -23,8 +24,10 @@ private: // Fields
     std::string  variable_;
 
 private: // Methods
-    std::shared_ptr<TypeChecker::Type>         getTypeImpl(TypeChecker::Context &ctx) final;
-    virtual std::shared_ptr<TypeChecker::Type> getDeclTypeImpl(TypeChecker::Context &ctx) = 0;
+    std::shared_ptr<TypeChecker::Type>
+    getTypeImpl(TypeChecker::Context &ctx) final;
+    virtual std::shared_ptr<TypeChecker::Type>
+    getDeclTypeImpl(TypeChecker::Context &ctx) = 0;
 };
 
 } // namespace AST

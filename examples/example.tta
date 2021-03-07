@@ -1,8 +1,21 @@
+var a = {
+    12.34
+    1234
+    "foo"
+}
+
+var arr: int[] = [1,2,3,4]
+
+var f = arr[5] + 5
+
+func identity(x: int) -> x
+
+identity f
+
 var x: int|float = 5
 var y: int|float = x
 var z: (int,int,float) = (1,2,3.)
 
-var a = 1
 
 var b: int = false
 var lambda = f:int -> g:int -> (f * g, 5)
@@ -13,7 +26,7 @@ var ifVal = (if true then
 var c = 1.
 var d: float = 1e-10
 var e = "Hello, world!"
-var f: string = e
+var str: string = e
 var cond = true
 
 var g: (int -> int)

@@ -92,7 +92,7 @@ Func::getDeclTypeImpl(TypeChecker::Context &ctx) {
                                          : argTypes[0];
     auto bodyRet = body_->getType(newCtx);
     if (retType_) {
-        (*retType_)->verify(ctx);
+        *retType_ = TypeChecker::Type::verify(*retType_, ctx);
         if (!bodyRet->isSubtype(**retType_, ctx)) {
             vector<pair<string, yy::location>> msgs;
             stringstream                       ss;

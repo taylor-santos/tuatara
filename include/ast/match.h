@@ -26,16 +26,20 @@ public: // Aliases
 public: // Methods
     Match(const yy::location &loc, std::unique_ptr<Expression> value, std::vector<Case> cases);
     ~Match() override;
-    void walk(const std::function<void(const Node &)> &fn) const override;
-    [[nodiscard]] const std::string &getNodeName() const override;
+    void
+    walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
 
 private: // Fields
     std::unique_ptr<Expression> value_;
     std::vector<Case>           cases_;
 
 private: // Methods
-    void                               json(std::ostream &os) const override;
-    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
+    void
+    json(std::ostream &os) const override;
+    std::shared_ptr<TypeChecker::Type>
+    getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

@@ -22,8 +22,10 @@ public:
     Driver();
     ~Driver();
 
-    int parse(std::istream &in = std::cin, std::ostream &out = std::cerr);
-    int parseFile(const char *path);
+    int
+    parse(std::istream &in = std::cin, std::ostream &out = std::cerr);
+    int
+    parseFile(const char *path);
 
     std::vector<std::unique_ptr<AST::Expression>> statements;
     std::vector<std::string>                      lines;
@@ -39,7 +41,8 @@ private:
 
     enum class IndentType { NOT_SET, SPACES, TABS } indentType = IndentType::NOT_SET;
 
-    bool applyIndent(int indent);
+    bool
+    applyIndent(int indent);
 
     /// Allows Parser and Scanner to access private attributes
     /// of the Driver class

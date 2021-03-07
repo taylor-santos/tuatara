@@ -20,18 +20,21 @@ public: // Methods
         const yy::location &        idLoc,
         std::string                 ident);
     ~IdentAccess() override;
-    void walk(const std::function<void(const Node &)> &fn) const override;
-    [[nodiscard]] const std::string &getNodeName() const override;
+    void
+    walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
 
 private: // Fields
-    std::unique_ptr<Expression>                expr_;
-    yy::location                               idLoc_;
-    std::string                                ident_;
-    std::optional<std::unique_ptr<Expression>> state_;
+    std::unique_ptr<Expression> expr_;
+    yy::location                idLoc_;
+    std::string                 ident_;
 
 private: // Methods
-    void                               json(std::ostream &os) const override;
-    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
+    void
+    json(std::ostream &os) const override;
+    std::shared_ptr<TypeChecker::Type>
+    getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

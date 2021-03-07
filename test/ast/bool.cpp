@@ -5,7 +5,7 @@
 
 #include "ast/bool.h"
 
-#include "gtest/gtest.h"
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -24,6 +24,13 @@ TEST(ASTTest, BoolWalk) {
     Bool          node(loc, true);
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Bool\n");
+}
+
+TEST(ASTTest, BoolGetType) {
+    istringstream iss("var a = true");
+
+    auto target = make_shared<TypeChecker::Object>(yy::location{}, "bool");
+    EXPECT_TYPE(iss, "a", target);
 }
 
 #ifdef _MSC_VER

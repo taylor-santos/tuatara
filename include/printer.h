@@ -11,13 +11,15 @@ class location;
 
 namespace Print {
 
-void error(
+void
+error(
     std::ostream &                  out,
     const std::string &             msg,
     const yy::location &            location,
     const std::vector<std::string> &lines);
 
-std::string pretty(std::string str);
+std::string
+pretty(std::string str);
 
 } // namespace Print
 

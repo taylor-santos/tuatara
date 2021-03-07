@@ -23,18 +23,23 @@ public: // Methods
         std::string                 variable,
         std::unique_ptr<Expression> value);
     ~ValueDeclaration() override;
-    void walk(const std::function<void(const Node &)> &fn) const override;
-    [[nodiscard]] const std::string &getNodeName() const override;
+    void
+    walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
 
 protected: // Methods
-    [[nodiscard]] const Expression &   getValue() const;
-    std::shared_ptr<TypeChecker::Type> getDeclTypeImpl(TypeChecker::Context &ctx) override;
+    [[nodiscard]] const Expression &
+    getValue() const;
+    std::shared_ptr<TypeChecker::Type>
+    getDeclTypeImpl(TypeChecker::Context &ctx) override;
 
 private: // Fields
     std::unique_ptr<Expression> value_;
 
 private: // Methods
-    void json(std::ostream &os) const override;
+    void
+    json(std::ostream &os) const override;
 };
 
 } // namespace AST

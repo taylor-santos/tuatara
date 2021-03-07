@@ -9,7 +9,9 @@
 #include "ast/float.h"
 #include "ast/int.h"
 
-#include "gtest/gtest.h"
+#include "type/sum.h"
+
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -57,6 +59,22 @@ TEST(ASTTest, IfElseWalk) {
     IfElse node(loc, move(cond), move(trueBlock), move(falseBlock));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "If Else\nBool\nBlock\nInt\nBlock\nFloat\n");
+}
+
+TEST(ASTTest, IfElseGetType) {
+    istringstream                 iss("var a = if true then 123 else 456");
+    shared_ptr<TypeChecker::Type> target = make_unique<TypeChecker::Object>(yy::location{}, "int");
+    EXPECT_TYPE(iss, "a", target);
+}
+
+TEST(ASTTest, IfElseGetTypeSumType) {
+    istringstream                         iss("var a = if true then 123 else 4.56");
+    vector<shared_ptr<TypeChecker::Type>> types;
+    types.emplace_back(make_shared<TypeChecker::Object>(yy::location{}, "int"));
+    types.emplace_back(make_shared<TypeChecker::Object>(yy::location{}, "float"));
+    shared_ptr<TypeChecker::Type> target =
+        make_unique<TypeChecker::Sum>(yy::location{}, move(types));
+    EXPECT_TYPE(iss, "a", target);
 }
 
 #ifdef _MSC_VER

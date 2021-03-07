@@ -16,26 +16,47 @@ class Sum final : public Type {
 public: // Fields
     Sum(yy::location loc, std::vector<std::shared_ptr<Type>> types);
     ~Sum() override;
-    [[nodiscard]] const std::string &getNodeName() const override;
-    void walk(const std::function<void(const Node &)> &fn) const override;
-    void pretty(std::ostream &out, bool mod) const override;
-    bool isSubtype(const Type &other, const Context &ctx) const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
+    void
+    walk(const std::function<void(const Node &)> &fn) const override;
+    void
+    pretty(std::ostream &out, bool mod) const override;
+    bool
+    isSubtype(const Type &other, const Context &ctx) const override;
+    std::shared_ptr<Type>
+    callAsFunc(const Type &arg, const AST::Expression &call, Context &ctx) override;
+    std::shared_ptr<Type>
+    indexAsArray(AST::Expression &arg, const AST::Expression &index, Context &ctx) override;
+    std::shared_ptr<Type>
+    accessField(const std::string &field, const AST::Expression &access, Context &ctx) override;
 
 private: // Fields
     std::vector<std::shared_ptr<Type>> types_;
 
 private: // Methods
-    void                  json(std::ostream &os) const override;
-    void                  verifyImpl(Context &ctx) override;
-    std::shared_ptr<Type> simplify(Context &ctx) override;
-    bool                  isSuper(const Type &other, const Context &ctx) const;
-    bool                  isSuperImpl(const Array &other, const Context &ctx) const override;
-    bool                  isSuperImpl(const Func &other, const Context &ctx) const override;
-    bool                  isSuperImpl(const Maybe &other, const Context &ctx) const override;
-    bool                  isSuperImpl(const Object &other, const Context &ctx) const override;
-    bool                  isSuperImpl(const Product &other, const Context &ctx) const override;
-    bool                  isSuperImpl(const Sum &other, const Context &ctx) const override;
-    bool                  isSuperImpl(const Unit &other, const Context &ctx) const override;
+    void
+    json(std::ostream &os) const override;
+    void
+    verifyImpl(Context &ctx) override;
+    std::shared_ptr<Type>
+    simplify(Context &ctx) override;
+    bool
+    isSuper(const Type &other, const Context &ctx) const;
+    bool
+    isSuperImpl(const Array &other, const Context &ctx) const override;
+    bool
+    isSuperImpl(const Func &other, const Context &ctx) const override;
+    bool
+    isSuperImpl(const Maybe &other, const Context &ctx) const override;
+    bool
+    isSuperImpl(const Object &other, const Context &ctx) const override;
+    bool
+    isSuperImpl(const Product &other, const Context &ctx) const override;
+    bool
+    isSuperImpl(const Sum &other, const Context &ctx) const override;
+    bool
+    isSuperImpl(const Unit &other, const Context &ctx) const override;
 };
 
 } // namespace TypeChecker

@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#include "ast/call.h"
+#include "ast/expression.h"
 
 #include "type/type_exception.h"
 
@@ -21,15 +21,16 @@ Type::Type(yy::location loc)
 
 Type::~Type() = default;
 
-void
-Type::verify(Context &ctx) {
-    if (verifyState_ != VerifyState::NONE) {
-        return;
+std::shared_ptr<Type>
+Type::verify(std::shared_ptr<Type> type, Context &ctx) {
+    if (type->verifyState_ != VerifyState::NONE) {
+        return type;
     }
-    verifyState_ = VerifyState::FAILED;
-    verifyImpl(ctx); // Throws on failure
-    simplify(ctx);
-    verifyState_ = VerifyState::VERIFIED;
+    type->verifyState_ = VerifyState::FAILED;
+    type->verifyImpl(ctx); // Throws on failure
+    type               = type->simplify(ctx);
+    type->verifyState_ = VerifyState::VERIFIED;
+    return type;
 }
 
 void
@@ -38,11 +39,29 @@ Type::pretty(ostream &out) const {
 }
 
 std::shared_ptr<Type>
-Type::callAsFunc(Context &, AST::Expression &, const AST::Call &call) {
+Type::callAsFunc(const Type &, const AST::Expression &call, Context &) {
     vector<pair<string, yy::location>> msgs;
     msgs.emplace_back("error: expression is not a function", call.getLoc());
     addTypeLocMessage(msgs, "expression");
     throw TypeException(msgs);
+}
+
+std::shared_ptr<Type>
+Type::indexAsArray(AST::Expression &, const AST::Expression &index, Context &) {
+    vector<pair<string, yy::location>> msgs;
+    msgs.emplace_back("error: expression cannot be indexed", index.getLoc());
+    addTypeLocMessage(msgs, "expression");
+    throw TypeException(msgs);
+}
+
+std::shared_ptr<Type>
+Type::accessField(const std::string &field, const AST::Expression &access, Context &) {
+    vector<pair<string, yy::location>> msgs;
+    stringstream                       ss;
+    ss << "error: cannot access member \"" << field << "\" of non-class type";
+    msgs.emplace_back(ss.str(), access.getLoc());
+    addTypeLocMessage(msgs, "expression");
+    throw TypeChecker::TypeException(msgs);
 }
 
 bool

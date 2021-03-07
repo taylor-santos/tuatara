@@ -17,21 +17,28 @@ class If : public Expression {
 public: // Methods
     If(const yy::location &loc, std::unique_ptr<Expression> cond, std::unique_ptr<Block> block);
     ~If() override;
-    void walk(const std::function<void(const Node &)> &fn) const override;
-    [[nodiscard]] const std::string &getNodeName() const override;
+    void
+    walk(const std::function<void(const Node &)> &fn) const override;
+    [[nodiscard]] const std::string &
+    getNodeName() const override;
 
 protected: // Methods
-    [[nodiscard]] const Expression &   getCond() const;
-    [[nodiscard]] const Expression &   getBlock() const;
-    std::shared_ptr<TypeChecker::Type> getTrueType(TypeChecker::Context &ctx);
+    [[nodiscard]] const Expression &
+    getCond() const;
+    [[nodiscard]] const Expression &
+    getBlock() const;
+    std::shared_ptr<TypeChecker::Type>
+    getTrueType(TypeChecker::Context &ctx);
 
 private: // Fields
     std::unique_ptr<Expression> cond_;
     std::unique_ptr<Block>      block_;
 
 private: // Methods
-    void                               json(std::ostream &os) const override;
-    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) override;
+    void
+    json(std::ostream &os) const override;
+    std::shared_ptr<TypeChecker::Type>
+    getTypeImpl(TypeChecker::Context &ctx) override;
 };
 
 } // namespace AST

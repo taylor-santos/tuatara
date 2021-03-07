@@ -21,7 +21,8 @@ private: // Fields
     std::string className_;
 
 private: // Methods
-    std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) final;
+    std::shared_ptr<TypeChecker::Type>
+    getTypeImpl(TypeChecker::Context &ctx) final;
 };
 
 } // namespace AST

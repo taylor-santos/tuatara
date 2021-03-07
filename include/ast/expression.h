@@ -16,13 +16,15 @@ namespace AST {
 class Expression : public Node {
 public: // Methods
     ~Expression() override;
-    std::shared_ptr<TypeChecker::Type> getType(TypeChecker::Context &ctx);
+    std::shared_ptr<TypeChecker::Type>
+    getType(TypeChecker::Context &ctx);
 
 protected: // Methods
     explicit Expression(const yy::location &loc);
 
 private: // Fields
-    virtual std::shared_ptr<TypeChecker::Type> getTypeImpl(TypeChecker::Context &ctx) = 0;
+    virtual std::shared_ptr<TypeChecker::Type>
+    getTypeImpl(TypeChecker::Context &ctx) = 0;
 };
 
 } // namespace AST

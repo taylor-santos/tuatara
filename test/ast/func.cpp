@@ -11,9 +11,12 @@
 #include "pattern/named_constraint.h"
 #include "pattern/type_constraint.h"
 
+#include "type/func.h"
 #include "type/object.h"
+#include "type/type_exception.h"
+#include "type/unit.h"
 
-#include "gtest/gtest.h"
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -72,6 +75,40 @@ TEST(ASTTest, FuncImplWalk) {
         ss.str(),
         "Func Impl\nNamed Constraint Pattern\nType Constraint Pattern\nObject Type\nObject Type\n"
         "Block\nVariable\n");
+}
+
+TEST(ASTTest, FuncGetType) {
+    istringstream                 iss("func a(x:float): int -> 123");
+    shared_ptr<TypeChecker::Type> argType =
+                                      make_shared<TypeChecker::Object>(yy::location{}, "float"),
+                                  retType = make_shared<TypeChecker::Object>(yy::location{}, "int");
+    auto target = make_shared<TypeChecker::Func>(yy::location{}, move(argType), move(retType));
+    EXPECT_TYPE(iss, "a", target);
+}
+
+TEST(ASTTest, FuncGetTypeWrongReturn) {
+    istringstream iss("func a(x:float): bool -> 123");
+    SETUP_SCANNER((iss));
+    EXPECT_EQ(drv.parse(iss, oss), 0);
+    EXPECT_EQ(oss.str(), "") << "Expected Bison to output no errors";
+    TypeChecker::Context ctx;
+    EXPECT_THROW(
+        {
+            try {
+                for (auto &stmt : drv.statements) {
+                    stmt->getType(ctx);
+                }
+            } catch (const TypeChecker::TypeException &e) {
+                auto msgs = e.getMsgs();
+                EXPECT_EQ(msgs.size(), 2);
+                EXPECT_EQ(
+                    msgs[0].first,
+                    "error: returning \"int\" from a function expecting to return \"bool\"");
+                EXPECT_EQ(msgs[1].first, "note: function given type \"bool\" here:");
+                throw;
+            }
+        },
+        TypeChecker::TypeException);
 }
 
 #ifdef _MSC_VER

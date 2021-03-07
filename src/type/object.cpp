@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include "ast/expression.h"
+
 #include "type/class.h"
 #include "type/type_context.h"
 #include "type/type_exception.h"
@@ -9,8 +11,10 @@
 #include "json.h"
 
 using std::ostream;
+using std::pair;
 using std::string;
 using std::stringstream;
+using std::vector;
 
 namespace TypeChecker {
 
@@ -59,6 +63,23 @@ Object::isSuperImpl(const class Object &other, const Context &ctx) const {
 const Class &
 Object::getClass() const {
     return *ofClass_;
+}
+
+std::shared_ptr<Type>
+Object::accessField(const string &field, const AST::Expression &access, Context &) {
+    auto optField = (*ofClass_).get().getField(field);
+    if (!optField) {
+        vector<pair<string, yy::location>> msgs;
+        {
+            stringstream ss;
+            ss << "error: no member named \"" << field << "\" in object with type \""
+               << (*ofClass_).get().getClassName() << "\"";
+            msgs.emplace_back(ss.str(), access.getLoc());
+        }
+        addTypeLocMessage(msgs, "object");
+        throw TypeChecker::TypeException(msgs);
+    }
+    return *optField;
 }
 
 } // namespace TypeChecker
