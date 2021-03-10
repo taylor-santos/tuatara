@@ -1,3 +1,20 @@
+func f1(x: bool) -> 123
+func f2(y: bool) -> 456.78
+
+var f3 = if true then f1 else f2
+
+var x: int|float = f3(true)
+var y: int|float = f3(false)
+var z: int|float = x + y // This is allowed because the runtime type of x and y are bound together.
+{
+    var a: int
+}
+{
+    var a: float
+}
+
+var sum3: (int,int,int)|(string, string, string)
+
 var a = {
     12.34
     1234
@@ -7,14 +24,6 @@ var a = {
 var arr: int[] = [1,2,3,4]
 
 var f = arr[5] + 5
-
-func identity(x: int) -> x
-
-identity f
-
-var x: int|float = 5
-var y: int|float = x
-var z: (int,int,float) = (1,2,3.)
 
 
 var b: int = false

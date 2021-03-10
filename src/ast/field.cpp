@@ -63,7 +63,7 @@ Field::getNodeName() const {
 shared_ptr<TypeChecker::Type>
 Field::getTypeImpl(TypeChecker::Context &ctx) {
     auto type = expr_->getType(ctx);
-    return type->accessField(field_, *this, ctx);
+    return type->accessField(field_, getLoc(), ctx);
 }
 
 } // namespace AST

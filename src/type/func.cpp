@@ -32,6 +32,14 @@ Func::Func(yy::location loc, shared_ptr<Type> argType, shared_ptr<Type> retType)
 
 Func::~Func() = default;
 
+shared_ptr<Type>
+Func::clone(const yy::location &loc) const {
+    return make_shared<Func>(
+        loc,
+        argType_->clone(argType_->getLoc()),
+        retType_->clone(retType_->getLoc()));
+}
+
 void
 Func::json(ostream &os) const {
     JSON::Object obj(os);
@@ -55,8 +63,8 @@ Func::getNodeName() const {
 
 void
 Func::verifyImpl(Context &ctx) {
-    argType_ = TypeChecker::Type::verify(argType_, ctx);
-    retType_ = TypeChecker::Type::verify(retType_, ctx);
+    argType_ = argType_->verify(ctx);
+    retType_ = retType_->verify(ctx);
 }
 
 void
@@ -64,9 +72,9 @@ Func::pretty(ostream &out, bool mod) const {
     if (mod) {
         out << "(";
     }
-    argType_->pretty(out, false);
+    argType_->pretty(out, true);
     out << "->";
-    retType_->pretty(out, false);
+    retType_->pretty(out, true);
     if (mod) {
         out << ")";
     }
@@ -80,23 +88,23 @@ Func::simplify(Context &ctx) {
 }
 
 std::shared_ptr<Type>
-Func::callAsFunc(const Type &arg, const AST::Expression &call, Context &ctx) {
+Func::callAsFunc(const Type &arg, const yy::location &loc, Context &ctx) {
     if (arg.isSubtype(*argType_, ctx)) {
-        // TODO: This should point to the call site
-        return retType_;
+        return retType_->clone(loc);
     }
     vector<pair<string, yy::location>> msgs;
     {
         stringstream ss;
-        ss << "error: function expecting an argument with type \"";
+        ss << "function \"";
+        TypeChecker::Type::pretty(ss);
+        ss << "\" expects an argument with type \"";
         argType_->pretty(ss);
-        ss << "\" cannot be called with type \"";
+        ss << "\" but got \"";
         arg.pretty(ss);
         ss << "\"";
-        msgs.emplace_back(ss.str(), arg.getLoc());
+        msgs.emplace_back(ss.str(), loc);
     }
     arg.addTypeLocMessage(msgs, "argument");
-    msgs.emplace_back("note: function invoked here:", call.getLoc());
     addTypeLocMessage(msgs, "function");
     throw TypeException(msgs);
 }
@@ -109,6 +117,11 @@ Func::isSubtype(const Type &other, const Context &ctx) const {
 bool
 Func::isSuperImpl(const class Func &other, const Context &ctx) const {
     return argType_->isSubtype(*other.argType_, ctx) && other.retType_->isSubtype(*retType_, ctx);
+}
+
+void
+Func::updateWith(const Type &other) {
+    other.updateForImpl(*this);
 }
 
 } // namespace TypeChecker

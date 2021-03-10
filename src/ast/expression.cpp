@@ -18,8 +18,7 @@ Expression::~Expression() = default;
 shared_ptr<TypeChecker::Type>
 Expression::getType(TypeChecker::Context &ctx) {
     auto type = getTypeImpl(ctx);
-    type      = TypeChecker::Type::verify(type, ctx);
-    return type;
+    return type->verify(ctx);
 }
 
 } // namespace AST

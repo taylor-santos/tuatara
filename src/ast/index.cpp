@@ -57,8 +57,9 @@ Index::getNodeName() const {
 
 shared_ptr<TypeChecker::Type>
 Index::getTypeImpl(TypeChecker::Context &ctx) {
-    auto type = expr_->getType(ctx);
-    return type->indexAsArray(*index_, *this, ctx);
+    auto type      = expr_->getType(ctx);
+    auto indexType = index_->getType(ctx);
+    return type->indexAsArray(*indexType, getLoc(), ctx);
 }
 
 } // namespace AST

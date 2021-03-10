@@ -23,6 +23,11 @@ Maybe::Maybe(yy::location loc, shared_ptr<Type> type)
 
 Maybe::~Maybe() = default;
 
+shared_ptr<Type>
+Maybe::clone(const yy::location &loc) const {
+    return make_shared<Maybe>(loc, type_->clone(type_->getLoc()));
+}
+
 void
 Maybe::json(ostream &os) const {
     JSON::Object obj(os);
@@ -44,7 +49,7 @@ Maybe::getNodeName() const {
 
 void
 Maybe::verifyImpl(Context &ctx) {
-    type_ = TypeChecker::Type::verify(type_, ctx);
+    type_ = type_->verify(ctx);
 }
 
 void
@@ -70,21 +75,26 @@ Maybe::simplify(Context &ctx) {
 }
 
 shared_ptr<Type>
-Maybe::callAsFunc(const Type &arg, const AST::Expression &call, Context &ctx) {
-    auto type = type_->callAsFunc(arg, call, ctx);
+Maybe::callAsFunc(const Type &arg, const yy::location &loc, Context &ctx) {
+    auto type = type_->callAsFunc(arg, loc, ctx);
     return make_shared<Maybe>(getLoc(), type);
 }
 
 shared_ptr<Type>
-Maybe::indexAsArray(AST::Expression &arg, const AST::Expression &index, Context &ctx) {
-    auto type = type_->indexAsArray(arg, index, ctx);
+Maybe::indexAsArray(const Type &arg, const yy::location &loc, Context &ctx) {
+    auto type = type_->indexAsArray(arg, loc, ctx);
     return make_shared<Maybe>(getLoc(), type);
 }
 
 shared_ptr<Type>
-Maybe::accessField(const string &field, const AST::Expression &access, Context &ctx) {
-    auto type = type_->accessField(field, access, ctx);
+Maybe::accessField(const string &field, const yy::location &loc, Context &ctx) {
+    auto type = type_->accessField(field, loc, ctx);
     return make_shared<Maybe>(getLoc(), type);
+}
+
+void
+Maybe::updateWith(const Type &other) {
+    other.updateForImpl(*this);
 }
 
 } // namespace TypeChecker

@@ -10,6 +10,7 @@
 
 #include "json.h"
 
+using std::make_shared;
 using std::ostream;
 using std::pair;
 using std::string;
@@ -23,6 +24,11 @@ Object::Object(yy::location loc, string className)
     , className_{move(className)} {}
 
 Object::~Object() = default;
+
+std::shared_ptr<Type>
+Object::clone(const yy::location &loc) const {
+    return make_shared<Object>(loc, className_);
+}
 
 void
 Object::json(ostream &os) const {
@@ -40,7 +46,7 @@ void
 Object::verifyImpl(Context &ctx) {
     auto symbol = ctx.getClass(className_);
     if (!symbol) {
-        throw TypeException({"error: unknown class name \"" + className_ + "\"", getLoc()});
+        throw TypeException({"unknown class name \"" + className_ + "\"", getLoc()});
     }
     ofClass_ = *symbol;
 }
@@ -66,20 +72,25 @@ Object::getClass() const {
 }
 
 std::shared_ptr<Type>
-Object::accessField(const string &field, const AST::Expression &access, Context &) {
+Object::accessField(const string &field, const yy::location &loc, Context &) {
     auto optField = (*ofClass_).get().getField(field);
     if (!optField) {
         vector<pair<string, yy::location>> msgs;
         {
             stringstream ss;
-            ss << "error: no member named \"" << field << "\" in object with type \""
+            ss << "no member named \"" << field << "\" in object with type \""
                << (*ofClass_).get().getClassName() << "\"";
-            msgs.emplace_back(ss.str(), access.getLoc());
+            msgs.emplace_back(ss.str(), loc);
         }
         addTypeLocMessage(msgs, "object");
         throw TypeChecker::TypeException(msgs);
     }
     return *optField;
+}
+
+void
+Object::updateWith(const Type &other) {
+    other.updateForImpl(*this);
 }
 
 } // namespace TypeChecker

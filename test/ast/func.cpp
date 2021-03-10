@@ -103,8 +103,8 @@ TEST(ASTTest, FuncGetTypeWrongReturn) {
                 EXPECT_EQ(msgs.size(), 2);
                 EXPECT_EQ(
                     msgs[0].first,
-                    "error: returning \"int\" from a function expecting to return \"bool\"");
-                EXPECT_EQ(msgs[1].first, "note: function given type \"bool\" here:");
+                    "returning \"int\" from a function expecting to return \"bool\"");
+                EXPECT_EQ(msgs[1].first, "function given type \"bool\" here:");
                 throw;
             }
         },

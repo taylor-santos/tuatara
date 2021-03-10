@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cassert>
 
+#include "type/type_context.h"
 #include "type/type_exception.h"
 
 #include "json.h"
@@ -55,8 +56,9 @@ Block::getNodeName() const {
 
 shared_ptr<TypeChecker::Type>
 Block::getTypeImpl(TypeChecker::Context &ctx) {
+    auto                          newCtx = ctx;
     shared_ptr<TypeChecker::Type> type;
-    for_each(stmts_.begin(), stmts_.end(), [&](auto &s) { type = s->getType(ctx); });
+    for_each(stmts_.begin(), stmts_.end(), [&](auto &s) { type = s->getType(newCtx); });
     return type;
 }
 

@@ -56,9 +56,9 @@ While::getNodeName() const {
 
 shared_ptr<TypeChecker::Type>
 While::getTypeImpl(TypeChecker::Context &) {
-    throw TypeChecker::TypeException(
-        "type error: " + getNodeName() + " type checking not implemented (" LOC_STR ")",
-        getLoc());
+    throw std::logic_error(
+        "internal compiler error: " + getNodeName() +
+        " type checking not implemented (" LOC_STR ")");
 }
 
 } // namespace AST

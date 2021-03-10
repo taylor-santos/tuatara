@@ -46,15 +46,15 @@ Variable::getTypeImpl(TypeChecker::Context &ctx) {
     auto optType = ctx.getSymbol(name_);
     if (!optType) {
         throw TypeChecker::TypeException(
-            "error: use of unidentified variable \"" + name_ + "\"",
+            "use of unidentified variable \"" + name_ + "\"",
             getLoc());
     }
     auto type = *optType;
     if (!type->isInitialized()) {
         vector<pair<string, yy::location>> msgs;
-        msgs.emplace_back("error: use of uninitialized variable \"" + name_ + "\"", getLoc());
+        msgs.emplace_back("use of uninitialized variable \"" + name_ + "\"", getLoc());
         msgs.emplace_back(
-            "note: \"" + name_ + "\" was not initialized when it was declared",
+            "variable \"" + name_ + "\" was not initialized when it was declared",
             type->getLoc());
         throw TypeChecker::TypeException(msgs);
     }

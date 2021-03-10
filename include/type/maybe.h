@@ -23,11 +23,13 @@ public: // Methods
     bool
     isSubtype(const Type &other, const Context &ctx) const override;
     std::shared_ptr<Type>
-    callAsFunc(const Type &arg, const AST::Expression &call, Context &ctx) override;
+    callAsFunc(const Type &arg, const yy::location &loc, Context &ctx) override;
     std::shared_ptr<Type>
-    indexAsArray(AST::Expression &arg, const AST::Expression &index, Context &ctx) override;
+    indexAsArray(const Type &arg, const yy::location &loc, Context &ctx) override;
     std::shared_ptr<Type>
-    accessField(const std::string &field, const AST::Expression &access, Context &ctx) override;
+    accessField(const std::string &field, const yy::location &loc, Context &ctx) override;
+    std::shared_ptr<Type>
+    clone(const yy::location &loc) const override;
 
 private: // Fields
     std::shared_ptr<Type> type_;
@@ -41,6 +43,8 @@ private: // Methods
     simplify(Context &ctx) override;
     bool
     isSuperImpl(const class Maybe &other, const Context &ctx) const override;
+    void
+    updateWith(const Type &other) override;
 };
 
 } // namespace TypeChecker

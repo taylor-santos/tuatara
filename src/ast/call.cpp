@@ -57,7 +57,7 @@ shared_ptr<TypeChecker::Type>
 Call::getTypeImpl(TypeChecker::Context &ctx) {
     auto type    = func_->getType(ctx);
     auto argType = arg_->getType(ctx);
-    auto ret     = type->callAsFunc(*argType, *this, ctx);
+    auto ret     = type->callAsFunc(*argType, getLoc(), ctx);
     return ret;
 }
 

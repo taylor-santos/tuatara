@@ -55,7 +55,7 @@ Class::getClassName() const {
 void
 Class::verifyImpl(Context &ctx) {
     for (auto &[name, field] : fields_) {
-        field = TypeChecker::Type::verify(field, ctx);
+        field = field->verify(ctx);
     }
     // TODO: check if this is necessary
     setVerifyState(VerifyState::VERIFIED);
@@ -176,16 +176,45 @@ Class::generateBuiltins() {
         }
     }
     for (const auto &name : logics) {
+        static auto infixes = {
+            "||",
+            "&&",
+            "^",
+            "||=",
+            "&&=",
+            "^=",
+            "=",
+        };
         auto  clptr = make_shared<Class>(loc, name);
         auto &cl    = *clptr;
         cl.setVerifyState(Type::VerifyState::VERIFIED);
         builtins.emplace(name, move(clptr));
+        for (const auto &op : infixes) {
+            cl.addField(
+                op,
+                make_shared<Func>(
+                    loc,
+                    make_shared<Object>(loc, name),
+                    make_shared<Object>(loc, name)));
+        }
     }
     for (const auto &name : others) {
+        static auto infixes = {
+            "+=",
+            "=",
+        };
         auto  clptr = make_shared<Class>(loc, name);
         auto &cl    = *clptr;
         cl.setVerifyState(Type::VerifyState::VERIFIED);
         builtins.emplace(name, move(clptr));
+        for (const auto &op : infixes) {
+            cl.addField(
+                op,
+                make_shared<Func>(
+                    loc,
+                    make_shared<Object>(loc, name),
+                    make_shared<Object>(loc, name)));
+        }
     }
     builtins["int"]->addSuperType(builtins["bool"].get());
     return builtins;
@@ -197,6 +226,17 @@ Class::simplify(Context &ctx) {
         type = type->simplify(ctx);
     }
     return shared_from_this();
+}
+
+void
+Class::updateWith(const Type &other) {
+    other.updateForImpl(*this);
+}
+
+shared_ptr<Type>
+Class::clone(const yy::location &) const {
+    throw std::logic_error("internal compiler error: class type should never be cloned (" LOC_STR
+                           ")");
 }
 
 } // namespace TypeChecker

@@ -20,6 +20,8 @@ public: // Methods
     pretty(std::ostream &out, bool mod) const override;
     bool
     isSubtype(const Type &other, const Context &ctx) const override;
+    std::shared_ptr<Type>
+    clone(const yy::location &loc) const override;
 
 private: // Methods
     void
@@ -40,6 +42,8 @@ private: // Methods
     isSuperImpl(const Sum &other, const Context &ctx) const override;
     bool
     isSuperImpl(const Unit &other, const Context &ctx) const override;
+    void
+    updateWith(const Type &other) override;
 };
 
 } // namespace TypeChecker

@@ -25,9 +25,11 @@ public: // Methods
     void
     pretty(std::ostream &out, bool mod) const override;
     std::shared_ptr<Type>
-    callAsFunc(const Type &arg, const AST::Expression &call, Context &ctx) override;
+    callAsFunc(const Type &arg, const yy::location &loc, Context &ctx) override;
     bool
     isSubtype(const Type &other, const Context &ctx) const override;
+    std::shared_ptr<Type>
+    clone(const yy::location &loc) const override;
 
 private: // Fields
     std::shared_ptr<Type> argType_;
@@ -42,6 +44,8 @@ private: // Methods
     simplify(Context &ctx) override;
     bool
     isSuperImpl(const class Func &other, const Context &ctx) const override;
+    void
+    updateWith(const Type &other) override;
 };
 
 } // namespace TypeChecker

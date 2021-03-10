@@ -92,7 +92,7 @@
         }                                                                                         \
         auto symbol = ctx.getSymbol((SYMBOL));                                                    \
         ASSERT_TRUE(symbol) << "Expected \"" << (SYMBOL) << "\" to be added to the symbol table"; \
-        auto              new_type = TypeChecker::Type::verify((TYPE), ctx);                      \
+        auto              new_type = (TYPE)->verify(ctx);                                         \
         std::stringstream ss;                                                                     \
         ss << "Expected type \"";                                                                 \
         new_type->pretty(ss);                                                                     \

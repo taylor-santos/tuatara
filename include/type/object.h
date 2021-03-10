@@ -26,7 +26,9 @@ public: // Methods
     bool
     isSubtype(const Type &other, const Context &ctx) const override;
     std::shared_ptr<Type>
-    accessField(const std::string &field, const AST::Expression &access, Context &ctx) override;
+    accessField(const std::string &field, const yy::location &loc, Context &ctx) override;
+    std::shared_ptr<Type>
+    clone(const yy::location &loc) const override;
 
 private: // Fields
     std::string                                  className_;
@@ -39,6 +41,8 @@ private: // Methods
     verifyImpl(Context &ctx) override;
     bool
     isSuperImpl(const class Object &other, const Context &ctx) const override;
+    void
+    updateWith(const Type &other) override;
 };
 
 } // namespace TypeChecker

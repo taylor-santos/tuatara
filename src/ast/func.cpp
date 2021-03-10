@@ -92,11 +92,11 @@ Func::getDeclTypeImpl(TypeChecker::Context &ctx) {
                                          : argTypes[0];
     auto bodyRet = body_->getType(newCtx);
     if (retType_) {
-        *retType_ = TypeChecker::Type::verify(*retType_, ctx);
+        *retType_ = (*retType_)->verify(ctx);
         if (!bodyRet->isSubtype(**retType_, ctx)) {
             vector<pair<string, yy::location>> msgs;
             stringstream                       ss;
-            ss << "error: returning \"";
+            ss << "returning \"";
             bodyRet->pretty(ss);
             ss << "\" from a function expecting to return \"";
             (*retType_)->pretty(ss);

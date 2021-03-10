@@ -40,7 +40,7 @@ Context::Context() {
         addClass(name, *type);
     }
     for (auto &[_, type] : symbols_) {
-        type = TypeChecker::Type::verify(type, *this);
+        type = type->verify(*this);
     }
 }
 
@@ -66,20 +66,20 @@ Context::updateSymbol(const std::string &name, const std::shared_ptr<TypeChecker
     if (!added) {
         const auto &[n, prevType] = *prev;
         if (type->isSubtype(*prevType, *this)) {
-            prevType->setInitialized(type->isInitialized());
+            type->updateType(*prevType);
             return;
         }
         vector<pair<string, yy::location>> msgs;
         {
             stringstream ss;
-            ss << "error: redefining variable \"" << name << "\" to have type \"";
+            ss << "redefining variable \"" << name << "\" to have type \"";
             type->pretty(ss);
             ss << "\"";
             msgs.emplace_back(ss.str(), type->getLoc());
         }
         {
             stringstream ss;
-            ss << "note: \"" << name << "\" defined to have type \"";
+            ss << "variable \"" << name << "\" defined to have type \"";
             prevType->pretty(ss);
             ss << "\"";
             msgs.emplace_back(ss.str(), prevType->getLoc());
@@ -123,7 +123,7 @@ Context::printSymbols(std::ostream &out) const {
     out << setw(maxLen) << left << "Name"
         << " | "
         << "Type" << endl;
-    out << "-----|-----" << endl;
+    out << string(maxLen + 1, '-') << "|-----" << endl;
     for (const auto &[name, type] : getSymbols()) {
         out << setw(maxLen) << left << name << " | ";
         type->pretty(out);

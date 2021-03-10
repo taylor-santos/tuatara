@@ -68,39 +68,40 @@ IdentAccess::getNodeName() const {
 shared_ptr<TypeChecker::Type>
 IdentAccess::getTypeImpl(TypeChecker::Context &ctx) {
     /* The expression "a b" can be interpreted in two different ways depending on the type of a:
-     *  1) If a is an object, "a b" is equivalent to a member access expression "a.b".
-     *  2) If a is a function, "a b" is equivalent to the function call "a(b)".
+     *  1) If a is an object, "a b" is equivalent to a member access expression "a.b", in which case
+     *     b would need to be the name of one of a's fields.
+     *  2) If a is a function, "a b" is equivalent to the function call "a(b)", in which case b
+     *     would need to resolve to a valid local variable compatible with the function a.
      */
     vector<pair<string, yy::location>> msgs;
+    yy::location                       nullLoc{nullptr, 0, 0};
     auto                               type = expr_->getType(ctx);
     try {
-        auto fieldType = type->accessField(ident_, *this, ctx);
+        auto fieldType = type->accessField(ident_, expr_->getLoc(), ctx);
         return fieldType;
     } catch (const TypeChecker::TypeException &e) {
-        {
-            stringstream ss;
-            ss << "error: \"" << ident_ << "\" names neither a field nor a function argument";
-            msgs.emplace_back(ss.str(), idLoc_);
-        }
-        const auto &newMsgs = e.getMsgs();
-        msgs.insert(msgs.end(), newMsgs.begin(), newMsgs.end());
+        stringstream ss;
+        ss << "\"" << ident_ << "\" cannot be applied to an expression with type \"";
+        type->pretty(ss);
+        ss << "\"";
+        msgs.emplace_back(ss.str(), getLoc());
+        msgs.emplace_back("\"" + ident_ + "\" cannot be a field because:", nullLoc);
+        msgs.insert(msgs.end(), e.getMsgs().begin(), e.getMsgs().end());
+        msgs.emplace_back(
+            "\"" + ident_ + "\" cannot be the argument to a function because:",
+            nullLoc);
     }
 
     auto optIdentType = ctx.getSymbol(ident_);
     if (!optIdentType) {
-        stringstream ss;
-        ss << "note: \"" << ident_
-           << "\" cannot be a function argument because it not the name of a variable in scope";
-        msgs.emplace_back(ss.str(), getLoc());
+        msgs.emplace_back("\"" + ident_ + "\" is not the name of a variable in scope", getLoc());
     } else if (!(*optIdentType)->isInitialized()) {
         msgs.emplace_back(
-            "note: \"" + ident_ +
-                "\" cannot be a function argument because it was not initialized when it was "
-                "declared",
+            "the variable \"" + ident_ + "\" has not been initialized",
             (*optIdentType)->getLoc());
     } else {
         try {
-            auto funcRetType = type->callAsFunc(**optIdentType, *this, ctx);
+            auto funcRetType = type->callAsFunc(**optIdentType, getLoc(), ctx);
             return funcRetType;
         } catch (TypeChecker::TypeException &e) {
             const auto &newMsgs = e.getMsgs();

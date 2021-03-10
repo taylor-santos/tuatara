@@ -22,15 +22,21 @@ Type::Type(yy::location loc)
 Type::~Type() = default;
 
 std::shared_ptr<Type>
-Type::verify(std::shared_ptr<Type> type, Context &ctx) {
-    if (type->verifyState_ != VerifyState::NONE) {
-        return type;
+Type::verify(Context &ctx) {
+    if (verifyState_ != VerifyState::NONE) {
+        return shared_from_this();
     }
-    type->verifyState_ = VerifyState::FAILED;
-    type->verifyImpl(ctx); // Throws on failure
-    type               = type->simplify(ctx);
-    type->verifyState_ = VerifyState::VERIFIED;
-    return type;
+    verifyState_ = VerifyState::FAILED;
+    verifyImpl(ctx); // Throws on failure
+    auto ret          = simplify(ctx);
+    ret->verifyState_ = VerifyState::VERIFIED;
+    return ret;
+}
+
+void
+Type::updateType(Type &other) const {
+    other.initialized_ = initialized_;
+    other.updateWith(*this);
 }
 
 void
@@ -39,27 +45,29 @@ Type::pretty(ostream &out) const {
 }
 
 std::shared_ptr<Type>
-Type::callAsFunc(const Type &, const AST::Expression &call, Context &) {
+Type::callAsFunc(const Type &, const yy::location &loc, Context &) {
     vector<pair<string, yy::location>> msgs;
-    msgs.emplace_back("error: expression is not a function", call.getLoc());
+    msgs.emplace_back("expression is not a function", loc);
     addTypeLocMessage(msgs, "expression");
     throw TypeException(msgs);
 }
 
 std::shared_ptr<Type>
-Type::indexAsArray(AST::Expression &, const AST::Expression &index, Context &) {
+Type::indexAsArray(const Type &, const yy::location &loc, Context &) {
     vector<pair<string, yy::location>> msgs;
-    msgs.emplace_back("error: expression cannot be indexed", index.getLoc());
+    msgs.emplace_back("expression cannot be indexed", loc);
     addTypeLocMessage(msgs, "expression");
     throw TypeException(msgs);
 }
 
 std::shared_ptr<Type>
-Type::accessField(const std::string &field, const AST::Expression &access, Context &) {
+Type::accessField(const std::string &field, const yy::location &loc, Context &) {
     vector<pair<string, yy::location>> msgs;
     stringstream                       ss;
-    ss << "error: cannot access member \"" << field << "\" of non-class type";
-    msgs.emplace_back(ss.str(), access.getLoc());
+    ss << "cannot access member \"" << field << "\" of non-class type \"";
+    pretty(ss);
+    ss << "\"";
+    msgs.emplace_back(ss.str(), loc);
     addTypeLocMessage(msgs, "expression");
     throw TypeChecker::TypeException(msgs);
 }
@@ -145,14 +153,38 @@ Type::addTypeLocMessage(vector<pair<string, yy::location>> &msgs, const string &
     }
     stringstream ss;
     if (name.empty()) {
-        ss << "node: given type \"";
+        ss << "given type \"";
     } else {
-        ss << "note: " << name << " given type \"";
+        ss << name << " given type \"";
     }
     pretty(ss);
     ss << "\" here:";
     msgs.emplace_back(ss.str(), loc);
     return true;
 }
+
+void
+Type::updateForImpl(TypeChecker::Array &) const {}
+
+void
+Type::updateForImpl(TypeChecker::Class &) const {}
+
+void
+Type::updateForImpl(TypeChecker::Func &) const {}
+
+void
+Type::updateForImpl(TypeChecker::Maybe &) const {}
+
+void
+Type::updateForImpl(TypeChecker::Object &) const {}
+
+void
+Type::updateForImpl(TypeChecker::Product &) const {}
+
+void
+Type::updateForImpl(TypeChecker::Sum &) const {}
+
+void
+Type::updateForImpl(TypeChecker::Unit &) const {}
 
 } // namespace TypeChecker

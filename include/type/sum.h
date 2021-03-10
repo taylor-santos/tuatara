@@ -15,6 +15,9 @@ class Context;
 class Sum final : public Type {
 public: // Fields
     Sum(yy::location loc, std::vector<std::shared_ptr<Type>> types);
+    Sum(yy::location                       loc,
+        std::vector<std::shared_ptr<Type>> types,
+        const std::shared_ptr<int> &       indexOverride);
     ~Sum() override;
     [[nodiscard]] const std::string &
     getNodeName() const override;
@@ -25,14 +28,20 @@ public: // Fields
     bool
     isSubtype(const Type &other, const Context &ctx) const override;
     std::shared_ptr<Type>
-    callAsFunc(const Type &arg, const AST::Expression &call, Context &ctx) override;
+    callAsFunc(const Type &arg, const yy::location &loc, Context &ctx) override;
     std::shared_ptr<Type>
-    indexAsArray(AST::Expression &arg, const AST::Expression &index, Context &ctx) override;
+    indexAsArray(const Type &arg, const yy::location &loc, Context &ctx) override;
     std::shared_ptr<Type>
-    accessField(const std::string &field, const AST::Expression &access, Context &ctx) override;
+    accessField(const std::string &field, const yy::location &loc, Context &ctx) override;
+    std::shared_ptr<Type>
+    clone(const yy::location &loc) const override;
 
 private: // Fields
     std::vector<std::shared_ptr<Type>> types_;
+    // Type checker will branch for each sub-type of a sum type, assuming that it takes on that
+    // type. The indexOverride_ field encodes that assumption so if the same type is encountered
+    // again it will maintain that assumption.
+    std::shared_ptr<int> indexOverride_;
 
 private: // Methods
     void
@@ -57,6 +66,22 @@ private: // Methods
     isSuperImpl(const Sum &other, const Context &ctx) const override;
     bool
     isSuperImpl(const Unit &other, const Context &ctx) const override;
+    void
+    updateWith(const Type &other) override;
+    void
+    updateForImpl(Sum &other) const override;
+
+private: // Classes
+    // RAII setter for Sum::indexOverride_. Resets to -1 when the object goes out of scope.
+    friend class IndexOverrider;
+    class IndexOverrider {
+    public: // Methods
+        IndexOverrider(Sum &sum, int index);
+        ~IndexOverrider();
+
+    private: // Fields
+        Sum &sum_;
+    };
 };
 
 } // namespace TypeChecker

@@ -38,6 +38,11 @@ Array::Array(yy::location loc, shared_ptr<Type> type)
 
 Array::~Array() = default;
 
+shared_ptr<Type>
+Array::clone(const yy::location &loc) const {
+    return make_shared<Array>(loc, type_->clone(type_->getLoc()));
+}
+
 void
 Array::json(ostream &os) const {
     JSON::Object obj(os);
@@ -59,7 +64,7 @@ Array::getNodeName() const {
 
 void
 Array::verifyImpl(Context &ctx) {
-    type_ = TypeChecker::Type::verify(type_, ctx);
+    type_ = type_->verify(ctx);
 }
 
 void
@@ -85,22 +90,26 @@ Array::simplify(Context &ctx) {
 }
 
 shared_ptr<Type>
-Array::indexAsArray(AST::Expression &arg, const AST::Expression &index, Context &ctx) {
-    auto argType  = arg.getType(ctx);
-    auto argAsObj = dynamic_pointer_cast<TypeChecker::Object>(argType);
+Array::indexAsArray(const Type &arg, const yy::location &loc, Context &) {
+    auto argAsObj = dynamic_cast<const TypeChecker::Object *>(&arg);
     if (argAsObj && argAsObj->getClass().getClassName() == "int") {
         return make_shared<TypeChecker::Maybe>(getLoc(), type_);
     }
     vector<pair<string, yy::location>> msgs;
     {
         stringstream ss;
-        ss << "error: cannot index into array with expression of type \"";
-        argType->pretty(ss);
+        ss << "cannot index into array with expression of type \"";
+        arg.pretty(ss);
         ss << "\"";
-        msgs.emplace_back(ss.str(), index.getLoc());
+        msgs.emplace_back(ss.str(), loc);
     }
-    argType->addTypeLocMessage(msgs);
+    arg.addTypeLocMessage(msgs);
     throw TypeChecker::TypeException(msgs);
+}
+
+void
+Array::updateWith(const Type &other) {
+    other.updateForImpl(*this);
 }
 
 } // namespace TypeChecker

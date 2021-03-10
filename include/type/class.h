@@ -36,6 +36,8 @@ public: // Methods
 
     static std::unordered_map<std::string, std::shared_ptr<Class>>
     generateBuiltins();
+    std::shared_ptr<Type>
+    clone(const yy::location &loc) const override;
 
 private: // Fields
     std::string                                            name_;
@@ -56,6 +58,8 @@ private: // Methods
     addSuperTypeImpl(Class *cl);
     bool
     isSuperImpl(const class Class &other, const Context &ctx) const override;
+    void
+    updateWith(const Type &other) override;
 };
 
 } // namespace TypeChecker

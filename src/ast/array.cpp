@@ -72,10 +72,10 @@ Array::getTypeImpl(TypeChecker::Context &ctx) {
             // TODO: Find common ancestor of all elements instead of direct equality
             if (!type->isEqual(*exprType, ctx)) {
                 vector<pair<string, yy::location>> msgs;
-                msgs.emplace_back("error: array must have uniform type", getLoc());
+                msgs.emplace_back("array must have uniform type", getLoc());
                 {
                     stringstream ss;
-                    ss << "note: expression at position " << i << " has type \"";
+                    ss << "expression at position " << i << " has type \"";
                     exprType->pretty(ss);
                     ss << "\" which conflicts with the previous elements' type \"";
                     type->pretty(ss);

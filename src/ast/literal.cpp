@@ -23,10 +23,8 @@ Literal::~Literal() = default;
 
 shared_ptr<TypeChecker::Type>
 Literal::getTypeImpl(TypeChecker::Context &ctx) {
-    auto type =
-        TypeChecker::Type::verify(make_shared<TypeChecker::Object>(getLoc(), className_), ctx);
-    type->setInitialized(true);
-    return type;
+    auto type = make_shared<TypeChecker::Object>(getLoc(), className_);
+    return type->verify(ctx);
 }
 
 } // namespace AST

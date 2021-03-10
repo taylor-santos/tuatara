@@ -82,7 +82,7 @@ Lambda::getTypeImpl(TypeChecker::Context &ctx) {
     vector<shared_ptr<TypeChecker::Type>> argTypes;
     argTypes.reserve(args_.size());
     transform(args_.begin(), args_.end(), back_inserter(argTypes), [&](auto &arg) {
-        arg.second = TypeChecker::Type::verify(arg.second, newCtx);
+        arg.second = arg.second->verify(newCtx);
         arg.second->setInitialized(true);
         newCtx.setSymbol(arg.first, arg.second);
         return arg.second;

@@ -48,7 +48,7 @@ TypeConstraint::getNodeName() const {
 
 shared_ptr<TypeChecker::Type>
 TypeConstraint::getTypeImpl(TypeChecker::Context &ctx) {
-    type_ = TypeChecker::Type::verify(type_, ctx);
+    type_ = type_->verify(ctx);
     return type_;
 }
 

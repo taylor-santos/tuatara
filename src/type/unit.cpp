@@ -6,6 +6,7 @@ namespace TypeChecker {
 class Context;
 } // namespace TypeChecker
 
+using std::make_shared;
 using std::ostream;
 using std::string;
 
@@ -15,6 +16,11 @@ Unit::Unit(yy::location loc)
     : Type(loc) {}
 
 Unit::~Unit() = default;
+
+std::shared_ptr<Type>
+Unit::clone(const yy::location &loc) const {
+    return make_shared<Unit>(loc);
+}
 
 void
 Unit::json(ostream &os) const {
@@ -74,6 +80,11 @@ Unit::isSuperImpl(const Sum &, const Context &) const {
 bool
 Unit::isSuperImpl(const Unit &, const Context &) const {
     return true;
+}
+
+void
+Unit::updateWith(const Type &other) {
+    other.updateForImpl(*this);
 }
 
 } // namespace TypeChecker
