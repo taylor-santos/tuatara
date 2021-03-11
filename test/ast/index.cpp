@@ -8,7 +8,10 @@
 #include "ast/int.h"
 #include "ast/variable.h"
 
-#include "gtest/gtest.h"
+#include "type/maybe.h"
+#include "type/object.h"
+
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -39,6 +42,16 @@ TEST(ASTTest, IndexWalk) {
     Index         node(loc, move(expr), move(index));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Index\nVariable\nInt\n");
+}
+
+TEST(ASTTest, IndexGetType) {
+    istringstream iss("var arr = [1,2,3,4]\n"
+                      "var a = arr[2]");
+
+    shared_ptr<TypeChecker::Type> target = make_unique<TypeChecker::Maybe>(
+        yy::location{},
+        make_unique<TypeChecker::Object>(yy::location{}, "int"));
+    EXPECT_TYPE(iss, "a", target);
 }
 
 #ifdef _MSC_VER

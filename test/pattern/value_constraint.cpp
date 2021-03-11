@@ -7,6 +7,9 @@
 
 #include "ast/int.h"
 
+#include "type/object.h"
+#include "type/type_context.h"
+
 #include "gtest/gtest.h"
 
 using namespace Pattern;
@@ -37,6 +40,18 @@ TEST(PatternTest, ValueConstraintWalk) {
     ValueConstraint node(loc, move(value));
     node.walk([&ss](const AST::Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Value Constraint Pattern\nInt\n");
+}
+
+TEST(PatternTest, ValueConstraintGetType) {
+    yy::location         loc;
+    auto                 value = make_unique<AST::Int>(loc, 123);
+    ValueConstraint      node(loc, move(value));
+    TypeChecker::Context ctx;
+
+    shared_ptr<TypeChecker::Type> target = make_shared<TypeChecker::Object>(loc, "int");
+    target                               = target->verify(ctx);
+    auto type                            = node.getType(ctx);
+    EXPECT_TRUE(type->isEqual(*target, ctx));
 }
 
 #ifdef _MSC_VER

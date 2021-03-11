@@ -22,8 +22,6 @@ public: // Methods
     operator<<(std::ostream &os, const Node &ast);
     [[nodiscard]] const yy::location &
     getLoc() const;
-    void
-    setLoc(const yy::location &loc);
     [[nodiscard]] virtual const std::string &
     getNodeName() const = 0;
 

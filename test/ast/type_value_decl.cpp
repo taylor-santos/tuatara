@@ -8,7 +8,7 @@
 
 #include "type/object.h"
 
-#include "gtest/gtest.h"
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -40,6 +40,13 @@ TEST(ASTTest, TypeValueDeclWalk) {
     TypeValueDeclaration node(loc, loc, "var", move(type), move(val));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Type Value Decl\nObject Type\nInt\n");
+}
+
+TEST(ASTTest, TypeValueDeclGetType) {
+    istringstream iss(R"(var a: int = 123)");
+
+    auto target = make_shared<TypeChecker::Object>(yy::location{}, "int");
+    EXPECT_TYPE(iss, "a", target);
 }
 
 #ifdef _MSC_VER

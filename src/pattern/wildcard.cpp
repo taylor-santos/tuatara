@@ -35,7 +35,8 @@ Wildcard::getNodeName() const {
 }
 
 shared_ptr<TypeChecker::Type>
-Wildcard::getTypeImpl(TypeChecker::Context &) {
+Wildcard::getTypeImpl(TypeChecker::Context &ctx) {
+    type_ = type_->verify(ctx);
     return type_;
 }
 

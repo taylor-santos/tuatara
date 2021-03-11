@@ -99,12 +99,11 @@ TEST(ASTTest, FuncGetTypeWrongReturn) {
                     stmt->getType(ctx);
                 }
             } catch (const TypeChecker::TypeException &e) {
-                auto msgs = e.getMsgs();
-                EXPECT_EQ(msgs.size(), 2);
+                ASSERT_EQ(e.getMsgs().size(), 2);
                 EXPECT_EQ(
-                    msgs[0].first,
+                    e.getMsgs().at(0).first,
                     "returning \"int\" from a function expecting to return \"bool\"");
-                EXPECT_EQ(msgs[1].first, "function given type \"bool\" here:");
+                EXPECT_EQ(e.getMsgs().at(1).first, "function given type \"bool\" here:");
                 throw;
             }
         },

@@ -26,7 +26,7 @@ private: // Methods
     json(std::ostream &os) const override;
 
 private: // Fields
-    std::shared_ptr<TypeChecker::Unit> type_;
+    std::shared_ptr<TypeChecker::Type> type_;
 };
 
 } // namespace Pattern

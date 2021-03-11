@@ -5,7 +5,9 @@
 
 #include "ast/string.h"
 
-#include "gtest/gtest.h"
+#include "type/object.h"
+
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -24,6 +26,13 @@ TEST(ASTTest, StringWalk) {
     String        node(loc, "StringNode");
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "String\n");
+}
+
+TEST(ASTTest, StringGetType) {
+    istringstream iss(R"(var a = "foo")");
+
+    auto target = make_shared<TypeChecker::Object>(yy::location{}, "string");
+    EXPECT_TYPE(iss, "a", target);
 }
 
 #ifdef _MSC_VER

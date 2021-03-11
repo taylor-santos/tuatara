@@ -8,7 +8,10 @@
 #include "ast/int.h"
 #include "ast/variable.h"
 
-#include "gtest/gtest.h"
+#include "type/object.h"
+#include "type/product.h"
+
+#include "test_util.h"
 
 using namespace AST;
 using namespace std;
@@ -40,6 +43,19 @@ TEST(ASTTest, TupleWalk) {
     Tuple node(loc, move(exprs));
     node.walk([&ss](const Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Tuple\nVariable\nInt\n");
+}
+
+TEST(ASTTest, TupleGetType) {
+    istringstream iss(R"(var a = (1, 2.5, "foo", false))");
+
+    vector<shared_ptr<TypeChecker::Type>> types;
+    yy::location                          loc;
+    types.emplace_back(make_unique<TypeChecker::Object>(loc, "int"));
+    types.emplace_back(make_unique<TypeChecker::Object>(loc, "float"));
+    types.emplace_back(make_unique<TypeChecker::Object>(loc, "string"));
+    types.emplace_back(make_unique<TypeChecker::Object>(loc, "bool"));
+    auto target = make_shared<TypeChecker::Product>(yy::location{}, move(types));
+    EXPECT_TYPE(iss, "a", target);
 }
 
 #ifdef _MSC_VER

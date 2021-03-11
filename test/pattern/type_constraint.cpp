@@ -6,6 +6,7 @@
 #include "pattern/type_constraint.h"
 
 #include "type/object.h"
+#include "type/type_context.h"
 
 #include "gtest/gtest.h"
 
@@ -33,6 +34,17 @@ TEST(PatternTest, TypeConstraintWalk) {
     TypeConstraint node(loc, move(type));
     node.walk([&ss](const AST::Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Type Constraint Pattern\nObject Type\n");
+}
+
+TEST(PatternTest, TypeConstraintGetType) {
+    yy::location         loc;
+    TypeConstraint       node(loc, make_shared<TypeChecker::Object>(loc, "int"));
+    TypeChecker::Context ctx;
+
+    shared_ptr<TypeChecker::Type> target = make_shared<TypeChecker::Object>(loc, "int");
+    target                               = target->verify(ctx);
+    auto type                            = node.getType(ctx);
+    EXPECT_TRUE(type->isEqual(*target, ctx));
 }
 
 #ifdef _MSC_VER

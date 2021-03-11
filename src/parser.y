@@ -360,11 +360,11 @@ literal
     }
 
 multi_expression
-    : ident_expr ";" ident_expr {
+    : postfix_expr ";" postfix_expr {
         $$.push_back($1);
         $$.push_back($3);
     }
-    | multi_expression ";" ident_expr {
+    | multi_expression ";" postfix_expr {
         $$ = $1;
         $$.push_back($3);
     }
@@ -656,7 +656,7 @@ type_pattern
     }
 
 value_pattern
-    : "=" ident_expr {
+    : "=" postfix_expr {
         $$ = $2;
     }
 

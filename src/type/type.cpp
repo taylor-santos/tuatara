@@ -1,5 +1,6 @@
 #include "type/type.h"
 
+#include <cassert>
 #include <sstream>
 
 #include "ast/expression.h"
@@ -74,11 +75,15 @@ Type::accessField(const std::string &field, const yy::location &loc, Context &) 
 
 bool
 Type::isSupertype(const Type &other, const Context &ctx) const {
+    assert(verifyState_ == VerifyState::VERIFIED);
+    assert(other.verifyState_ == VerifyState::VERIFIED);
     return other.isSubtype(*this, ctx);
 }
 
 bool
 Type::isEqual(const Type &other, Context &ctx) const {
+    assert(verifyState_ == VerifyState::VERIFIED);
+    assert(other.verifyState_ == VerifyState::VERIFIED);
     if (this == &other) {
         return true;
     }

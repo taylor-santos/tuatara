@@ -26,9 +26,4 @@ Node::getLoc() const {
     return loc_;
 }
 
-void
-Node::setLoc(const yy::location &loc) {
-    loc_ = loc;
-}
-
 } // namespace AST

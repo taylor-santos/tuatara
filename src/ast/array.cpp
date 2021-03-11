@@ -66,26 +66,22 @@ Array::getTypeImpl(TypeChecker::Context &ctx) {
     for (size_t i = 1; i < exprs_.size(); i++) {
         auto &expr     = exprs_[i];
         auto  exprType = expr->getType(ctx);
-        if (!type) {
-            type = exprType;
-        } else {
-            // TODO: Find common ancestor of all elements instead of direct equality
-            if (!type->isEqual(*exprType, ctx)) {
-                vector<pair<string, yy::location>> msgs;
-                msgs.emplace_back("array must have uniform type", getLoc());
-                {
-                    stringstream ss;
-                    ss << "expression at position " << i << " has type \"";
-                    exprType->pretty(ss);
-                    ss << "\" which conflicts with the previous elements' type \"";
-                    type->pretty(ss);
-                    ss << "\"";
-                    msgs.emplace_back(ss.str(), expr->getLoc());
-                }
-                exprType->addTypeLocMessage(msgs, "expression");
-                type->addTypeLocMessage(msgs, "first element");
-                throw TypeChecker::TypeException(msgs);
+        // TODO: Find common ancestor of all elements instead of direct equality
+        if (!type->isEqual(*exprType, ctx)) {
+            vector<pair<string, yy::location>> msgs;
+            msgs.emplace_back("array must have uniform type", getLoc());
+            {
+                stringstream ss;
+                ss << "expression at position " << i << " has type \"";
+                exprType->pretty(ss);
+                ss << "\" which conflicts with the previous element type \"";
+                type->pretty(ss);
+                ss << "\"";
+                msgs.emplace_back(ss.str(), expr->getLoc());
             }
+            exprType->addTypeLocMessage(msgs, "expression");
+            type->addTypeLocMessage(msgs, "first element");
+            throw TypeChecker::TypeException(msgs);
         }
     }
     return make_unique<TypeChecker::Array>(getLoc(), type);

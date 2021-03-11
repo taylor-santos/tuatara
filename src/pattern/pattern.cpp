@@ -27,6 +27,7 @@ shared_ptr<TypeChecker::Type>
 Pattern::getType(TypeChecker::Context &ctx) {
     auto type = getTypeImpl(ctx);
     type->setInitialized(true);
+    type = type->verify(ctx);
     if (auto *name = getName()) {
         ctx.setSymbol(*name, type);
     }

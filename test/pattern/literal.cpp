@@ -7,6 +7,9 @@
 
 #include "ast/int.h"
 
+#include "type/object.h"
+#include "type/type_context.h"
+
 #include "gtest/gtest.h"
 
 using namespace Pattern;
@@ -37,6 +40,17 @@ TEST(PatternTest, LiteralWalk) {
     Literal      node(loc, move(value));
     node.walk([&ss](const AST::Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Literal Pattern\nInt\n");
+}
+
+TEST(PatternTest, LiteralGetType) {
+    yy::location                  loc;
+    auto                          value = make_unique<AST::Int>(loc, 123);
+    Literal                       node(loc, move(value));
+    TypeChecker::Context          ctx;
+    shared_ptr<TypeChecker::Type> target = make_shared<TypeChecker::Object>(loc, "int");
+    target                               = target->verify(ctx);
+    auto type                            = node.getType(ctx);
+    EXPECT_TRUE(type->isEqual(*target, ctx));
 }
 
 #ifdef _MSC_VER

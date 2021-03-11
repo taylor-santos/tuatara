@@ -5,6 +5,9 @@
 
 #include "pattern/named_wildcard.h"
 
+#include "type/type_context.h"
+#include "type/unit.h"
+
 #include "gtest/gtest.h"
 
 using namespace Pattern;
@@ -31,6 +34,16 @@ TEST(PatternTest, NamedWildcardWalk) {
     NamedWildcard node(loc, "foo");
     node.walk([&ss](const AST::Node &n) { ss << n.getNodeName() << endl; });
     EXPECT_EQ(ss.str(), "Named Wildcard Pattern\n");
+}
+
+TEST(PatternTest, NamedWildcardGetType) {
+    yy::location                  loc;
+    NamedWildcard                 node(loc, "foo");
+    TypeChecker::Context          ctx;
+    shared_ptr<TypeChecker::Type> target = make_shared<TypeChecker::Unit>(loc);
+    target                               = target->verify(ctx);
+    auto type                            = node.getType(ctx);
+    EXPECT_TRUE(type->isEqual(*target, ctx));
 }
 
 #ifdef _MSC_VER
